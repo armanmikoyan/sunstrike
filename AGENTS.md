@@ -7,3 +7,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Design skills
+
+Read the relevant skill before changing UI or interaction design.
+
+- `.agents/skills/unslop/SKILL.md` — use for any visual polish, redesign, or interface cleanup. It covers spacing, color, type, copy, layout, visuals, and motion, plus audit references in `references/`.
+- `.agents/skills/apple-design/SKILL.md` — use for interaction feel, gesture behavior, motion, depth, typography, and reduced-motion decisions.
+
+Project design rules:
+
+- Preserve Sunstrike.ai's dark studio direction. Use bright-enough cool neutral greys (`#131517` page, `#18191c` section, `#1c1e20` raised); keep those panels neutral, without warm or green tinting. Crimson `#d12b38` is the official brand color and CTA/logo fill, with off-white text. Rose `#e85a66` is the secondary support accent for text accents, selected states, sliders, and the navigation progress bar. One italic key word in each section heading is set in Instrument Serif (`font-serif`) in rose. Cost figures, focus rings, active navigation, and chart surfaces stay neutral.
+- Keep the infinite video wall; it is a product-critical moment, not decorative motion. The home hero is the full-bleed wall. Start it at the beginning of the loop and keep the tiles slightly darkened.
+- The home prompt sits at the bottom of the hero at its full size. It does not stick to the viewport or resize on scroll. The sidebar starts collapsed and expands from its top control.
+- Do not add decorative status dots before labels.
+- Keep body copy sentence case. Section headings are concise 17-19px uppercase labels with a sentence-case description and one italic rose key word. Do not add uppercase tracked eyebrows above page titles, additional italics for emphasis, colored glows, radial color washes, or hover scaling on cards.
+- Small text stays at 11px or larger. Headlines, labels, and buttons do not end in periods.
+- Use named transitions and respect `prefers-reduced-motion`.

@@ -1,0 +1,193 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { RollingNumber } from "@/components/magicui/rolling-number";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { QuantityButton, pricingSliderStyles } from "@/components/pricing/quantity-button";
+import {
+  MAX_IMAGES,
+  MIN_IMAGES,
+  getImageQuote,
+} from "@/lib/pricing";
+import { cn } from "@/lib/utils";
+
+const tiers = [
+  {
+    label: "1–9",
+    price: "$0.07",
+    start: 1,
+    active: (quantity: number) => quantity < 10,
+  },
+  {
+    label: "10–49",
+    price: "$0.06",
+    start: 10,
+    active: (quantity: number) => quantity >= 10 && quantity < 50,
+  },
+  {
+    label: "50–500",
+    price: "$0.05",
+    start: 50,
+    active: (quantity: number) => quantity >= 50,
+  },
+];
+
+export function ImageOrderCard() {
+  const [quantity, setQuantity] = useState(10);
+  const quote = getImageQuote(quantity);
+
+  return (
+    <div className="relative mx-auto w-full max-w-[380px] overflow-hidden rounded-2xl border border-white/[0.1] bg-[#1c1e20]">
+      <div className="p-5">
+        <div className="flex items-center justify-between">
+          <span className="text-[12px] text-muted-foreground">Your order</span>
+          <span className="font-mono text-[11px] text-muted-foreground">
+            PAYG
+          </span>
+        </div>
+
+        <div className="mt-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              Images
+            </p>
+            <div className="mt-1 flex items-end gap-2">
+              <RollingNumber
+                value={quote.quantity}
+                className="text-[34px] font-medium leading-none tracking-[-0.03em]"
+              />
+              <span className="pb-1 text-[12px] text-muted-foreground">
+                images
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <QuantityButton
+              onClick={() =>
+                setQuantity((value) => Math.max(MIN_IMAGES, value - 1))
+              }
+              disabled={quantity <= MIN_IMAGES}
+              aria-label="Decrease images"
+            >
+              −
+            </QuantityButton>
+            <QuantityButton
+              onClick={() =>
+                setQuantity((value) => Math.min(MAX_IMAGES, value + 1))
+              }
+              disabled={quantity >= MAX_IMAGES}
+              aria-label="Increase images"
+            >
+              +
+            </QuantityButton>
+          </div>
+        </div>
+
+        <Slider
+          value={[quantity]}
+          min={MIN_IMAGES}
+          max={MAX_IMAGES}
+          step={1}
+          onValueChange={([value]) => setQuantity(value)}
+          aria-label="Number of images"
+          className={cn("mt-5 w-full", pricingSliderStyles)}
+        />
+        <div className="mt-2 flex justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground/70">
+          <span>1 image</span>
+          <span>{MAX_IMAGES} images</span>
+        </div>
+
+        <div className="mt-5 grid grid-cols-3 gap-2">
+          {tiers.map((tier) => {
+            const active = tier.active(quote.quantity);
+            return (
+              <button
+                key={tier.label}
+                type="button"
+                onClick={() => setQuantity(tier.start)}
+                aria-pressed={active}
+                className={cn(
+                  "rounded-xl border p-2.5 text-left transition-colors",
+                  active
+                    ? "border-support/40 bg-support/10 hover:border-support/55 hover:bg-support/15"
+                    : "border-white/[0.1] hover:border-white/25 hover:bg-white/[0.04]",
+                )}
+              >
+                <span
+                  className={cn(
+                    "font-mono text-[11px] uppercase tracking-[0.1em]",
+                    active ? "text-support" : "text-muted-foreground",
+                  )}
+                >
+                  {tier.label}
+                </span>
+                <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-[13px] font-medium tracking-[-0.02em] text-foreground">
+                  {tier.price}
+                  <span className="text-[11px] font-normal text-muted-foreground">
+                    / image
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 space-y-2.5 border-t border-white/[0.07] pt-4 text-[12px]">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Images</span>
+            <RollingNumber value={quote.quantity} />
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Per image</span>
+            <RollingNumber
+              value={quote.unit}
+              decimalPlaces={2}
+              prefix="$"
+            />
+          </div>
+          <div
+            aria-hidden={quote.savings <= 0}
+            className={cn(
+              "flex justify-between text-support",
+              quote.savings <= 0 && "invisible",
+            )}
+          >
+            <span>Volume saving</span>
+            <RollingNumber
+              value={quote.savings}
+              decimalPlaces={2}
+              prefix="−$"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-end justify-between border-t border-white/[0.07] pt-4">
+          <span className="text-[13px] text-muted-foreground">Total</span>
+          <RollingNumber
+            value={quote.total}
+            decimalPlaces={2}
+            prefix="$"
+            className="text-[30px] font-medium leading-none tracking-[-0.03em]"
+          />
+        </div>
+
+        <Button
+          asChild
+          className="mt-5 h-10 w-full rounded-lg bg-brand text-[12px] font-medium text-brand-foreground hover:bg-brand-hover"
+        >
+          <Link href="/billing">
+            Get <RollingNumber value={quote.quantity} /> images
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </Button>
+        <p className="mt-3 text-center font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground/65">
+          One-time payment · No subscription
+        </p>
+      </div>
+    </div>
+  );
+}
