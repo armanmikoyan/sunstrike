@@ -15,7 +15,7 @@ describe("model catalogue", () => {
   it("every model is priced in dollars with a visible description", () => {
     for (const models of Object.values(modelOptions)) {
       for (const model of models) {
-        expect(model.name).toMatch(/^Sunstrike /);
+        expect(model.name).toMatch(/^Chronolab /);
         expect(model.cost).toBeGreaterThan(0);
         expect(model.cost).toBeLessThan(1);
         expect(model.description.length).toBeGreaterThan(0);
@@ -36,20 +36,20 @@ describe("model catalogue", () => {
 
 describe("getGenerationCost", () => {
   it("returns the clip rate for a standard duration", () => {
-    expect(getGenerationCost("video", "Sunstrike Motion 2", "5s")).toBe(0.51);
+    expect(getGenerationCost("video", "Chronolab Motion 2", "5s")).toBe(0.51);
     expect(
-      getGenerationCost("video", "Sunstrike Motion Turbo", "4s"),
+      getGenerationCost("video", "Chronolab Motion Turbo", "4s"),
     ).toBe(0.34);
   });
 
   it("adds render time for longer takes", () => {
-    expect(getGenerationCost("video", "Sunstrike Motion 2", "8s")).toBe(0.68);
-    expect(getGenerationCost("video", "Sunstrike Motion 2", "12s")).toBe(0.94);
+    expect(getGenerationCost("video", "Chronolab Motion 2", "8s")).toBe(0.68);
+    expect(getGenerationCost("video", "Chronolab Motion 2", "12s")).toBe(0.94);
   });
 
   it("ignores duration for stills", () => {
-    expect(getGenerationCost("image", "Sunstrike Image 2", "12s")).toBe(0.07);
-    expect(getGenerationCost("image", "Sunstrike Image Raw", "5s")).toBe(0.17);
+    expect(getGenerationCost("image", "Chronolab Image 2", "12s")).toBe(0.07);
+    expect(getGenerationCost("image", "Chronolab Image Raw", "5s")).toBe(0.17);
   });
 
   it("falls back to the first model when the name is unknown", () => {
@@ -62,7 +62,7 @@ describe("getGenerationCost", () => {
   });
 
   it("rounds to cents", () => {
-    expect(getGenerationCost("video", "Sunstrike Loop", "12s")).toBe(0.86);
+    expect(getGenerationCost("video", "Chronolab Loop", "12s")).toBe(0.86);
   });
 });
 

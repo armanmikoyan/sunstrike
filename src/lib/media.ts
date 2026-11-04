@@ -28,9 +28,9 @@ export type MediaItem = {
 
 const categoryFallback: Record<MediaCategory, string> = {
   Portrait:
-    "linear-gradient(150deg, #2c2226 0%, #4b3036 60%, #63383e 100%)",
+    "linear-gradient(150deg, #262130 0%, #3a2f4b 60%, #4e4066 100%)",
   Fashion:
-    "linear-gradient(150deg, #2b241f 0%, #4f3d2c 60%, #6b4a32 100%)",
+    "linear-gradient(150deg, #2b2428 0%, #443a47 60%, #5a4a5f 100%)",
   Abstract:
     "linear-gradient(150deg, #262130 0%, #3f3552 60%, #514060 100%)",
   City: "linear-gradient(150deg, #1e252c 0%, #2f4454 60%, #3c5568 100%)",
@@ -38,7 +38,7 @@ const categoryFallback: Record<MediaCategory, string> = {
     "linear-gradient(150deg, #202823 0%, #334a3d 60%, #3f5949 100%)",
   Space: "linear-gradient(150deg, #1d1f2a 0%, #2b3050 60%, #3a3d63 100%)",
   Cinematic:
-    "linear-gradient(150deg, #2a211c 0%, #4e3427 60%, #66402c 100%)",
+    "linear-gradient(150deg, #221f2b 0%, #352c4a 60%, #463a63 100%)",
 };
 
 const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
@@ -52,7 +52,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Fashion",
     aspect: "9 / 16",
-    model: "Sunstrike Motion 2",
+    model: "Chronolab Motion 2",
     author: "Mara Lune",
     likes: 842,
     cost: 0.51,
@@ -67,7 +67,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Fashion",
     aspect: "9 / 16",
-    model: "Sunstrike Motion Turbo",
+    model: "Chronolab Motion Turbo",
     author: "Studio Kova",
     likes: 1204,
     cost: 0.34,
@@ -82,7 +82,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "City",
     aspect: "9 / 16",
-    model: "Sunstrike Motion 2",
+    model: "Chronolab Motion 2",
     author: "Noah A.",
     likes: 673,
     cost: 0.51,
@@ -97,7 +97,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "City",
     aspect: "9 / 16",
-    model: "Sunstrike Motion Turbo",
+    model: "Chronolab Motion Turbo",
     author: "Sena Ito",
     likes: 2190,
     cost: 0.34,
@@ -112,7 +112,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
-    model: "Sunstrike Image 2",
+    model: "Chronolab Image 2",
     author: "Field Office",
     likes: 473,
     cost: 0.07,
@@ -126,7 +126,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
-    model: "Sunstrike Image Pro",
+    model: "Chronolab Image Pro",
     author: "Iris M.",
     likes: 318,
     cost: 0.12,
@@ -140,7 +140,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Nature",
     aspect: "9 / 16",
-    model: "Sunstrike Motion 2",
+    model: "Chronolab Motion 2",
     author: "Mara Lune",
     likes: 956,
     cost: 0.51,
@@ -155,7 +155,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Cinematic",
     aspect: "1 / 1",
-    model: "Sunstrike Motion Turbo",
+    model: "Chronolab Motion Turbo",
     author: "Studio Kova",
     likes: 731,
     cost: 0.34,
@@ -170,7 +170,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Fashion",
     aspect: "9 / 16",
-    model: "Sunstrike Motion 2",
+    model: "Chronolab Motion 2",
     author: "Mara Lune",
     likes: 3402,
     cost: 0.51,
@@ -186,7 +186,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "City",
     aspect: "3 / 4",
-    model: "Sunstrike Image Pro",
+    model: "Chronolab Image Pro",
     author: "Noah A.",
     likes: 1871,
     cost: 0.12,
@@ -200,7 +200,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "City",
     aspect: "9 / 16",
-    model: "Sunstrike Motion Turbo",
+    model: "Chronolab Motion Turbo",
     author: "Sena Ito",
     likes: 2688,
     cost: 0.34,
@@ -216,7 +216,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Nature",
     aspect: "3 / 4",
-    model: "Sunstrike Image 2",
+    model: "Chronolab Image 2",
     author: "Iris M.",
     likes: 945,
     cost: 0.07,
@@ -230,7 +230,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Nature",
     aspect: "3 / 4",
-    model: "Sunstrike Image 2",
+    model: "Chronolab Image 2",
     author: "Mara Lune",
     likes: 622,
     cost: 0.07,
@@ -244,7 +244,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Fashion",
     aspect: "9 / 16",
-    model: "Sunstrike Motion Turbo",
+    model: "Chronolab Motion Turbo",
     author: "Studio Kova",
     likes: 4121,
     cost: 0.34,
@@ -260,7 +260,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Space",
     aspect: "3 / 4",
-    model: "Sunstrike Image Pro",
+    model: "Chronolab Image Pro",
     author: "Noah A.",
     likes: 1107,
     cost: 0.12,
@@ -274,7 +274,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "video",
     category: "Cinematic",
     aspect: "1 / 1",
-    model: "Sunstrike Motion Turbo",
+    model: "Chronolab Motion Turbo",
     author: "Studio Kova",
     likes: 2954,
     cost: 0.34,
@@ -290,7 +290,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
-    model: "Sunstrike Image Pro",
+    model: "Chronolab Image Pro",
     author: "Field Office",
     likes: 859,
     cost: 0.12,
@@ -304,7 +304,7 @@ const items: (Omit<MediaItem, "src" | "poster" | "fallback"> & {
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
-    model: "Sunstrike Image 2",
+    model: "Chronolab Image 2",
     author: "Iris M.",
     likes: 704,
     cost: 0.07,
@@ -325,12 +325,6 @@ export const mediaItems: MediaItem[] = items.map((item) => {
 
 export const mediaById = (id: string) =>
   mediaItems.find((item) => item.id === id);
-
-export const heroMedia = mediaItems.filter((item) =>
-  ["01", "02", "03", "04", "05", "07", "08", "09", "10", "11", "14", "16", "17", "18", "12"].includes(
-    item.id,
-  ),
-);
 
 export const mediaCategories: ("All" | MediaCategory)[] = [
   "All",
@@ -370,22 +364,22 @@ export const topUpPacks = [
 export const generationRates = [
   {
     name: "Motion turbo",
-    detail: "Sunstrike Motion Turbo · 4 seconds",
+    detail: "Chronolab Motion Turbo · 4 seconds",
     price: "$0.34",
   },
   {
     name: "Motion standard",
-    detail: "Sunstrike Motion 2 · 6 seconds",
+    detail: "Chronolab Motion 2 · 6 seconds",
     price: "$0.51",
   },
   {
     name: "Still image",
-    detail: "Sunstrike Image 2 · 1 megapixel",
+    detail: "Chronolab Image 2 · 1 megapixel",
     price: "$0.07",
   },
   {
     name: "Still image pro",
-    detail: "Sunstrike Image Pro · 2 megapixels",
+    detail: "Chronolab Image Pro · 2 megapixels",
     price: "$0.12",
   },
 ];

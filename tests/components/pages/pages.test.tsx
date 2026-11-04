@@ -12,7 +12,6 @@ import AssetsPage from "@/app/(app)/assets/page";
 import FavoritesPage from "@/app/(app)/favorites/page";
 import HelpPage from "@/app/(app)/help/page";
 import LoginPage from "@/app/login/page";
-import { PromptSuggestions } from "@/components/home/prompt-suggestions";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function renderPage(ui: React.ReactNode) {
@@ -98,11 +97,6 @@ describe("app pages", () => {
     expect(
       screen.getByRole("textbox", { name: "Describe your generation" }),
     ).toBeInTheDocument();
-  });
-
-  it("offers prompt suggestions on the home page", () => {
-    renderPage(<PromptSuggestions />);
-    expect(screen.getAllByRole("button").length).toBeGreaterThan(3);
   });
 });
 

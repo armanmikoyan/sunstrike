@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FolderHeart, Heart, Plus } from "lucide-react";
-import { MediaCard } from "@/components/gallery/media-card";
-import { PageHeader } from "@/components/shared/page-header";
+import { MediaCard } from "@/components/media-card";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { mediaById } from "@/lib/media";
 
@@ -30,7 +30,7 @@ export default function FavoritesPage() {
         action={
           <Button
             variant="outline"
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[11px] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
           >
             <Plus className="size-3.5" />
             New collection
@@ -45,18 +45,18 @@ export default function FavoritesPage() {
             type="button"
             className={
               collection.active
-                ? "flex shrink-0 items-center gap-2 rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-[11px] font-medium text-foreground"
-                : "flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.015] px-3 py-2 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
+                ? "flex shrink-0 items-center gap-2 rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-[0.6875rem] font-medium text-foreground"
+                : "flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.015] px-3 py-2 text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
             }
           >
             <FolderHeart className="size-3.5" />
             {collection.name}
-            <span className="font-mono text-[11px] opacity-60">
+            <span className="font-mono text-[0.6875rem] opacity-60">
               {collection.count}
             </span>
           </button>
         ))}
-        <div className="flex shrink-0 items-center gap-1.5 px-2 text-[11px] text-muted-foreground">
+        <div className="flex shrink-0 items-center gap-1.5 px-2 text-[0.6875rem] text-muted-foreground">
           <Heart className="size-3 text-muted-foreground" />
           {favorites.length} single frames
         </div>
@@ -76,8 +76,8 @@ export default function FavoritesPage() {
             <Heart className="size-4" />
           </span>
           <div>
-            <p className="text-[11px] font-medium">Your references, ready</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">
+            <p className="text-[0.6875rem] font-medium">Your references, ready</p>
+            <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
               Open a collection as a reference set in the studio.
             </p>
           </div>
@@ -85,7 +85,7 @@ export default function FavoritesPage() {
         <Button
           asChild
           variant="outline"
-          className="h-8 rounded-lg border-white/10 bg-transparent text-[11px] hover:bg-white/[0.04]"
+          className="h-8 rounded-lg border-white/10 bg-transparent text-[0.6875rem] hover:bg-white/[0.04]"
         >
           <Link href="/create/video">Open in studio</Link>
         </Button>

@@ -8,7 +8,7 @@ import {
   Plus,
   UploadCloud,
 } from "lucide-react";
-import { PageHeader } from "@/components/shared/page-header";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { mediaById } from "@/lib/media";
 
@@ -61,7 +61,7 @@ export default function AssetsPage() {
         action={
           <Button
             variant="outline"
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[11px] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
           >
             <UploadCloud className="size-3.5" />
             Upload
@@ -73,20 +73,20 @@ export default function AssetsPage() {
         <span className="grid size-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
           <UploadCloud className="size-4" />
         </span>
-        <p className="mt-3 text-[11px] font-medium">
+        <p className="mt-3 text-[0.6875rem] font-medium">
           Drop files here or click to upload
         </p>
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="mt-1 text-[0.6875rem] text-muted-foreground">
           Images, video, PDF or SVG · up to 50 MB per file
         </p>
         <input type="file" multiple className="hidden" />
       </label>
 
       <div className="mt-7 flex items-center justify-between">
-        <h2 className="text-[13px] font-medium">Folders</h2>
+        <h2 className="text-[0.8125rem] font-medium">Folders</h2>
         <button
           type="button"
-          className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-1 text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
         >
           <Plus className="size-2.5" />
           New folder
@@ -113,15 +113,15 @@ export default function AssetsPage() {
                   />
                 ) : null}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
-                <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-1 text-[11px] text-white/80 backdrop-blur">
+                <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-1 text-[0.6875rem] text-white/80 backdrop-blur">
                   <Folder className="size-2.5" />
                   {folder.count} files
                 </span>
               </div>
               <div className="flex items-center justify-between px-3 py-2.5">
                 <div>
-                  <p className="text-[11px] font-medium">{folder.name}</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="text-[0.6875rem] font-medium">{folder.name}</p>
+                  <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
                     {folder.type}
                   </p>
                 </div>
@@ -134,22 +134,22 @@ export default function AssetsPage() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-[13px] font-medium">Recent assets</h2>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+          <h2 className="text-[0.8125rem] font-medium">Recent assets</h2>
+          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
             36
           </span>
         </div>
         <div className="flex items-center gap-1">
           <button
             type="button"
-            className="flex h-7 items-center gap-1.5 rounded-md bg-white/[0.06] px-2 text-[11px] text-foreground"
+            className="flex h-7 items-center gap-1.5 rounded-md bg-white/[0.06] px-2 text-[0.6875rem] text-foreground"
           >
             <ImageIcon className="size-2.5" />
             Images
           </button>
           <button
             type="button"
-            className="flex h-7 items-center gap-1.5 rounded-md px-2 text-[11px] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+            className="flex h-7 items-center gap-1.5 rounded-md px-2 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
           >
             <Folder className="size-2.5" />
             All
@@ -180,10 +180,10 @@ export default function AssetsPage() {
                 <MoreHorizontal className="size-3" />
               </button>
               <div className="absolute inset-x-2 bottom-2">
-                <p className="truncate text-[11px] text-white/90">
+                <p className="truncate text-[0.6875rem] text-white/90">
                   {asset.title.toLowerCase().replaceAll(" ", "-")}.jpg
                 </p>
-                <p className="mt-0.5 text-[11px] text-white/60">
+                <p className="mt-0.5 text-[0.6875rem] text-white/60">
                   {asset.aspect} · 1.4 MB
                 </p>
               </div>

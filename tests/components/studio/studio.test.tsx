@@ -1,7 +1,7 @@
 import { Provider } from "jotai";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Studio } from "@/components/studio/studio";
+import { Studio } from "@/components/studio";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 function renderStudio(mode: "video" | "image" = "video") {

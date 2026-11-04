@@ -2,7 +2,7 @@ import { Provider } from "jotai";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { PromptComposer } from "@/components/home/prompt-composer";
+import { PromptComposer } from "@/components/prompt-composer";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routerMock } from "../../mocks/navigation";
 

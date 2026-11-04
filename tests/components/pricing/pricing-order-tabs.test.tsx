@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { PricingOrderTabs } from "@/components/pricing/pricing-order-tabs";
+import { PricingOrderTabs } from "@/components/pricing";
 
 describe("pricing order tabs", () => {
   it("starts on video", () => {

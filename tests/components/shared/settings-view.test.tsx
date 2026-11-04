@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { SettingsView } from "@/components/shared/settings-view";
+import { SettingsView } from "@/components/settings";
 
 describe("settings view", () => {
   it("opens on the profile pane", () => {

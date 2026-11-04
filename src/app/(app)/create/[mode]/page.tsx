@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Studio } from "@/components/studio/studio";
+import { Studio } from "@/components/studio";
 import type { GenerationMode } from "@/lib/store";
 
 type CreatePageProps = {

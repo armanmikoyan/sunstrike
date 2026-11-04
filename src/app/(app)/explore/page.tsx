@@ -1,8 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { ExploreGallery } from "@/components/gallery/explore-gallery";
-import { PageHeader } from "@/components/shared/page-header";
-import { SiteFooter } from "@/components/shared/site-footer";
+import { ExploreGallery } from "@/components/explore-gallery";
+import { PageHeader } from "@/components/page-header";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
@@ -16,11 +16,11 @@ export default function ExplorePage() {
         <PageHeader
           eyebrow="Community"
           title="The feed"
-          description="Fresh work from the Sunstrike community. Inspect the prompt, model and render price, then remix it into your own studio."
+          description="Fresh work from the Chronolab community. Inspect the prompt, model and render price, then remix it into your own studio."
           action={
             <Button
               asChild
-              className="h-10 rounded-lg bg-brand px-4 text-[12px] font-medium text-brand-foreground hover:bg-brand-hover"
+              className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
             >
               <Link href="/create/video">
                 Publish a frame

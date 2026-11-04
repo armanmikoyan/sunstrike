@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   generationRates,
-  heroMedia,
   mediaById,
   mediaCategories,
   mediaItems,
@@ -48,13 +47,6 @@ describe("media catalogue", () => {
   it("looks items up by id", () => {
     expect(mediaById("01")?.title).toBe("Extra Time");
     expect(mediaById("does-not-exist")).toBeUndefined();
-  });
-
-  it("builds the hero wall from real items", () => {
-    expect(heroMedia.length).toBeGreaterThan(6);
-    for (const item of heroMedia) {
-      expect(mediaById(item.id)).toBeDefined();
-    }
   });
 });
 

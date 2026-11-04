@@ -7,7 +7,6 @@ import {
   durationAtom,
   modeAtom,
   promptAtom,
-  qualityAtom,
   selectedModelAtom,
 } from "@/lib/store";
 
@@ -15,14 +14,13 @@ describe("generation store defaults", () => {
   it("starts in video mode with the standard model", () => {
     const store = createStore();
     expect(store.get(modeAtom)).toBe("video");
-    expect(store.get(selectedModelAtom)).toBe("Sunstrike Motion 2");
+    expect(store.get(selectedModelAtom)).toBe("Chronolab Motion 2");
   });
 
   it("starts from the landscape, five second preset", () => {
     const store = createStore();
     expect(store.get(aspectRatioAtom)).toBe("16:9");
     expect(store.get(durationAtom)).toBe("5s");
-    expect(store.get(qualityAtom)).toBe("Balanced");
   });
 
   it("starts with an empty prompt and no attachment", () => {

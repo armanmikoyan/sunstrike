@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { MobileSidebar, Sidebar } from "@/components/layout/sidebar";
+import { MobileSidebar, Sidebar } from "@/components/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { setPathname } from "../../mocks/navigation";
 
@@ -110,7 +110,7 @@ describe("sidebar profile menu", () => {
     const menu = await screen.findByRole("menu");
     expect(within(menu).getByText("Arman Mikoyan")).toBeInTheDocument();
     expect(
-      within(menu).getByText("arman@sunstrike.ai"),
+      within(menu).getByText("arman@chronolab.ai"),
     ).toBeInTheDocument();
 
     const balance = within(menu).getByRole("menuitem", { name: /Balance/ });

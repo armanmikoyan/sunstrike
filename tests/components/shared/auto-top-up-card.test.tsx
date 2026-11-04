@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { AutoTopUpCard } from "@/components/shared/auto-top-up-card";
+import { AutoTopUpCard } from "@/components/auto-top-up-card";
 
 describe("auto top-up card", () => {
   it("is on by default and shows the refill amount", () => {

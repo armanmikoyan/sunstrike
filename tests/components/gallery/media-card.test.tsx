@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { MediaCard } from "@/components/gallery/media-card";
+import { MediaCard } from "@/components/media-card";
 import { mediaById, type MediaItem } from "@/lib/media";
 
 const video = mediaById("01") as MediaItem;

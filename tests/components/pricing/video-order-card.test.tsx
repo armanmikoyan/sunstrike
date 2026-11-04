@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { VideoOrderCard } from "@/components/pricing/video-order-card";
+import { VideoOrderCard } from "@/components/pricing";
 
 const totalRow = () => screen.getByText("Total").parentElement as HTMLElement;
 

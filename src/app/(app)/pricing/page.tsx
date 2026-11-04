@@ -6,9 +6,9 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import { PricingOrderTabs } from "@/components/pricing/pricing-order-tabs";
-import { ClipStrip } from "@/components/shared/clip-strip";
-import { SiteFooter } from "@/components/shared/site-footer";
+import { PricingOrderTabs } from "@/components/pricing";
+import { ClipStrip } from "@/components/clip-strip";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { generationRates, topUpPacks } from "@/lib/media";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ const faqs = [
   {
     question: "Is there a subscription?",
     answer:
-      "No. Sunstrike is pay as you go. Top up when you need to and spend the balance across image and video models at your own pace.",
+      "No. Chronolab is pay as you go. Top up when you need to and spend the balance across image and video models at your own pace.",
   },
   {
     question: "Does my balance expire?",
@@ -49,20 +49,20 @@ export default function PricingPage() {
   return (
     <>
       <div className="w-full px-5 py-12 sm:py-16">
-        <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
+        <div className="grid gap-12 lg:grid-cols-[1fr_22.5rem]">
           <div className="flex flex-col gap-8">
             <div>
-              <div className="text-[12px] text-muted-foreground">
+              <div className="text-[0.75rem] text-muted-foreground">
                 Pay as you go
               </div>
-              <h1 className="mt-4 max-w-[700px] text-balance text-[clamp(40px,6vw,64px)] font-medium leading-[1.02] tracking-[-0.05em]">
+              <h1 className="mt-4 max-w-[43.75rem] text-balance text-[clamp(2.5rem,6vw,4rem)] font-medium leading-[1.02] tracking-[-0.05em]">
                 Pay for output
                 <br />
                 <span className="font-display font-normal tracking-[-0.03em]">
                   Not seats
                 </span>
               </h1>
-              <p className="mt-4 max-w-[510px] text-[15px] leading-relaxed text-muted-foreground">
+              <p className="mt-4 max-w-[31.875rem] text-[0.9375rem] leading-relaxed text-muted-foreground">
                 One balance for stills and motion — clips from{" "}
                 <span className="text-foreground">$0.34</span>, stills from{" "}
                 <span className="text-foreground">$0.07</span>. Top up from $10,
@@ -74,7 +74,7 @@ export default function PricingPage() {
                   (item) => (
                     <span
                       key={item}
-                      className="flex items-center gap-1.5 text-[12px] text-muted-foreground"
+                      className="flex items-center gap-1.5 text-[0.75rem] text-muted-foreground"
                     >
                       <Check className="size-3.5 text-muted-foreground" />
                       {item}
@@ -86,7 +86,7 @@ export default function PricingPage() {
 
             <ClipStrip
               ids={["01", "02", "03", "04", "07", "08"]}
-              className="hidden min-h-[200px] flex-1 lg:flex"
+              className="hidden min-h-[12.5rem] flex-1 lg:flex"
             />
           </div>
 
@@ -96,14 +96,14 @@ export default function PricingPage() {
         <div className="mt-16">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-[22px] font-medium tracking-[-0.025em]">
+              <h2 className="text-[1.375rem] font-medium tracking-[-0.025em]">
                 Top-ups
               </h2>
-              <p className="mt-1 text-[13px] text-muted-foreground">
+              <p className="mt-1 text-[0.8125rem] text-muted-foreground">
                 Buy any amount from $10. One-time payment, no recurring charge.
               </p>
             </div>
-            <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
               <ShieldCheck className="size-3.5" />
               Secure checkout · instant delivery
             </span>
@@ -121,25 +121,25 @@ export default function PricingPage() {
                 )}
               >
                 {pack.popular ? (
-                  <span className="absolute right-5 top-5 text-[11px] font-medium text-foreground">
+                  <span className="absolute right-5 top-5 text-[0.6875rem] font-medium text-foreground">
                     Most popular
                   </span>
                 ) : null}
-                <p className="text-[12px] font-medium text-muted-foreground">
+                <p className="text-[0.75rem] font-medium text-muted-foreground">
                   {pack.name}
                 </p>
                 <div className="mt-6 flex items-end gap-2">
-                  <span className="text-[36px] font-medium leading-none tracking-[-0.03em] tabular-nums">
+                  <span className="text-[2.25rem] font-medium leading-none tracking-[-0.03em] tabular-nums">
                     ${pack.price}
                   </span>
-                  <span className="mb-1 text-[12px] text-muted-foreground">
+                  <span className="mb-1 text-[0.75rem] text-muted-foreground">
                     one time
                   </span>
                 </div>
-                <p className="mt-3 text-[13px] text-muted-foreground">
+                <p className="mt-3 text-[0.8125rem] text-muted-foreground">
                   {pack.note}
                 </p>
-                <div className="mt-6 flex items-center justify-between border-t border-white/[0.07] pt-4 text-[11px] text-muted-foreground">
+                <div className="mt-6 flex items-center justify-between border-t border-white/[0.07] pt-4 text-[0.6875rem] text-muted-foreground">
                   <span>Added to your balance</span>
                   <span>Never expires</span>
                 </div>
@@ -147,7 +147,7 @@ export default function PricingPage() {
                   asChild
                   variant={pack.popular ? "default" : "outline"}
                   className={cn(
-                    "mt-5 h-10 rounded-lg text-[12px] font-medium",
+                    "mt-5 h-10 rounded-lg text-[0.75rem] font-medium",
                     pack.popular
                       ? "bg-brand text-brand-foreground hover:bg-brand-hover"
                       : "border-white/10 bg-transparent text-foreground hover:bg-white/[0.04]",
@@ -163,12 +163,12 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <div className="mt-16 grid gap-4 lg:grid-cols-[1fr_340px]">
+        <div className="mt-16 grid gap-4 lg:grid-cols-[1fr_21.25rem]">
           <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.012]">
             <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
               <div>
-                <h2 className="text-[15px] font-medium">What a render costs</h2>
-                <p className="mt-1 text-[12px] text-muted-foreground">
+                <h2 className="text-[0.9375rem] font-medium">What a render costs</h2>
+                <p className="mt-1 text-[0.75rem] text-muted-foreground">
                   Exact price per render, before you hit generate.
                 </p>
               </div>
@@ -181,16 +181,16 @@ export default function PricingPage() {
                   className="flex items-center justify-between gap-4 px-5 py-3.5"
                 >
                   <div className="min-w-0">
-                    <p className="text-[13px] font-medium">{rate.name}</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                    <p className="text-[0.8125rem] font-medium">{rate.name}</p>
+                    <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
                       {rate.detail}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-baseline gap-2">
-                    <span className="font-mono text-[15px] font-medium text-foreground">
+                    <span className="font-mono text-[0.9375rem] font-medium text-foreground">
                       {rate.price}
                     </span>
-                    <span className="hidden text-[11px] text-muted-foreground min-[360px]:inline">
+                    <span className="hidden text-[0.6875rem] text-muted-foreground min-[22.5rem]:inline">
                       per render
                     </span>
                   </div>
@@ -198,12 +198,12 @@ export default function PricingPage() {
               ))}
             </div>
             <div className="flex items-center justify-between border-t border-white/[0.06] bg-white/[0.015] px-5 py-3">
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[0.6875rem] text-muted-foreground">
                 Failed renders are refunded automatically.
               </p>
               <Link
                 href="/create/video"
-                className="flex items-center gap-1 text-[11px] font-medium text-foreground/80 transition-colors hover:text-foreground"
+                className="flex items-center gap-1 text-[0.6875rem] font-medium text-foreground/80 transition-colors hover:text-foreground"
               >
                 Start a render
                 <ArrowRight className="size-3" />
@@ -213,31 +213,31 @@ export default function PricingPage() {
 
           <div className="rounded-2xl border border-white/[0.08] bg-[#18191c] p-5">
             <RefreshCw className="size-4 text-muted-foreground" />
-            <h3 className="mt-4 text-[15px] font-medium">
+            <h3 className="mt-4 text-[0.9375rem] font-medium">
               Auto top-up, on your terms
             </h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-              Set a floor and a pack size. Sunstrike refills your balance only when
+            <p className="mt-2 text-[0.8125rem] leading-relaxed text-muted-foreground">
+              Set a floor and a pack size. Chronolab refills your balance only when
               it drops below your threshold. Switch it off whenever you want.
             </p>
             <div className="mt-5 space-y-2">
               <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <span className="text-[12px] text-muted-foreground">
+                <span className="text-[0.75rem] text-muted-foreground">
                   Balance below
                 </span>
-                <span className="font-mono text-[11px]">$5</span>
+                <span className="font-mono text-[0.6875rem]">$5</span>
               </div>
               <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <span className="text-[12px] text-muted-foreground">
+                <span className="text-[0.75rem] text-muted-foreground">
                   Top up with
                 </span>
-                <span className="font-mono text-[11px]">$10</span>
+                <span className="font-mono text-[0.6875rem]">$10</span>
               </div>
             </div>
             <Button
               asChild
               variant="outline"
-              className="mt-4 h-9 w-full rounded-lg border-white/10 bg-transparent text-[12px] text-foreground hover:bg-white/[0.04]"
+              className="mt-4 h-9 w-full rounded-lg border-white/10 bg-transparent text-[0.75rem] text-foreground hover:bg-white/[0.04]"
             >
               <Link href="/billing">
                 Configure auto top-up
@@ -248,7 +248,7 @@ export default function PricingPage() {
         </div>
 
         <div className="mt-16 border-t border-border pt-10">
-          <h2 className="text-[22px] font-medium tracking-[-0.025em]">
+          <h2 className="text-[1.375rem] font-medium tracking-[-0.025em]">
             Common questions
           </h2>
           <div className="mt-4 grid gap-x-12 md:grid-cols-2">
@@ -257,14 +257,14 @@ export default function PricingPage() {
                 key={faq.question}
                 className="group border-b border-white/[0.07] py-4"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[13px] font-medium">
+                <summary className="flex cursor-pointer list-none items-center justify-between text-[0.8125rem] font-medium">
                   {faq.question}
                   <span className="relative size-3">
                     <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-muted-foreground" />
                     <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-muted-foreground transition-transform group-open:rotate-90" />
                   </span>
                 </summary>
-                <p className="mt-2 max-w-[480px] text-[13px] leading-relaxed text-muted-foreground">
+                <p className="mt-2 max-w-[30rem] text-[0.8125rem] leading-relaxed text-muted-foreground">
                   {faq.answer}
                 </p>
               </details>

@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { VideoWithFallback } from "@/components/media/video-with-fallback";
+import { VideoWithFallback } from "@/components/video-with-fallback";
 
 describe("video with fallback", () => {
   it("renders a muted, looping, inline player", () => {

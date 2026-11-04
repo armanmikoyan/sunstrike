@@ -1,6 +1,6 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { NavigationProgress } from "@/components/layout/navigation-progress";
+import { NavigationProgress } from "@/components/navigation-progress";
 import { setPathname } from "../../mocks/navigation";
 
 const bar = () => document.querySelector('[aria-hidden="true"]') as HTMLElement;
@@ -22,7 +22,7 @@ describe("navigation progress", () => {
   it("shows while a navigation is running", () => {
     render(<NavigationProgress />);
     act(() => {
-      window.dispatchEvent(new Event("sunstrike:navigation-start"));
+      window.dispatchEvent(new Event("chronolab:navigation-start"));
     });
     expect(bar()).toHaveClass("opacity-100");
   });
@@ -73,7 +73,7 @@ describe("navigation progress", () => {
   it("hides again once the route settles", () => {
     const { rerender } = render(<NavigationProgress />);
     act(() => {
-      window.dispatchEvent(new Event("sunstrike:navigation-start"));
+      window.dispatchEvent(new Event("chronolab:navigation-start"));
     });
     expect(bar()).toHaveClass("opacity-100");
 

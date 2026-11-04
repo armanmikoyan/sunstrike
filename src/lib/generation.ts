@@ -6,25 +6,25 @@ export const modelOptions: Record<
 > = {
   video: [
     {
-      name: "Sunstrike Motion 2",
+      name: "Chronolab Motion 2",
       tag: "Cinematic",
       cost: 0.51,
       description: "Best detail · native audio",
     },
     {
-      name: "Sunstrike Motion Turbo",
+      name: "Chronolab Motion Turbo",
       tag: "Fast",
       cost: 0.34,
       description: "4s drafts · 3x faster",
     },
     {
-      name: "Sunstrike Camera",
+      name: "Chronolab Camera",
       tag: "Direction",
       cost: 0.6,
       description: "Camera paths · longer takes",
     },
     {
-      name: "Sunstrike Loop",
+      name: "Chronolab Loop",
       tag: "Loop",
       cost: 0.43,
       description: "Seamless motion · 4–12s",
@@ -32,25 +32,25 @@ export const modelOptions: Record<
   ],
   image: [
     {
-      name: "Sunstrike Image 2",
+      name: "Chronolab Image 2",
       tag: "Balanced",
       cost: 0.07,
       description: "Fast iteration · 1 MP",
     },
     {
-      name: "Sunstrike Image Pro",
+      name: "Chronolab Image Pro",
       tag: "Detail",
       cost: 0.12,
       description: "Best type & texture · 2 MP",
     },
     {
-      name: "Sunstrike Image Raw",
+      name: "Chronolab Image Raw",
       tag: "Raw",
       cost: 0.17,
       description: "Neutral grade · 4 MP",
     },
     {
-      name: "Sunstrike Product",
+      name: "Chronolab Product",
       tag: "Product",
       cost: 0.1,
       description: "Materials & product accuracy",
@@ -59,12 +59,12 @@ export const modelOptions: Record<
 };
 
 export const aspectRatios = [
-  { value: "16:9", label: "Landscape", shape: "h-[9px] w-4" },
-  { value: "9:16", label: "Portrait", shape: "h-4 w-[9px]" },
+  { value: "16:9", label: "Landscape", shape: "h-[0.5625rem] w-4" },
+  { value: "9:16", label: "Portrait", shape: "h-4 w-[0.5625rem]" },
   { value: "1:1", label: "Square", shape: "size-3" },
   { value: "4:3", label: "Classic", shape: "h-3 w-4" },
   { value: "3:4", label: "Editorial", shape: "h-4 w-3" },
-  { value: "21:9", label: "Cinema", shape: "h-[7px] w-[18px]" },
+  { value: "21:9", label: "Cinema", shape: "h-[0.4375rem] w-[1.125rem]" },
 ];
 
 export const durations = ["4s", "5s", "6s", "8s", "12s"];

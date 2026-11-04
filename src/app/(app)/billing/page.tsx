@@ -10,9 +10,9 @@ import {
   Plus,
   ReceiptText,
 } from "lucide-react";
-import { AutoTopUpCard } from "@/components/shared/auto-top-up-card";
-import { PageHeader } from "@/components/shared/page-header";
-import { SiteFooter } from "@/components/shared/site-footer";
+import { AutoTopUpCard } from "@/components/auto-top-up-card";
+import { PageHeader } from "@/components/page-header";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,7 @@ export const metadata = {
 const transactions = [
   {
     id: "txn_20931",
-    title: "Sunstrike Motion 2 · After Rain",
+    title: "Chronolab Motion 2 · After Rain",
     detail: "Video render · 6s · 1080p",
     date: "Today, 14:32",
     amount: "−$0.51",
@@ -32,7 +32,7 @@ const transactions = [
   },
   {
     id: "txn_20930",
-    title: "Sunstrike Image Pro · Soft Object",
+    title: "Chronolab Image Pro · Soft Object",
     detail: "Image render · 2 MP",
     date: "Today, 14:08",
     amount: "−$0.12",
@@ -50,7 +50,7 @@ const transactions = [
   },
   {
     id: "txn_20928",
-    title: "Sunstrike Motion Turbo · Orbit study",
+    title: "Chronolab Motion Turbo · Orbit study",
     detail: "Video render · 4s · 720p",
     date: "Oct 27, 08:44",
     amount: "−$0.34",
@@ -60,7 +60,7 @@ const transactions = [
   {
     id: "txn_20927",
     title: "Failed render refund",
-    detail: "Sunstrike Motion 2 · automatic refund",
+    detail: "Chronolab Motion 2 · automatic refund",
     date: "Oct 26, 19:03",
     amount: "+$0.51",
     status: "Refunded",
@@ -90,7 +90,7 @@ export default function BillingPage() {
           action={
             <Button
               asChild
-              className="h-9 rounded-lg bg-brand px-3.5 text-[11px] font-medium text-brand-foreground hover:bg-brand-hover"
+              className="h-9 rounded-lg bg-brand px-3.5 text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
             >
               <Link href="/pricing">
                 <Plus className="size-3.5" />
@@ -104,18 +104,18 @@ export default function BillingPage() {
           <div className="rounded-xl border border-white/[0.1] bg-white/[0.02] p-4">
             <div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
                   <Coins className="size-3 text-muted-foreground" />
                   Available balance
                 </span>
-                <span className="font-mono text-[11px] text-muted-foreground">
+                <span className="font-mono text-[0.6875rem] text-muted-foreground">
                   PAYG
                 </span>
               </div>
-              <p className="mt-4 text-[36px] font-medium leading-none tracking-[-0.03em] tabular-nums">
+              <p className="mt-4 text-[2.25rem] font-medium leading-none tracking-[-0.03em] tabular-nums">
                 $10.54
               </p>
-              <div className="mt-3 flex items-center justify-between text-[11px]">
+              <div className="mt-3 flex items-center justify-between text-[0.6875rem]">
                 <span className="text-muted-foreground">USD</span>
                 <span className="text-muted-foreground">Never expires</span>
               </div>
@@ -134,22 +134,22 @@ export default function BillingPage() {
                   <CreditCard className="size-3.5" strokeWidth={1.8} />
                 </span>
                 <div>
-                  <p className="text-[11px] font-medium">Payment method</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="text-[0.6875rem] font-medium">Payment method</p>
+                  <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
                     Charged when you add funds
                   </p>
                 </div>
               </div>
-              <span className="text-[11px] text-muted-foreground">Visa</span>
+              <span className="text-[0.6875rem] text-muted-foreground">Visa</span>
             </div>
             <div className="mt-4 rounded-lg border border-white/[0.06] bg-black/15 p-3">
               <div className="flex items-center gap-2">
-                <span className="flex size-7 items-center justify-center rounded bg-white text-[11px] font-semibold text-[#1a1f71]">
+                <span className="flex size-7 items-center justify-center rounded bg-white text-[0.6875rem] font-semibold text-[#1a1f71]">
                   VISA
                 </span>
                 <div>
-                  <p className="font-mono text-[11px]">•••• 4242</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  <p className="font-mono text-[0.6875rem]">•••• 4242</p>
+                  <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
                     Expires 08/29
                   </p>
                 </div>
@@ -157,7 +157,7 @@ export default function BillingPage() {
             </div>
             <button
               type="button"
-              className="mt-3 flex w-full items-center justify-between text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+              className="mt-3 flex w-full items-center justify-between text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
             >
               Manage payment methods
               <ArrowRight className="size-2.5" />
@@ -165,17 +165,17 @@ export default function BillingPage() {
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_330px]">
+        <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_20.625rem]">
           <div className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.012]">
             <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
               <div className="flex items-center gap-2">
                 <ReceiptText className="size-3.5 text-muted-foreground" />
-                <p className="text-[11px] font-medium">Usage & receipts</p>
+                <p className="text-[0.6875rem] font-medium">Usage & receipts</p>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 gap-1.5 rounded-md px-2 text-[11px] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                className="h-7 gap-1.5 rounded-md px-2 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
               >
                 <Download className="size-3" />
                 Download all
@@ -194,22 +194,22 @@ export default function BillingPage() {
                       <Icon className="size-3.5" strokeWidth={1.7} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[11px] font-medium">
+                      <p className="truncate text-[0.6875rem] font-medium">
                         {txn.title}
                       </p>
-                      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                      <p className="mt-0.5 truncate text-[0.6875rem] text-muted-foreground">
                         {txn.detail}
                       </p>
                     </div>
                     <div className="hidden w-24 shrink-0 text-right sm:block">
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-[0.6875rem] text-muted-foreground">
                         {txn.date}
                       </p>
                     </div>
                     <div className="w-16 shrink-0 text-right">
                       <p
                         className={cn(
-                          "font-mono text-[11px]",
+                          "font-mono text-[0.6875rem]",
                           txn.amount.startsWith("+")
                             ? "text-foreground"
                             : "text-foreground/75",
@@ -219,7 +219,7 @@ export default function BillingPage() {
                       </p>
                       <p
                         className={cn(
-                          "mt-0.5 text-[11px]",
+                          "mt-0.5 text-[0.6875rem]",
                           txn.status === "Refunded"
                             ? "text-foreground"
                             : "text-muted-foreground",
@@ -235,7 +235,7 @@ export default function BillingPage() {
             <div className="border-t border-white/[0.06] p-3 text-center">
               <Link
                 href="/help"
-                className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                className="text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
               >
                 View full transaction history
               </Link>
@@ -245,8 +245,8 @@ export default function BillingPage() {
           <div className="flex flex-col gap-3">
             <div className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[11px] font-medium">Last 14 days</p>
-                <span className="font-mono text-[11px] text-muted-foreground">
+                <p className="text-[0.6875rem] font-medium">Last 14 days</p>
+                <span className="font-mono text-[0.6875rem] text-muted-foreground">
                   $12.40
                 </span>
               </div>
@@ -264,7 +264,7 @@ export default function BillingPage() {
                   />
                 ))}
               </div>
-              <div className="mt-2 flex justify-between text-[11px] text-muted-foreground">
+              <div className="mt-2 flex justify-between text-[0.6875rem] text-muted-foreground">
                 <span>Oct 18</span>
                 <span>Oct 31</span>
               </div>
@@ -272,15 +272,15 @@ export default function BillingPage() {
 
             <div className="rounded-xl border border-white/[0.08] bg-[#18191c] p-4">
               <Coins className="size-3.5 text-muted-foreground" />
-              <p className="mt-3 text-[12px] font-medium">Running low?</p>
-              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+              <p className="mt-3 text-[0.75rem] font-medium">Running low?</p>
+              <p className="mt-1 text-[0.75rem] leading-relaxed text-muted-foreground">
                 Auto top-up keeps your balance above $5. You can switch
                 it off from this page at any time.
               </p>
               <Button
                 asChild
                 variant="outline"
-                className="mt-3 h-8 w-full rounded-lg border-white/10 bg-transparent text-[11px] hover:bg-white/[0.04]"
+                className="mt-3 h-8 w-full rounded-lg border-white/10 bg-transparent text-[0.6875rem] hover:bg-white/[0.04]"
               >
                 <Link href="/pricing">See top-up options</Link>
               </Button>
@@ -289,10 +289,10 @@ export default function BillingPage() {
         </div>
 
         <div className="mt-4 flex flex-col justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.012] px-4 py-3 sm:flex-row sm:items-center">
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[0.6875rem] text-muted-foreground">
             All prices in USD. Your next charge is only when you top up.
           </p>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-4 text-[0.6875rem]">
             <Link
               href="/help"
               className="text-muted-foreground transition-colors hover:text-foreground"

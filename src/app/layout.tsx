@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif, Space_Grotesk, Space_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { SOCIAL_SRC } from "@/components/brand/constants";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,18 +28,32 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sunstrike.ai"),
-  applicationName: "Sunstrike.ai",
+  metadataBase: new URL("https://chronolab.ai"),
+  applicationName: "Chronolab.ai",
   title: {
-    default: "Sunstrike.ai — Generative Studio",
-    template: "%s — Sunstrike.ai",
+    default: "Chronolab.ai — Generative Studio",
+    template: "%s — Chronolab.ai",
   },
   description:
     "Generate cinematic video and stills from a prompt. Pay as you go, keep every frame.",
+  manifest: "/favicons/site.webmanifest",
+  openGraph: {
+    title: "Chronolab.ai — Generative Studio",
+    description:
+      "Generate cinematic video and stills from a prompt. Pay as you go, keep every frame.",
+    siteName: "Chronolab.ai",
+    type: "website",
+    images: [{ url: SOCIAL_SRC, width: 1200, height: 630, alt: "Chronolab.ai" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [SOCIAL_SRC],
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#131517",
+  themeColor: "#7c3aed",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({

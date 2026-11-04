@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { ExploreGallery } from "@/components/gallery/explore-gallery";
+import { ExploreGallery } from "@/components/explore-gallery";
 
 const frames = () => screen.getAllByRole("article");
 const counter = () => screen.getByText(/\d+ frames?/);

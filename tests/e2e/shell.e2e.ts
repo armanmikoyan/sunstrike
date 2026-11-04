@@ -15,13 +15,13 @@ test.describe("app shell", () => {
     await expect(page.getByRole("link", { name: "Favorites" })).toBeVisible();
     // Wordmark appears next to the collapse control, the bar keeps the mark.
     await expect(
-      page.getByRole("link", { name: "Sunstrike.ai home" }),
+      page.getByRole("link", { name: "Chronolab.ai home" }),
     ).toHaveCount(2);
 
     await collapse.click();
     await expect(expand).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Sunstrike.ai home" }),
+      page.getByRole("link", { name: "Chronolab.ai home" }),
     ).toHaveCount(1);
   });
 
@@ -38,14 +38,16 @@ test.describe("app shell", () => {
     await page.evaluate(() => {
       const samples: number[] = [];
       (window as unknown as { __rail: number[] }).__rail = samples;
+      // Keep sampling until the rail has actually settled. A fixed window
+      // can expire before a click that a busy, parallel run delayed.
       const started = performance.now();
       const tick = () => {
         const aside = document.querySelector("aside");
         if (aside) samples.push(aside.getBoundingClientRect().width);
         const last = samples.slice(-3);
         const settled =
-          last.length === 3 && last.every((width) => width > 198);
-        if (!settled && performance.now() - started < 2500) {
+          last.length === 3 && last.every((width) => width > 199.95);
+        if (!settled && performance.now() - started < 20_000) {
           requestAnimationFrame(tick);
         }
       };
@@ -58,7 +60,7 @@ test.describe("app shell", () => {
     ).toBeVisible();
     await page.waitForFunction(() => {
       const samples = (window as unknown as { __rail: number[] }).__rail;
-      return samples.length > 3 && Math.abs(samples.at(-1)! - 200) < 1;
+      return samples.length > 3 && Math.abs(samples.at(-1)! - 200) < 0.05;
     });
 
     const samples = await page.evaluate(
@@ -86,31 +88,47 @@ test.describe("app shell", () => {
     // the rail moved. The header toggle is the one control with a real trip —
     // rail centre to rail edge — and it must make it with the rail instead of
     // teleporting because the flex row re-aligned it.
-    const sample = (run: () => Promise<void>) =>
+    const sample = (run: () => Promise<void>, target: number) =>
       page
-        .evaluate(() => {
+        .evaluate((target) => {
           const frames: { rail: number; x: number; toggle: number }[] = [];
           (window as unknown as { __axis: typeof frames }).__axis = frames;
           const started = performance.now();
-          const tick = () => {
-            const aside = document.querySelector("aside");
-            const item = aside?.querySelector('a[aria-label="Explore"]');
-            const toggle = aside?.querySelector("button[aria-expanded]");
-            if (aside && item && toggle) {
-              frames.push({
-                rail: aside.getBoundingClientRect().width,
-                x: item.getBoundingClientRect().x,
-                toggle: toggle.getBoundingClientRect().x,
-              });
-            }
-            if (performance.now() - started < 1_200) {
+          (window as unknown as { __axisDone: Promise<void> }).__axisDone =
+            new Promise<void>((resolve) => {
+              const tick = () => {
+                const aside = document.querySelector("aside");
+                const item = aside?.querySelector('a[aria-label="Explore"]');
+                const toggle = aside?.querySelector("button[aria-expanded]");
+                if (aside && item && toggle) {
+                  frames.push({
+                    rail: aside.getBoundingClientRect().width,
+                    x: item.getBoundingClientRect().x,
+                    toggle: toggle.getBoundingClientRect().x,
+                  });
+                }
+                // Settle on the target width instead of running for a fixed
+                // window, which can expire before a delayed click lands.
+                const last = frames.slice(-3);
+                const settled =
+                  last.length === 3 &&
+                  last.every((frame) => Math.abs(frame.rail - target) < 0.05);
+                if (settled || performance.now() - started > 20_000) {
+                  resolve();
+                  return;
+                }
+                requestAnimationFrame(tick);
+              };
               requestAnimationFrame(tick);
-            }
-          };
-          requestAnimationFrame(tick);
-        })
+            });
+        }, target)
         .then(run)
-        .then(() => page.waitForTimeout(900))
+        .then(() =>
+          page.evaluate(
+            () =>
+              (window as unknown as { __axisDone: Promise<void> }).__axisDone,
+          ),
+        )
         .then(() =>
           page.evaluate(
             () =>
@@ -132,8 +150,9 @@ test.describe("app shell", () => {
       }
     };
 
-    const expanding = await sample(() =>
-      page.getByRole("button", { name: "Expand sidebar" }).click(),
+    const expanding = await sample(
+      () => page.getByRole("button", { name: "Expand sidebar" }).click(),
+      200,
     );
     expect(expanding.length).toBeGreaterThan(4);
     for (const frame of expanding) {
@@ -143,8 +162,9 @@ test.describe("app shell", () => {
     expect(Math.abs(expanding.at(-1)!.toggle - 157)).toBeLessThan(1);
     expectNoTeleport(expanding);
 
-    const collapsing = await sample(() =>
-      page.getByRole("button", { name: "Collapse sidebar" }).click(),
+    const collapsing = await sample(
+      () => page.getByRole("button", { name: "Collapse sidebar" }).click(),
+      61,
     );
     for (const frame of collapsing) {
       expect(Math.abs(frame.x - 10)).toBeLessThan(0.6);
@@ -213,7 +233,7 @@ test.describe("app shell", () => {
     // Let the width transition settle before reading the layout.
     await page.waitForFunction(() => {
       const rail = document.querySelector("aside")!;
-      return Math.abs(rail.getBoundingClientRect().width - 200) < 1;
+      return Math.abs(rail.getBoundingClientRect().width - 200) < 0.05;
     });
 
     const expanded = await Promise.all(

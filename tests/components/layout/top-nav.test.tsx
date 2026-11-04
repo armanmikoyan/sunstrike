@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { TopNav } from "@/components/layout/top-nav";
+import { TopNav } from "@/components/nav";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { routerMock } from "../../mocks/navigation";
 
@@ -21,7 +21,7 @@ describe("top nav", () => {
   it("is the brand entry point", () => {
     renderTopNav();
     expect(
-      screen.getByRole("link", { name: "Sunstrike.ai home" }),
+      screen.getByRole("link", { name: "Chronolab.ai home" }),
     ).toHaveAttribute("href", "/");
   });
 

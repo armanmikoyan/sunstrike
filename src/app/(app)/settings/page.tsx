@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { PageHeader } from "@/components/shared/page-header";
-import { SettingsView } from "@/components/shared/settings-view";
-import { SiteFooter } from "@/components/shared/site-footer";
+import { PageHeader } from "@/components/page-header";
+import { SettingsView } from "@/components/settings";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
@@ -21,7 +21,7 @@ export default function SettingsPage() {
             <Button
               asChild
               variant="outline"
-              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[11px] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
             >
               <Link href="/billing">
                 Pay as you go · $10.54

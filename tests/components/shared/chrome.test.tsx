@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PageHeader } from "@/components/shared/page-header";
-import { SectionHeader } from "@/components/shared/section-header";
-import { SiteFooter } from "@/components/shared/site-footer";
-import { ClipStrip } from "@/components/shared/clip-strip";
+import { PageHeader } from "@/components/page-header";
+import { SectionHeader } from "@/components/section-header";
+import { SiteFooter } from "@/components/site-footer";
+import { ClipStrip } from "@/components/clip-strip";
 
 describe("page header", () => {
   it("renders a level one heading with optional context", () => {
