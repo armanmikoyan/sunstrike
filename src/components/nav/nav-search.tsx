@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { navCopy } from "./constants";
 import { useCompactNav, useShortcutLabel } from "./hooks";
 
 export function NavSearch() {
@@ -53,8 +54,10 @@ export function NavSearch() {
             event.currentTarget.blur();
           }
         }}
-        placeholder={compact ? "Search" : "Search the studio"}
-        aria-label="Search the studio"
+        placeholder={
+          compact ? navCopy.compactSearch : navCopy.search
+        }
+        aria-label={navCopy.search}
         className={cn(
           "h-9 w-full appearance-none rounded-lg border border-white/[0.08] bg-white/[0.035] pl-8 text-[0.75rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:border-white/25 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
           query.length === 0 ? "pr-2.5 lg:pr-11" : "pr-9 lg:pr-11",
@@ -78,7 +81,7 @@ export function NavSearch() {
               setQuery("");
               searchRef.current?.focus();
             }}
-            aria-label="Clear search"
+            aria-label={navCopy.clearSearch}
             className="grid size-[1.125rem] place-items-center rounded-full bg-white/20 text-background transition-colors hover:bg-white/35"
           >
             <X className="size-[0.6875rem]" strokeWidth={3} />

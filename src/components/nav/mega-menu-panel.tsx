@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Film, ImageIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import { mediaById } from "@/lib/media";
 import { cn } from "@/lib/utils";
+import { megaMenuCopy } from "./constants";
 import type { MegaMenuPanelProps } from "./types";
 
 export function MegaMenuPanel({ menu, onClose, left }: MegaMenuPanelProps) {
@@ -102,7 +103,7 @@ export function MegaMenuPanel({ menu, onClose, left }: MegaMenuPanelProps) {
                       ) : (
                         <ImageIcon className="size-3" />
                       )}
-                      {item.kind === "video" ? "Video" : "Image"}
+                      {item.kind === "video" ? megaMenuCopy.video : megaMenuCopy.image}
                     </span>
                   </Link>
                 );
@@ -113,7 +114,7 @@ export function MegaMenuPanel({ menu, onClose, left }: MegaMenuPanelProps) {
 
         <div className="flex items-center justify-between gap-4 border-t border-white/[0.07] bg-white/[0.015] px-6 py-3">
           <p className="text-[0.6875rem] text-muted-foreground">
-            Every render shows its price before you start.
+            {megaMenuCopy.priceNote}
           </p>
           <div className="flex items-center gap-4">
             <Link
@@ -121,14 +122,14 @@ export function MegaMenuPanel({ menu, onClose, left }: MegaMenuPanelProps) {
               onClick={onClose}
               className="text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Recent renders
+              {megaMenuCopy.recentRenders}
             </Link>
             <Link
               href="/pricing"
               onClick={onClose}
               className="flex items-center gap-1 text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Pay as you go
+              {megaMenuCopy.payg}
               <ArrowRight className="size-3" />
             </Link>
           </div>

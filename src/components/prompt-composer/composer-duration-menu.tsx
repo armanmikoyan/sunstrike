@@ -1,22 +1,19 @@
 "use client";
 
 import { Check, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/ui/dropdown-menu";
 import { durations } from "@/lib/generation";
-import type { PromptComposerState } from "./hooks";
+import { composerCopy } from "./constants";
+import type { ComposerDurationMenuProps } from "./types";
 
-export function ComposerDurationMenu({
-  composer,
-}: {
-  composer: PromptComposerState;
-}) {
+export function ComposerDurationMenu({ composer }: ComposerDurationMenuProps) {
   const { duration, setDuration } = composer;
 
   return (
@@ -33,7 +30,7 @@ export function ComposerDurationMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-36 p-1.5">
-        <DropdownMenuLabel>Duration</DropdownMenuLabel>
+        <DropdownMenuLabel>{composerCopy.duration}</DropdownMenuLabel>
         {durations.map((value) => (
           <DropdownMenuItem
             key={value}

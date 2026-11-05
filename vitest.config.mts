@@ -5,16 +5,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "~": fileURLToPath(new URL(".", import.meta.url)),
     },
   },
   test: {
     environment: "jsdom",
     globals: true,
-    setupFiles: ["./tests/setup.tsx"],
-    include: [
-      "tests/unit/**/*.test.{ts,tsx}",
-      "tests/components/**/*.test.{ts,tsx}",
-    ],
+    setupFiles: ["./vitest.setup.tsx"],
+    include: ["src/**/*.test.{ts,tsx}"],
     restoreMocks: true,
     coverage: {
       provider: "v8",
@@ -23,9 +21,11 @@ export default defineConfig({
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "src/**/*.d.ts",
-        "src/components/ui/**",
+        "src/**/*.test.{ts,tsx}",
+        "src/e2e/**",
+        "vitest.*.{ts,tsx}",
+        "src/ui/**",
         "src/app/**/layout.tsx",
-        "src/app/**/favicon.ico",
       ],
       // Floors sit just under today's numbers: enough to catch a regression
       // during the restructure without failing on unrelated churn.

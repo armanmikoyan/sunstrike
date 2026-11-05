@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { PanelLeftClose } from "lucide-react";
-import { EXIT_MS } from "./constants";
+import { EXIT_MS, sidebarCopy } from "./constants";
 import { SidebarBody } from "./sidebar-body";
 import type { MobileSidebarProps } from "./types";
 
@@ -120,7 +120,7 @@ export function MobileSidebar({
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Navigation"
+        aria-label={sidebarCopy.navigation}
         tabIndex={-1}
         className="absolute inset-y-0 left-0 flex w-[80%] max-w-[27.5rem] transform-gpu flex-col rounded-r-2xl border-r border-white/[0.07] bg-sidebar outline-none will-change-transform"
         style={{ height: "100dvh" }}
@@ -128,7 +128,7 @@ export function MobileSidebar({
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          aria-label="Close navigation"
+          aria-label={sidebarCopy.closeNavigation}
           className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <PanelLeftClose className="size-[1.125rem]" strokeWidth={1.8} />

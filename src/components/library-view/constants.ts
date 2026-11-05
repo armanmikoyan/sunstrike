@@ -9,3 +9,13 @@ export const libraryTabs = [
   ["image", "Images"],
   ["favorites", "Favorites"],
 ] as const;
+
+export const libraryViewCopy = {
+  searchPlaceholder: "Search your library",
+  emptyTitle: "Nothing here yet",
+  emptyDescription: "Generate a frame or clear your search.",
+  showing: "Showing",
+  of: "of",
+  frames: "frames",
+};
+

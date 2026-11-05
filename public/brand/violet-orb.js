@@ -42,6 +42,9 @@
     }
     attributeChangedCallback(){this.sync();}
     get duration(){const value=Number(this.getAttribute('duration'));return Number.isFinite(value)&&value>0?value:12;}
+    // React assigns props to custom elements as properties once the element is
+    // upgraded, so a getter-only `duration` threw on every remount.
+    set duration(value){if(value==null){this.removeAttribute('duration');return;}this.setAttribute('duration',String(value));}
     play(){this.removeAttribute('paused');}
     pause(){this.setAttribute('paused','');}
     seek(seconds){this.elapsed=Number(seconds)||0;this.draw();}

@@ -1,21 +1,21 @@
 "use client";
 
 import { ArrowDownWideNarrow, Search, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@/ui/dropdown-menu";
+import { Input } from "@/ui/input";
 import { mediaCategories } from "@/lib/media";
 import { cn } from "@/lib/utils";
-import { kindOptions, sortOptions } from "./constants";
-import type { ExploreGalleryState } from "./hooks";
+import { exploreToolbarCopy, kindOptions, sortOptions } from "./constants";
+import type { ExploreToolbarProps } from "./types";
 
-export function ExploreToolbar({ gallery }: { gallery: ExploreGalleryState }) {
+export function ExploreToolbar({ gallery }: ExploreToolbarProps) {
   const { category, setCategory, kind, setKind, query, setQuery, sort, setSort } =
     gallery;
 
@@ -60,7 +60,7 @@ export function ExploreToolbar({ gallery }: { gallery: ExploreGalleryState }) {
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search"
+              placeholder={exploreToolbarCopy.searchPlaceholder}
               className="h-8 w-[11.875rem] rounded-lg border-white/[0.08] bg-white/[0.025] pl-8 text-[0.6875rem] placeholder:text-muted-foreground/60 focus-visible:border-white/25 focus-visible:ring-white/10"
             />
           </div>
@@ -77,7 +77,7 @@ export function ExploreToolbar({ gallery }: { gallery: ExploreGalleryState }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40 p-1.5">
-              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+              <DropdownMenuLabel>{exploreToolbarCopy.sortBy}</DropdownMenuLabel>
               {sortOptions.map((item) => (
                 <DropdownMenuItem
                   key={item}
@@ -94,7 +94,7 @@ export function ExploreToolbar({ gallery }: { gallery: ExploreGalleryState }) {
             variant="outline"
             size="icon"
             className="size-8 rounded-lg border-white/[0.08] bg-white/[0.025] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
-            aria-label="More filters"
+            aria-label={exploreToolbarCopy.moreFilters}
           >
             <SlidersHorizontal className="size-3.5" />
           </Button>

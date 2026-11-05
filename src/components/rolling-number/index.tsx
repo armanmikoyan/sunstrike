@@ -3,26 +3,9 @@
 import { AnimatePresence, motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
+import type { RollingDigitProps, RollingNumberProps } from "./types";
 
-interface RollingNumberProps {
-  value: number;
-  decimalPlaces?: number;
-  prefix?: string;
-  suffix?: string;
-  className?: string;
-  digitClassName?: string;
-  duration?: number;
-}
-
-function RollingDigit({
-  digit,
-  duration,
-  className,
-}: {
-  digit: string;
-  duration: number;
-  className?: string;
-}) {
+function RollingDigit({ digit, duration, className }: RollingDigitProps) {
   return (
     <span
       className={cn(

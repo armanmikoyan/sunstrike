@@ -4,7 +4,7 @@ const PORT = Number(process.env.E2E_PORT ?? 3100);
 const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
-  testDir: "./tests/e2e",
+  testDir: "./src/e2e",
   testMatch: "**/*.e2e.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

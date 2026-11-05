@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Clock3 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/ui/dialog";
 import { formatUSD } from "@/lib/pricing";
-import { starterPrompts } from "./constants";
-import type { StudioState } from "./hooks";
+import { starterPrompts, studioCopy } from "./constants";
+import type { StudioQueueDialogProps } from "./types";
 
-export function StudioQueueDialog({ studio }: { studio: StudioState }) {
+export function StudioQueueDialog({ studio }: StudioQueueDialogProps) {
+  const copy = studioCopy.queue;
   const {
     queued,
     setQueued,
@@ -30,7 +31,7 @@ export function StudioQueueDialog({ studio }: { studio: StudioState }) {
   const chips = [
     selectedModel.name,
     aspect,
-    isVideo ? duration : "1 MP",
+    isVideo ? duration : studioCopy.preview.imageUnit,
     formatUSD(cost),
   ];
 
@@ -42,16 +43,18 @@ export function StudioQueueDialog({ studio }: { studio: StudioState }) {
             <Clock3 className="size-4" />
           </div>
           <DialogTitle className="text-[1.125rem] tracking-[-0.03em]">
-            Render queued
+            {copy.title}
           </DialogTitle>
           <DialogDescription className="text-[0.75rem] leading-relaxed">
             Your {isVideo ? "video" : "image"} is in the queue. This prototype
             holds the shot in the library while the real renderer is wired up.
-            {formatUSD(cost)} reserved.
+            {formatUSD(cost)} {copy.reserved}
           </DialogDescription>
         </DialogHeader>
         <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-3">
-          <p className="text-[0.6875rem] text-muted-foreground">Recipe</p>
+          <p className="text-[0.6875rem] text-muted-foreground">
+            {copy.recipe}
+          </p>
           <p className="mt-1.5 line-clamp-2 text-[0.75rem] leading-relaxed text-foreground/75">
             {prompt || starterPrompts[isVideo ? "video" : "image"]}
           </p>
@@ -72,13 +75,13 @@ export function StudioQueueDialog({ studio }: { studio: StudioState }) {
             className="h-8 rounded-lg border-white/10 bg-transparent text-[0.6875rem]"
             onClick={() => setQueued(false)}
           >
-            Keep directing
+            {copy.keepDirecting}
           </Button>
           <Button
             asChild
             className="h-8 rounded-lg bg-brand px-3 text-[0.6875rem] text-brand-foreground hover:bg-brand-hover"
           >
-            <Link href="/library">Open library</Link>
+            <Link href="/library">{copy.openLibrary}</Link>
           </Button>
         </DialogFooter>
       </DialogContent>

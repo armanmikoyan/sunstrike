@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Check, Image as ImageIcon, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { StudioState } from "./hooks";
+import { studioCopy } from "./constants";
+import type { StudioTakesProps } from "./types";
 
-export function StudioTakes({ studio }: { studio: StudioState }) {
+export function StudioTakes({ studio }: StudioTakesProps) {
+  const copy = studioCopy.takes;
   const { takes, active, activeId, setActiveId, isVideo } = studio;
 
   return (
@@ -14,7 +16,7 @@ export function StudioTakes({ studio }: { studio: StudioState }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-[0.6875rem] font-medium text-muted-foreground">
-            Recent takes
+            {copy.title}
           </span>
           <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
             {takes.length}
@@ -24,7 +26,7 @@ export function StudioTakes({ studio }: { studio: StudioState }) {
           href="/library"
           className="flex items-center gap-1 text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
         >
-          View all
+          {copy.viewAll}
           <ArrowUpRight className="size-2.5" />
         </Link>
       </div>

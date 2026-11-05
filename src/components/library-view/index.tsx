@@ -2,9 +2,9 @@
 
 import { Search } from "lucide-react";
 import { MediaCard } from "@/components/media-card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { libraryItems, libraryTabs } from "./constants";
+import { Input } from "@/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { libraryItems, libraryTabs, libraryViewCopy } from "./constants";
 import { useLibraryView } from "./hooks";
 
 export function LibraryView() {
@@ -35,7 +35,7 @@ export function LibraryView() {
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search your library"
+            placeholder={libraryViewCopy.searchPlaceholder}
             className="h-8 rounded-lg border-white/[0.08] bg-white/[0.025] pl-8 text-[0.6875rem] placeholder:text-muted-foreground/60 focus-visible:border-white/25 focus-visible:ring-white/10"
           />
         </div>
@@ -50,15 +50,18 @@ export function LibraryView() {
       {!filtered.length ? (
         <div className="mt-6 flex min-h-[18.75rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.015]">
           <Search className="size-5 text-muted-foreground" />
-          <p className="mt-3 text-[0.8125rem] font-medium">Nothing here yet</p>
+          <p className="mt-3 text-[0.8125rem] font-medium">
+            {libraryViewCopy.emptyTitle}
+          </p>
           <p className="mt-1 text-[0.6875rem] text-muted-foreground">
-            Generate a frame or clear your search.
+            {libraryViewCopy.emptyDescription}
           </p>
         </div>
       ) : null}
 
       <p className="mt-5 text-center text-[0.6875rem] text-muted-foreground">
-        Showing {filtered.length} of {libraryItems.length} frames
+        {libraryViewCopy.showing} {filtered.length} {libraryViewCopy.of}{" "}
+        {libraryItems.length} {libraryViewCopy.frames}
       </p>
     </div>
   );

@@ -9,3 +9,7 @@ export const MARK_POSTER_SIZE = 128;
 
 /** Graphite social card, shared by metadata and the login hero. */
 export const SOCIAL_SRC = "/brand/chronolab-social.png";
+
+export const brandCopy = {
+  home: "Chronolab.ai home",
+};

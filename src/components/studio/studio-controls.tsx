@@ -12,26 +12,26 @@ import {
   WandSparkles,
   X,
 } from "lucide-react";
-import { AspectShape } from "@/components/aspect-shape";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/ui/button";
+import { Input } from "@/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/ui/select";
+import { Switch } from "@/ui/switch";
+import { Textarea } from "@/ui/textarea";
 import { aspectRatios, durations } from "@/lib/generation";
 import { mediaById } from "@/lib/media";
 import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
-import { cameraMoves, starterPrompts } from "./constants";
-import type { StudioState } from "./hooks";
+import { cameraMoves, starterPrompts, studioCopy } from "./constants";
+import type { StudioControlsProps } from "./types";
 
-export function StudioControls({ studio }: { studio: StudioState }) {
+export function StudioControls({ studio }: StudioControlsProps) {
+  const copy = studioCopy.controls;
   const {
     prompt,
     setPrompt,
@@ -64,7 +64,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
             htmlFor="studio-prompt"
             className="text-[0.6875rem] font-medium text-muted-foreground"
           >
-            Prompt
+            {copy.prompt}
           </label>
           <button
             type="button"
@@ -72,7 +72,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
             className="flex items-center gap-1 text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <WandSparkles className="size-2.5" />
-            Enhance
+            {copy.enhance}
           </button>
         </div>
         <div className="relative mt-2">
@@ -80,29 +80,26 @@ export function StudioControls({ studio }: { studio: StudioState }) {
             id="studio-prompt"
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
-            placeholder={
-              isVideo
-                ? "Describe the shot, subject and movement..."
-                : "Describe the frame, light and lens..."
-            }
+            placeholder={copy.placeholders[isVideo ? "video" : "image"]}
             className="min-h-[7rem] resize-none rounded-xl border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-[0.75rem] leading-relaxed placeholder:text-muted-foreground/65 focus-visible:border-white/25 focus-visible:ring-white/10"
           />
           <span className="absolute bottom-2 right-3 font-mono text-[0.6875rem] text-muted-foreground/70">
-            {prompt.length}/1200
+            {prompt.length}
+            {copy.characterLimit}
           </span>
         </div>
 
         <div className="mt-5">
           <div className="flex items-center justify-between">
             <p className="text-[0.6875rem] font-medium text-muted-foreground">
-              References
+              {copy.references}
             </p>
             <Link
               href="/library"
               className="flex items-center gap-1 text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
             >
               <Layers3 className="size-2.5" />
-              Library
+              {copy.library}
             </Link>
           </div>
           <input
@@ -122,13 +119,13 @@ export function StudioControls({ studio }: { studio: StudioState }) {
               className="flex h-[4.375rem] flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/[0.11] bg-white/[0.015] text-muted-foreground transition-colors hover:border-white/20 hover:bg-white/[0.03] hover:text-foreground"
             >
               <Upload className="size-3.5" />
-              <span className="text-[0.6875rem]">Drop a frame or reference</span>
+              <span className="text-[0.6875rem]">{copy.dropReference}</span>
             </button>
             {attachment ? (
               <div className="group relative flex h-[4.375rem] items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-white/[0.03]">
                 <Image
                   src={mediaById("02")?.poster ?? ""}
-                  alt="Reference"
+                  alt={copy.referenceAlt}
                   fill
                   sizes="58px"
                   className="object-cover opacity-80"
@@ -137,7 +134,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
                   type="button"
                   onClick={() => setAttachment(null)}
                   className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-black/65 text-white/80 opacity-0 transition-opacity group-hover:opacity-100"
-                  aria-label="Remove reference"
+                  aria-label={copy.removeReference}
                 >
                   <X className="size-2.5" />
                 </button>
@@ -148,7 +145,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
                 className="flex h-[4.375rem] flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.02] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
               >
                 <ImagePlus className="size-3.5" />
-                <span className="text-[0.6875rem]">Library</span>
+                <span className="text-[0.6875rem]">{copy.library}</span>
               </Link>
             )}
           </div>
@@ -162,7 +159,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
                 onClick={() => setAttachment(null)}
                 className="text-foreground"
               >
-                Clear
+                {copy.clear}
               </button>
             </div>
           ) : null}
@@ -170,7 +167,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
 
         <div className="mt-5">
           <p className="text-[0.6875rem] font-medium text-muted-foreground">
-            Model
+            {copy.model}
           </p>
           <Select value={selectedModel.name} onValueChange={setModel}>
             <SelectTrigger className="mt-2 h-11 w-full rounded-xl border-white/[0.08] bg-white/[0.02] px-3 text-[0.6875rem] hover:bg-white/[0.035] focus-visible:border-white/25 focus-visible:ring-white/10">
@@ -203,7 +200,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
 
         <div className="mt-5">
           <p className="text-[0.6875rem] font-medium text-muted-foreground">
-            Aspect ratio
+            {copy.aspectRatio}
           </p>
           <div className="mt-2 grid grid-cols-6 gap-1 rounded-xl border border-white/[0.07] bg-white/[0.015] p-1">
             {aspectRatios.map((ratio) => (
@@ -218,7 +215,12 @@ export function StudioControls({ studio }: { studio: StudioState }) {
                     "bg-white/[0.08] text-foreground shadow-sm",
                 )}
               >
-                <AspectShape className={ratio.shape} />
+                <span
+                  className={cn(
+                    "rounded-[0.125rem] border border-current opacity-80",
+                    ratio.shape,
+                  )}
+                />
               </button>
             ))}
           </div>
@@ -232,7 +234,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
           <>
             <div className="mt-5">
               <p className="text-[0.6875rem] font-medium text-muted-foreground">
-                Duration
+                {copy.duration}
               </p>
               <div className="mt-2 flex gap-1">
                 {durations.map((value) => (
@@ -254,7 +256,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
 
             <div className="mt-5">
               <p className="text-[0.6875rem] font-medium text-muted-foreground">
-                Camera
+                {copy.camera}
               </p>
               <div className="mt-2 flex flex-wrap gap-1">
                 {cameraMoves.map((move) => (
@@ -278,33 +280,33 @@ export function StudioControls({ studio }: { studio: StudioState }) {
 
         <details className="group mt-5 rounded-xl border border-white/[0.07] bg-white/[0.015]">
           <summary className="flex cursor-pointer select-none items-center justify-between px-3 py-2.5 text-[0.6875rem] font-medium text-muted-foreground">
-            Advanced
+            {copy.advanced}
             <ChevronDown className="size-3 transition-transform group-open:rotate-180" />
           </summary>
           <div className="border-t border-white/[0.06] p-3">
             <label className="text-[0.6875rem] text-muted-foreground">
-              Negative prompt
+              {copy.negativePrompt}
             </label>
             <Input
-              placeholder="blur, extra fingers, text..."
+              placeholder={copy.negativePlaceholder}
               className="mt-1.5 h-8 rounded-lg border-white/[0.08] bg-white/[0.02] text-[0.6875rem]"
             />
             <div className="mt-2.5 grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[0.6875rem] text-muted-foreground">
-                  Seed
+                  {copy.seed}
                 </label>
                 <Input
-                  defaultValue="847291"
+                  defaultValue={copy.seedValue}
                   className="mt-1.5 h-8 rounded-lg border-white/[0.08] bg-white/[0.02] font-mono text-[0.6875rem]"
                 />
               </div>
               <div>
                 <label className="text-[0.6875rem] text-muted-foreground">
-                  Motion strength
+                  {copy.motionStrength}
                 </label>
                 <Input
-                  defaultValue="62"
+                  defaultValue={copy.motionStrengthValue}
                   className="mt-1.5 h-8 rounded-lg border-white/[0.08] bg-white/[0.02] font-mono text-[0.6875rem]"
                 />
               </div>
@@ -312,10 +314,10 @@ export function StudioControls({ studio }: { studio: StudioState }) {
             <div className="mt-3 flex items-center justify-between">
               <div>
                 <p className="text-[0.6875rem] text-foreground/80">
-                  Loop take
+                  {copy.loopTake}
                 </p>
                 <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-                  Matches the first and last frame.
+                  {copy.loopTakeDescription}
                 </p>
               </div>
               <Switch checked={loop} onCheckedChange={setLoop} />
@@ -326,7 +328,7 @@ export function StudioControls({ studio }: { studio: StudioState }) {
 
       <div className="border-t border-border bg-[#0f1113] p-4">
         <div className="mb-2.5 flex items-center justify-between text-[0.6875rem]">
-          <span className="text-muted-foreground">Estimated cost</span>
+          <span className="text-muted-foreground">{copy.estimatedCost}</span>
           <span className="font-mono text-foreground/80">{formatUSD(cost)}</span>
         </div>
         <Button
@@ -339,10 +341,10 @@ export function StudioControls({ studio }: { studio: StudioState }) {
           ) : (
             <ImageIcon className="size-3.5" />
           )}
-          {isVideo ? "Generate video" : "Generate image"}
+          {isVideo ? copy.generate.video : copy.generate.image}
         </Button>
         <p className="mt-2 text-center text-[0.6875rem] text-muted-foreground">
-          {formatUSD(credits)} available · pay as you go
+          {formatUSD(credits)} {copy.available}
         </p>
       </div>
     </aside>

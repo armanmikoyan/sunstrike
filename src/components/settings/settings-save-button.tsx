@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
+import { settingsCopy } from "./constants";
 
 export function SettingsSaveButton() {
   const [saved, setSaved] = useState(false);
@@ -14,7 +15,7 @@ export function SettingsSaveButton() {
       className="h-8 rounded-lg bg-brand px-3 text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
     >
       {saved ? <Check className="size-3" /> : null}
-      {saved ? "Saved" : "Save changes"}
+      {saved ? settingsCopy.save.saved : settingsCopy.save.action}
     </Button>
   );
 }

@@ -1,17 +1,12 @@
-import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import type { SectionHeaderProps } from "./types";
 
 export function SectionHeader({
   title,
   description,
   action,
   className,
-}: {
-  title: ReactNode;
-  description: string;
-  action?: ReactNode;
-  className?: string;
-}) {
+}: SectionHeaderProps) {
   return (
     <div
       className={cn(

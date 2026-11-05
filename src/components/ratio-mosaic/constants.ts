@@ -13,3 +13,12 @@ export const mosaicTiles = [
   { id: "16", label: "1:1", span: "md:col-span-4" },
   { id: "17", label: "3:4", span: "hidden md:block md:col-span-3" },
 ];
+
+export const mosaicCopy = {
+  titleBefore: "Every frame finds its ",
+  titleAccent: "shape",
+  description:
+    "Stills and motion across every ratio, without rebuilding the shot.",
+  count: `${mosaicTiles.length} frames`,
+  action: "Explore more",
+};

@@ -2,14 +2,11 @@
 
 import { Search } from "lucide-react";
 import { MediaCard } from "@/components/media-card";
-import { Button } from "@/components/ui/button";
-import type { ExploreGalleryState } from "./hooks";
+import { Button } from "@/ui/button";
+import { exploreResultsCopy } from "./constants";
+import type { ExploreResultsProps } from "./types";
 
-export function ExploreResults({
-  gallery,
-}: {
-  gallery: ExploreGalleryState;
-}) {
+export function ExploreResults({ gallery }: ExploreResultsProps) {
   const {
     filtered,
     category,
@@ -23,12 +20,15 @@ export function ExploreResults({
     <div className="pt-6">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-[0.6875rem] text-muted-foreground">
-          {filtered.length} {filtered.length === 1 ? "frame" : "frames"}
+          {filtered.length}{" "}
+          {filtered.length === 1
+            ? exploreResultsCopy.frame
+            : exploreResultsCopy.frames}
           {category !== "All" ? ` · ${category}` : ""}
           {kind !== "all" ? ` · ${kind}` : ""}
         </p>
         <p className="hidden text-[0.6875rem] text-muted-foreground sm:block">
-          Updated live
+          {exploreResultsCopy.updated}
         </p>
       </div>
 
@@ -43,9 +43,11 @@ export function ExploreResults({
       ) : (
         <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.015] text-center">
           <Search className="size-5 text-muted-foreground" />
-          <p className="mt-3 text-[0.8125rem] font-medium">No frames found</p>
+          <p className="mt-3 text-[0.8125rem] font-medium">
+            {exploreResultsCopy.emptyTitle}
+          </p>
           <p className="mt-1 text-[0.8125rem] text-muted-foreground">
-            Try a different search or clear the filters.
+            {exploreResultsCopy.emptyDescription}
           </p>
           <Button
             variant="outline"
@@ -57,7 +59,7 @@ export function ExploreResults({
               setQuery("");
             }}
           >
-            Clear filters
+            {exploreResultsCopy.clearFilters}
           </Button>
         </div>
       )}
@@ -68,7 +70,7 @@ export function ExploreResults({
             variant="outline"
             className="h-9 rounded-lg border-white/[0.08] bg-white/[0.02] px-5 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
           >
-            Load more work
+            {exploreResultsCopy.loadMore}
           </Button>
         </div>
       ) : null}

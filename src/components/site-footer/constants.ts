@@ -18,3 +18,14 @@ export const footerGroups = [
     ],
   },
 ];
+
+export const footerCopy = {
+  description:
+    "Stills and motion in one studio. No subscription, no seat count, no expiring balance.",
+  status: "All systems rendering",
+  copyright: "© 2026 Chronolab.ai. All frames reserved.",
+  terms: "Terms",
+  privacy: "Privacy",
+  payg: "Pay as you go",
+};
+

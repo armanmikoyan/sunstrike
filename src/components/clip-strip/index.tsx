@@ -3,14 +3,9 @@ import { VideoWithFallback } from "@/components/video-with-fallback";
 import { mediaById } from "@/lib/media";
 import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
+import type { ClipStripProps } from "./types";
 
-export function ClipStrip({
-  ids,
-  className,
-}: {
-  ids: string[];
-  className?: string;
-}) {
+export function ClipStrip({ ids, className }: ClipStripProps) {
   const clips = ids
     .map((id) => mediaById(id))
     .filter((item) => item !== undefined);

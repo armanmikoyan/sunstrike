@@ -12,22 +12,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { starterPrompts } from "./constants";
-import type { StudioState } from "./hooks";
+} from "@/ui/dropdown-menu";
+import { starterPrompts, studioCopy } from "./constants";
+import type { StudioSummaryProps } from "./types";
 
-export function StudioSummary({ studio }: { studio: StudioState }) {
+export function StudioSummary({ studio }: StudioSummaryProps) {
+  const copy = studioCopy.summary;
   const { selectedModel, aspect, camera, duration, prompt, isVideo } = studio;
   const shownPrompt = prompt || starterPrompts[isVideo ? "video" : "image"];
 
   const facts = [
-    { icon: Layers3, label: "Model", value: selectedModel.name },
+    { icon: Layers3, label: copy.model, value: selectedModel.name },
     {
       icon: Clapperboard,
-      label: "Direction",
-      value: isVideo ? `${camera} · ${duration}` : "Single frame",
+      label: copy.direction,
+      value: isVideo ? `${camera} · ${duration}` : copy.singleFrame,
     },
-    { icon: Layers3, label: "Output", value: `${aspect} · 1080p` },
+    { icon: Layers3, label: copy.output, value: `${aspect} · ${copy.resolution}` },
   ];
 
   return (
@@ -55,29 +56,29 @@ export function StudioSummary({ studio }: { studio: StudioState }) {
       <div className="mx-auto mt-2.5 max-w-[61.25rem] rounded-lg border border-white/[0.07] bg-white/[0.015] p-3">
         <div className="flex items-center justify-between">
           <p className="text-[0.6875rem] text-muted-foreground">
-            Current prompt
+            {copy.currentPrompt}
           </p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
                 className="text-muted-foreground hover:text-foreground"
-                aria-label="Prompt options"
+                aria-label={copy.promptOptions}
               >
                 <MoreHorizontal className="size-3" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 p-1.5">
-              <DropdownMenuLabel>Prompt</DropdownMenuLabel>
+              <DropdownMenuLabel>{copy.promptMenuLabel}</DropdownMenuLabel>
               <DropdownMenuItem className="p-2 text-[0.6875rem]">
-                Copy prompt
+                {copy.copyPrompt}
               </DropdownMenuItem>
               <DropdownMenuItem className="p-2 text-[0.6875rem]">
-                Save to favorites
+                {copy.saveToFavorites}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="p-2 text-[0.6875rem]">
-                Reset to last
+                {copy.resetToLast}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

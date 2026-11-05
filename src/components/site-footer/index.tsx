@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoLockup } from "@/components/brand";
 import { cn } from "@/lib/utils";
-import { footerGroups } from "./constants";
+import { footerCopy, footerGroups } from "./constants";
 
 export function SiteFooter({ className }: { className?: string }) {
   return (
@@ -14,11 +14,10 @@ export function SiteFooter({ className }: { className?: string }) {
           <div>
             <LogoLockup compact />
             <p className="mt-3 max-w-[17.5rem] text-[0.75rem] leading-relaxed text-muted-foreground">
-              Stills and motion in one studio. No subscription, no seat count,
-              no expiring balance.
+              {footerCopy.description}
             </p>
             <div className="mt-4 text-[0.6875rem] text-muted-foreground">
-              All systems rendering
+              {footerCopy.status}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-12 sm:gap-20">
@@ -43,15 +42,15 @@ export function SiteFooter({ className }: { className?: string }) {
           </div>
         </div>
         <div className="flex flex-col justify-between gap-3 border-t border-white/[0.06] pt-5 text-[0.6875rem] text-muted-foreground sm:flex-row">
-          <p>© 2026 Chronolab.ai. All frames reserved.</p>
+          <p>{footerCopy.copyright}</p>
           <div className="flex items-center gap-5">
             <Link href="/help" className="transition-colors hover:text-foreground">
-              Terms
+              {footerCopy.terms}
             </Link>
             <Link href="/help" className="transition-colors hover:text-foreground">
-              Privacy
+              {footerCopy.privacy}
             </Link>
-            <span>Pay as you go</span>
+            <span>{footerCopy.payg}</span>
           </div>
         </div>
       </div>

@@ -8,6 +8,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Architecture
+
+Read `ARCHITECTURE.md` before changing folder structure, routes, shared state, the design system or the brand. It is the source of truth for feature folders, tokens, type, motion and tests.
+
 ## Design skills
 
 Read the relevant skill before changing UI or interaction design.
@@ -21,6 +25,6 @@ Project design rules:
 - Keep the infinite video wall; it is a product-critical moment, not decorative motion. The home hero is the full-bleed wall. Start it at the beginning of the loop and keep the tiles slightly darkened.
 - The home prompt sits at the bottom of the hero at its full size. It does not stick to the viewport or resize on scroll. The sidebar starts collapsed and expands from its top control.
 - Do not add decorative status dots before labels.
-- Keep body copy sentence case. Section headings are concise 17-19px uppercase labels with a sentence-case description and one italic lavender key word. Do not add uppercase tracked eyebrows above page titles, additional italics for emphasis, colored glows, radial color washes, or hover scaling on cards.
+- Keep body copy sentence case. Section headings are concise 17-19px uppercase labels with a sentence-case description and one italic key word in the brand violet. Do not add uppercase tracked eyebrows above page titles, additional italics for emphasis, colored glows, radial color washes, or hover scaling on cards.
 - Small text stays at 11px or larger. Headlines, labels, and buttons do not end in periods.
 - Use named transitions and respect `prefers-reduced-motion`.

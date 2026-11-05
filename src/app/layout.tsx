@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif, Space_Grotesk, Space_Mono } from "next/font/google";
-import { Providers } from "@/components/providers";
+import type { ReactNode } from "react";
+import { Providers } from "@/app/providers";
 import { SOCIAL_SRC } from "@/components/brand/constants";
 import "./globals.css";
 
@@ -37,6 +38,19 @@ export const metadata: Metadata = {
   description:
     "Generate cinematic video and stills from a prompt. Pay as you go, keep every frame.",
   manifest: "/favicons/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" },
+      { url: "/favicons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/favicons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
   openGraph: {
     title: "Chronolab.ai — Generative Studio",
     description:
@@ -56,9 +70,7 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"

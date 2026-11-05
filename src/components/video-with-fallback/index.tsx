@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
+import type { VideoWithFallbackProps } from "./types";
 
 /**
  * The hero wall renders the same clip more than once (looped columns), so
@@ -18,13 +18,7 @@ export function VideoWithFallback({
   fallback,
   className,
   preload = "metadata",
-}: {
-  src: string;
-  poster?: string;
-  fallback: string;
-  className?: string;
-  preload?: ComponentProps<"video">["preload"];
-}) {
+}: VideoWithFallbackProps) {
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);

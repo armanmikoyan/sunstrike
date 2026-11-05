@@ -1,6 +1,6 @@
 "use client";
 
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ComposerAspectMenu } from "./composer-aspect-menu";
 import { ComposerAttachMenu, ComposerAttachmentChip } from "./composer-attachment";
@@ -8,6 +8,7 @@ import { ComposerDurationMenu } from "./composer-duration-menu";
 import { ComposerModeSwitch } from "./composer-mode-switch";
 import { ComposerModelMenu } from "./composer-model-menu";
 import { ComposerSubmit } from "./composer-submit";
+import { composerCopy } from "./constants";
 import { usePromptComposer } from "./hooks";
 
 export function PromptComposer({ className }: { className?: string }) {
@@ -49,7 +50,7 @@ export function PromptComposer({ className }: { className?: string }) {
             }
           }}
           className="min-h-[4.875rem] resize-none border-0 bg-transparent px-3 py-2 text-[0.875rem] leading-relaxed shadow-none placeholder:text-muted-foreground/65 focus-visible:ring-0 dark:bg-transparent"
-          aria-label="Describe your generation"
+          aria-label={composerCopy.promptLabel}
         />
         {prompt.length === 0 ? (
           <span

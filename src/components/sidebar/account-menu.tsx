@@ -5,8 +5,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { ACCOUNT, accountLinks } from "./constants";
+} from "@/ui/dropdown-menu";
+import { ACCOUNT, accountLinks, accountMenuCopy } from "./constants";
 import type { AccountMenuProps } from "./types";
 
 export function AccountMenu({ side, align }: AccountMenuProps) {
@@ -29,7 +29,7 @@ export function AccountMenu({ side, align }: AccountMenuProps) {
       <DropdownMenuItem asChild className="p-2">
         <Link href="/pricing">
           <Coins className="size-4 text-muted-foreground" />
-          <span className="flex-1">Balance</span>
+          <span className="flex-1">{accountMenuCopy.balance}</span>
           <span className="font-mono text-[0.6875rem] tabular-nums text-foreground">
             {ACCOUNT.balance}
           </span>
@@ -49,7 +49,7 @@ export function AccountMenu({ side, align }: AccountMenuProps) {
       <DropdownMenuItem asChild className="p-2">
         <Link href="/login">
           <LogOut className="size-4 text-muted-foreground" />
-          Sign out
+          {accountMenuCopy.signOut}
         </Link>
       </DropdownMenuItem>
     </DropdownMenuContent>

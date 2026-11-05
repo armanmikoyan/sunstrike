@@ -2,22 +2,21 @@
 
 import Link from "next/link";
 import { Layers3, Paperclip, Plus, Upload, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { PromptComposerState } from "./hooks";
+} from "@/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
+import { composerCopy } from "./constants";
+import type { ComposerAttachMenuProps, ComposerAttachmentChipProps } from "./types";
 
 export function ComposerAttachmentChip({
   composer,
-}: {
-  composer: PromptComposerState;
-}) {
+}: ComposerAttachmentChipProps) {
   const { attachment, setAttachment } = composer;
   if (!attachment) return null;
 
@@ -31,7 +30,7 @@ export function ComposerAttachmentChip({
         type="button"
         onClick={() => setAttachment(null)}
         className="text-muted-foreground transition-colors hover:text-foreground"
-        aria-label="Remove attachment"
+        aria-label={composerCopy.attach.remove}
       >
         <X className="size-3" />
       </button>
@@ -41,9 +40,7 @@ export function ComposerAttachmentChip({
 
 export function ComposerAttachMenu({
   composer,
-}: {
-  composer: PromptComposerState;
-}) {
+}: ComposerAttachMenuProps) {
   const { fileInputRef, setAttachment } = composer;
 
   return (
@@ -67,34 +64,34 @@ export function ComposerAttachMenu({
                 variant="ghost"
                 size="icon"
                 className="size-8 rounded-lg text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
-                aria-label="Attach reference"
+                aria-label={composerCopy.attach.ariaLabel}
               >
                 <Paperclip className="size-[0.9375rem]" />
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent>Add reference</TooltipContent>
+          <TooltipContent>{composerCopy.attach.addReference}</TooltipContent>
         </Tooltip>
         <DropdownMenuContent align="start" className="w-56 p-1.5">
-          <DropdownMenuLabel>Reference</DropdownMenuLabel>
+          <DropdownMenuLabel>{composerCopy.attach.menuLabel}</DropdownMenuLabel>
           <DropdownMenuItem
             className="p-2"
             onSelect={() => fileInputRef.current?.click()}
           >
             <Upload className="size-4 text-muted-foreground" />
-            Upload from device
+            {composerCopy.attach.upload}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="p-2"
-            onSelect={() => setAttachment("pasted-reference.png")}
+            onSelect={() => setAttachment(composerCopy.attach.pastedName)}
           >
             <Plus className="size-4 text-muted-foreground" />
-            Paste from clipboard
+            {composerCopy.attach.paste}
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="p-2">
             <Link href="/library">
               <Layers3 className="size-4 text-muted-foreground" />
-              Choose from library
+              {composerCopy.attach.fromLibrary}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>

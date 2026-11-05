@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
-import { Button } from "@/components/ui/button";
-import { mosaicTiles } from "./constants";
+import { Button } from "@/ui/button";
+import { mosaicCopy, mosaicTiles } from "./constants";
 import { MosaicTile } from "./mosaic-tile";
 
 export function RatioMosaic() {
@@ -12,14 +12,16 @@ export function RatioMosaic() {
         <SectionHeader
           title={
             <>
-              Every frame finds its{" "}
-              <span className="font-serif italic text-brand">shape</span>
+              {mosaicCopy.titleBefore}
+              <span className="font-serif italic text-brand">
+                {mosaicCopy.titleAccent}
+              </span>
             </>
           }
-          description="Stills and motion across every ratio, without rebuilding the shot."
+          description={mosaicCopy.description}
           action={
             <p className="font-mono text-[0.6875rem] text-muted-foreground/70">
-              8 frames
+              {mosaicCopy.count}
             </p>
           }
           className="mb-6"
@@ -37,7 +39,7 @@ export function RatioMosaic() {
             className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
           >
             <Link href="/explore">
-              Explore more
+              {mosaicCopy.action}
               <ArrowUpRight className="size-3.5" />
             </Link>
           </Button>

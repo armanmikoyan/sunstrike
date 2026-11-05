@@ -7,9 +7,11 @@ import { StudioPreview } from "./studio-preview";
 import { StudioQueueDialog } from "./studio-queue-dialog";
 import { StudioSummary } from "./studio-summary";
 import { StudioTakes } from "./studio-takes";
-import type { StudioProps } from "./types";
+import type { GenerationMode } from "@/lib/generation";
 
-export function Studio({ initialMode }: StudioProps) {
+export { StudioSkeleton } from "./studio-skeleton";
+
+export function Studio({ initialMode }: { initialMode: GenerationMode }) {
   const studio = useStudio(initialMode);
 
   return (

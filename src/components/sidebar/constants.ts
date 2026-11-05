@@ -24,6 +24,21 @@ export const ACCOUNT = {
   balance: "$10.54",
 } as const;
 
+export const accountMenuCopy = {
+  balance: "Balance",
+  signOut: "Sign out",
+};
+
+export const sidebarCopy = {
+  newGeneration: "New generation",
+  studio: "Studio",
+  navigation: "Navigation",
+  closeNavigation: "Close navigation",
+  accountMenu: "Account menu",
+  collapse: "Collapse sidebar",
+  expand: "Expand sidebar",
+};
+
 export type NavLink = {
   label: string;
   href: string;

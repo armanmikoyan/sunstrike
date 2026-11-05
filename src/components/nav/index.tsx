@@ -5,7 +5,7 @@ import Script from "next/script";
 import { ChevronDown, PanelLeft } from "lucide-react";
 import { Chronosphere } from "@/components/brand";
 import { cn } from "@/lib/utils";
-import { megaMenus } from "./constants";
+import { megaMenus, navCopy } from "./constants";
 import { useMegaMenu } from "./hooks";
 import { MegaMenuPanel } from "./mega-menu-panel";
 import { NavBalance } from "./nav-balance";
@@ -38,21 +38,21 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
           type="button"
           ref={menuButtonRef}
           onClick={onOpenMenu}
-          aria-label="Open navigation"
+          aria-label={navCopy.openNavigation}
           className="-ml-1 grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:hidden"
         >
           <PanelLeft className="size-[1.125rem]" strokeWidth={1.8} />
         </button>
         <Link
           href="/"
-          aria-label="Chronolab.ai home"
+          aria-label={navCopy.home}
           className="shrink-0"
         >
           <Chronosphere className="size-8 sm:size-9" />
         </Link>
 
         <nav
-          aria-label="Studio tools"
+          aria-label={navCopy.tools}
           className="hidden min-w-0 flex-1 items-center gap-0.5 lg:flex"
         >
           {megaMenus.map((menu) => {

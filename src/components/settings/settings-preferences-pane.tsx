@@ -1,76 +1,63 @@
 "use client";
 
 import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/ui/switch";
+import { settingsCopy } from "./constants";
 import { SettingsField } from "./settings-field";
 import { SettingsSaveButton } from "./settings-save-button";
 
 export function SettingsPreferencesPane() {
+  const copy = settingsCopy.preferences;
   const [autoplay, setAutoplay] = useState(true);
   const [motion, setMotion] = useState(false);
   const [autoClean, setAutoClean] = useState(true);
 
   const switches = [
-    {
-      title: "Autoplay previews",
-      description: "Loop community and library clips automatically.",
-      value: autoplay,
-      onChange: setAutoplay,
-    },
-    {
-      title: "Reduce interface motion",
-      description: "Pause the community wall and other ambient movement.",
-      value: motion,
-      onChange: setMotion,
-    },
-    {
-      title: "Auto-clean failed renders",
-      description: "Remove failed generations after 7 days.",
-      value: autoClean,
-      onChange: setAutoClean,
-    },
+    { ...copy.switches[0], value: autoplay, onChange: setAutoplay },
+    { ...copy.switches[1], value: motion, onChange: setMotion },
+    { ...copy.switches[2], value: autoClean, onChange: setAutoClean },
   ];
 
   return (
     <div>
       <div className="border-b border-white/[0.06] px-5 py-4">
-        <h2 className="text-[0.8125rem] font-medium">Studio preferences</h2>
+        <h2 className="text-[0.8125rem] font-medium">{copy.title}</h2>
         <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-          Set the defaults that open with each new generation.
+          {copy.description}
         </p>
       </div>
       <div className="space-y-5 p-5">
         <div className="grid gap-4 sm:grid-cols-2">
-          <SettingsField label="Default video model">
+          <SettingsField label={copy.defaultVideoModel}>
             <div className="mt-1.5 flex h-9 items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 text-[0.6875rem]">
-              Chronolab Motion 2
+              {copy.videoModel}
               <span className="font-mono text-[0.6875rem] text-muted-foreground">
-                $0.51 · 6s
+                {copy.videoMeta}
               </span>
             </div>
           </SettingsField>
-          <SettingsField label="Default image model">
+          <SettingsField label={copy.defaultImageModel}>
             <div className="mt-1.5 flex h-9 items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 text-[0.6875rem]">
-              Chronolab Image 2
+              {copy.imageModel}
               <span className="font-mono text-[0.6875rem] text-muted-foreground">
-                $0.07 · 1 MP
+                {copy.imageMeta}
               </span>
             </div>
           </SettingsField>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <SettingsField label="Default aspect ratio">
+          <SettingsField label={copy.defaultAspect}>
             <div className="mt-1.5 flex h-9 items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 text-[0.6875rem]">
-              16:9
+              {copy.aspectValue}
               <span className="h-[0.5625rem] w-4 rounded-[0.125rem] border border-muted-foreground/60" />
             </div>
           </SettingsField>
-          <SettingsField label="Default resolution">
+          <SettingsField label={copy.defaultResolution}>
             <div className="mt-1.5 flex h-9 items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 text-[0.6875rem]">
-              1080p
+              {copy.resolutionValue}
               <span className="font-mono text-[0.6875rem] text-muted-foreground">
-                24 fps
+                {copy.fpsValue}
               </span>
             </div>
           </SettingsField>

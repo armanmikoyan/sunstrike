@@ -6,14 +6,15 @@ import {
   Image as ImageIcon,
   Share2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
-import { studioModels } from "./constants";
+import { studioCopy, studioModels } from "./constants";
 import type { StudioHeaderProps } from "./types";
 
 export function StudioHeader({ mode, credits }: StudioHeaderProps) {
   const isVideo = mode === "video";
+  const copy = studioCopy.header;
 
   return (
     <div className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border px-3 sm:px-4">
@@ -24,7 +25,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           size="icon"
           className="size-7 rounded-md text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
         >
-          <Link href="/" aria-label="Back home">
+          <Link href="/" aria-label={copy.backHome}>
             <ArrowLeft className="size-3.5" />
           </Link>
         </Button>
@@ -34,7 +35,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
             {studioModels[mode].label}
           </span>
           <span className="hidden rounded border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[0.6875rem] text-muted-foreground sm:inline">
-            Draft
+            {copy.draft}
           </span>
         </div>
         <div className="ml-1 hidden items-center gap-0.5 rounded-lg border border-white/[0.07] bg-white/[0.02] p-0.5 sm:flex">
@@ -46,7 +47,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
             )}
           >
             <Film className="size-2.5" />
-            Video
+            {copy.video}
           </Link>
           <Link
             href="/create/image"
@@ -56,7 +57,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
             )}
           >
             <ImageIcon className="size-2.5" />
-            Image
+            {copy.image}
           </Link>
         </div>
       </div>
@@ -69,7 +70,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           variant="ghost"
           size="icon"
           className="size-8 rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
-          aria-label="Share project"
+          aria-label={copy.share}
         >
           <Share2 className="size-3.5" />
         </Button>
@@ -80,7 +81,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           className="h-7 rounded-md border-white/[0.09] bg-white/[0.025] px-2.5 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
         >
           <Link href="/library">
-            Library
+            {copy.library}
             <ArrowUpRight className="size-3" />
           </Link>
         </Button>

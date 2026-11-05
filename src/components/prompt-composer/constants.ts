@@ -1,4 +1,4 @@
-import type { GenerationMode } from "@/lib/store";
+import type { GenerationMode } from "@/lib/generation";
 
 /** Rotating placeholders, one pool per mode. */
 export const promptIdeas: Record<GenerationMode, readonly string[]> = {
@@ -20,4 +20,32 @@ export const promptIdeas: Record<GenerationMode, readonly string[]> = {
 export const defaultModel: Record<GenerationMode, string> = {
   video: "Chronolab Motion 2",
   image: "Chronolab Image 2",
+};
+
+export const composerCopy = {
+  promptLabel: "Describe your generation",
+  modeLabels: {
+    video: "Video",
+    image: "Image",
+  },
+  estimated: "Estimated",
+  aspectRatio: "Aspect ratio",
+  duration: "Duration",
+  modelLabels: {
+    video: { title: "Motion model", tag: "Motion" },
+    image: { title: "Image model", tag: "Image" },
+  },
+  compareModels: "Compare models and rates",
+  attach: {
+    ariaLabel: "Attach reference",
+    addReference: "Add reference",
+    menuLabel: "Reference",
+    upload: "Upload from device",
+    paste: "Paste from clipboard",
+    fromLibrary: "Choose from library",
+    remove: "Remove attachment",
+    pastedName: "pasted-reference.png",
+  },
+  submit: "Start generation",
+  shortcut: "⌘ ↵",
 };

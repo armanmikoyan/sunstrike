@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { RollingNumber } from "@/components/rolling-number";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import { Button } from "@/ui/button";
+import { Slider } from "@/ui/slider";
 import { QuantityButton, pricingSliderStyles } from "@/components/pricing/pricing-quantity-button";
-import { imageTiers } from "./constants";
+import { imageTiers, pricingCardCopy } from "./constants";
 import {
   MAX_IMAGES,
   MIN_IMAGES,
@@ -23,16 +23,16 @@ export function ImageOrderCard() {
     <div className="relative mx-auto w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/[0.1] bg-[#1c1e20]">
       <div className="p-5">
         <div className="flex items-center justify-between">
-          <span className="text-[0.75rem] text-muted-foreground">Your order</span>
+          <span className="text-[0.75rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
           <span className="font-mono text-[0.6875rem] text-muted-foreground">
-            PAYG
+            {pricingCardCopy.payg}
           </span>
         </div>
 
         <div className="mt-5 flex items-end justify-between gap-4">
           <div>
             <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-              Images
+              {pricingCardCopy.images}
             </p>
             <div className="mt-1 flex items-end gap-2">
               <RollingNumber
@@ -40,7 +40,7 @@ export function ImageOrderCard() {
                 className="text-[2.125rem] font-medium leading-none tracking-[-0.03em]"
               />
               <span className="pb-1 text-[0.75rem] text-muted-foreground">
-                images
+                {pricingCardCopy.imagesLower}
               </span>
             </div>
           </div>
@@ -51,7 +51,7 @@ export function ImageOrderCard() {
                 setQuantity((value) => Math.max(MIN_IMAGES, value - 1))
               }
               disabled={quantity <= MIN_IMAGES}
-              aria-label="Decrease images"
+              aria-label={pricingCardCopy.decreaseImages}
             >
               −
             </QuantityButton>
@@ -60,7 +60,7 @@ export function ImageOrderCard() {
                 setQuantity((value) => Math.min(MAX_IMAGES, value + 1))
               }
               disabled={quantity >= MAX_IMAGES}
-              aria-label="Increase images"
+              aria-label={pricingCardCopy.increaseImages}
             >
               +
             </QuantityButton>
@@ -73,12 +73,12 @@ export function ImageOrderCard() {
           max={MAX_IMAGES}
           step={1}
           onValueChange={([value]) => setQuantity(value)}
-          aria-label="Number of images"
+          aria-label={pricingCardCopy.numberOfImages}
           className={cn("mt-5 w-full", pricingSliderStyles)}
         />
         <div className="mt-2 flex justify-between font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/70">
-          <span>1 image</span>
-          <span>{MAX_IMAGES} images</span>
+          <span>{pricingCardCopy.imageRangeStart}</span>
+          <span>{pricingCardCopy.imageRangeEnd}</span>
         </div>
 
         <div className="mt-5 grid grid-cols-3 gap-2">
@@ -108,7 +108,7 @@ export function ImageOrderCard() {
                 <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-[0.8125rem] font-medium tracking-[-0.02em] text-foreground">
                   {tier.price}
                   <span className="text-[0.6875rem] font-normal text-muted-foreground">
-                    / image
+                    {pricingCardCopy.imageUnit}
                   </span>
                 </span>
               </button>
@@ -118,15 +118,15 @@ export function ImageOrderCard() {
 
         <div className="mt-5 space-y-2.5 border-t border-white/[0.07] pt-4 text-[0.75rem]">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Images</span>
+            <span className="text-muted-foreground">{pricingCardCopy.images}</span>
             <RollingNumber value={quote.quantity} />
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Per image</span>
+            <span className="text-muted-foreground">{pricingCardCopy.perImage}</span>
             <RollingNumber
               value={quote.unit}
               decimalPlaces={2}
-              prefix="$"
+              prefix={pricingCardCopy.currency}
             />
           </div>
           <div
@@ -136,21 +136,21 @@ export function ImageOrderCard() {
               quote.savings <= 0 && "invisible",
             )}
           >
-            <span>Volume saving</span>
+            <span>{pricingCardCopy.volumeSaving}</span>
             <RollingNumber
               value={quote.savings}
               decimalPlaces={2}
-              prefix="−$"
+              prefix={pricingCardCopy.negativeCurrency}
             />
           </div>
         </div>
 
         <div className="mt-4 flex items-end justify-between border-t border-white/[0.07] pt-4">
-          <span className="text-[0.8125rem] text-muted-foreground">Total</span>
+          <span className="text-[0.8125rem] text-muted-foreground">{pricingCardCopy.total}</span>
           <RollingNumber
             value={quote.total}
             decimalPlaces={2}
-            prefix="$"
+            prefix={pricingCardCopy.currency}
             className="text-[1.875rem] font-medium leading-none tracking-[-0.03em]"
           />
         </div>
@@ -160,12 +160,14 @@ export function ImageOrderCard() {
           className="mt-5 h-10 w-full rounded-lg bg-brand text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
         >
           <Link href="/billing">
-            Get <RollingNumber value={quote.quantity} /> images
+            {pricingCardCopy.get}{" "}
+            <RollingNumber value={quote.quantity} />{" "}
+            {pricingCardCopy.imagesLower}
             <ArrowRight className="size-3.5" />
           </Link>
         </Button>
         <p className="mt-3 text-center font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/65">
-          One-time payment · No subscription
+          {pricingCardCopy.paymentNote}
         </p>
       </div>
     </div>

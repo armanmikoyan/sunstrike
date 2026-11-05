@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { FC } from "react";
 import { cn } from "@/lib/utils";
 import {
   LOCKUP_HEIGHT,
@@ -7,7 +8,16 @@ import {
   LOCKUP_WIDTH,
   MARK_POSTER_SIZE,
   MARK_POSTER_SRC,
+  brandCopy,
 } from "./constants";
+import type { ChronosphereProps, LogoLockupProps, VioletOrbProps } from "./types";
+
+/**
+ * `violet-orb` is a custom element registered by `/brand/violet-orb.js`. The
+ * cast keeps the runtime tag a string while letting JSX type its attributes;
+ * no global JSX augmentation is needed.
+ */
+const VioletOrb = "violet-orb" as unknown as FC<VioletOrbProps>;
 
 /**
  * The rotating chronosphere. The still poster holds the slot until the violet
@@ -20,10 +30,7 @@ import {
 export function Chronosphere({
   className,
   duration = 18,
-}: {
-  className?: string;
-  duration?: number;
-}) {
+}: ChronosphereProps) {
   return (
     <span
       aria-hidden="true"
@@ -37,7 +44,7 @@ export function Chronosphere({
         unoptimized
         className="absolute inset-0 size-full object-contain"
       />
-      <violet-orb
+      <VioletOrb
         duration={String(duration)}
         className="relative size-full"
       />
@@ -50,18 +57,12 @@ export function LogoLockup({
   href = "/",
   compact = false,
   inactive = false,
-}: {
-  className?: string;
-  href?: string;
-  compact?: boolean;
-  /** Kept in the layout for a reveal transition but out of reach. */
-  inactive?: boolean;
-}) {
+}: LogoLockupProps) {
   return (
     <Link
       href={href}
       className={cn("group flex items-center", className)}
-      aria-label="Chronolab.ai home"
+      aria-label={brandCopy.home}
       aria-hidden={inactive || undefined}
       tabIndex={inactive ? -1 : undefined}
     >

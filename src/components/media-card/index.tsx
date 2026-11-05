@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Film, Heart, ImageIcon, Play } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { cn } from "@/lib/utils";
+import { mediaCardCopy } from "./constants";
 import type { MediaCardProps } from "./types";
 
 export function MediaCard({
@@ -60,7 +61,7 @@ export function MediaCard({
 
         <button
           type="button"
-          aria-label={`Save ${item.title}`}
+          aria-label={`${mediaCardCopy.save} ${item.title}`}
           className="absolute right-2.5 top-2.5 grid size-8 place-items-center rounded-full border border-white/15 bg-black/40 text-white/70 opacity-0 backdrop-blur-md transition-opacity hover:bg-black/60 hover:text-white focus-visible:opacity-100 group-hover:opacity-100"
         >
           <Heart className="size-3" />
@@ -77,13 +78,13 @@ export function MediaCard({
                 className="flex h-8 items-center gap-1.5 rounded-md bg-foreground px-2.5 text-[0.6875rem] font-medium text-background transition-colors hover:bg-foreground/90"
               >
                 <Play className="size-3 fill-current" />
-                Remix
+                {mediaCardCopy.remix}
               </Link>
               <Link
                 href="/explore"
                 className="flex h-8 items-center gap-1.5 rounded-md border border-white/15 bg-black/35 px-2.5 text-[0.6875rem] font-medium text-white/85 backdrop-blur transition-colors hover:bg-black/55 hover:text-white"
               >
-                Details
+                {mediaCardCopy.details}
                 <ArrowUpRight className="size-3" />
               </Link>
             </div>

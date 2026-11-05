@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Check, ChevronDown, WandSparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,17 +10,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/ui/dropdown-menu";
 import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
-import type { PromptComposerState } from "./hooks";
+import { composerCopy } from "./constants";
+import type { ComposerModelMenuProps } from "./types";
 
-export function ComposerModelMenu({
-  composer,
-}: {
-  composer: PromptComposerState;
-}) {
+export function ComposerModelMenu({ composer }: ComposerModelMenuProps) {
   const { mode, model, setModel, activeModels } = composer;
+  const modelCopy = composerCopy.modelLabels[mode];
 
   return (
     <DropdownMenu>
@@ -40,9 +38,9 @@ export function ComposerModelMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[17.875rem] p-1.5">
         <DropdownMenuLabel className="flex items-center justify-between">
-          {mode === "video" ? "Motion model" : "Image model"}
+          {modelCopy.title}
           <span className="text-[0.6875rem] font-normal text-muted-foreground">
-            {mode === "video" ? "Motion" : "Image"}
+            {modelCopy.tag}
           </span>
         </DropdownMenuLabel>
         {activeModels.map((item) => (
@@ -78,7 +76,7 @@ export function ComposerModelMenu({
           asChild
           className="p-2 text-[0.6875rem] text-muted-foreground"
         >
-          <Link href="/pricing">Compare models and rates</Link>
+          <Link href="/pricing">{composerCopy.compareModels}</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

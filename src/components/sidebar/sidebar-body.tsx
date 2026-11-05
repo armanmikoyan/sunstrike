@@ -7,16 +7,18 @@ import { LogoLockup } from "@/components/brand";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+} from "@/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { AccountMenu } from "./account-menu";
 import {
   ACCOUNT,
   CTA_BEVEL,
   accountLinks,
+  accountMenuCopy,
   primaryLinks,
   secondaryLinks,
+  sidebarCopy,
 } from "./constants";
 import { useIsActive } from "./hooks";
 import { RailTooltip } from "./rail-tooltip";
@@ -59,7 +61,7 @@ export function SidebarBody({
               <button
                 type="button"
                 onClick={onToggle}
-                aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+                aria-label={expanded ? sidebarCopy.collapse : sidebarCopy.expand}
                 aria-expanded={expanded}
                 className={cn(
                   // The toggle is the one control that moves from the rail's
@@ -80,17 +82,17 @@ export function SidebarBody({
               </button>
             </TooltipTrigger>
             <TooltipContent side="right" sideOffset={12}>
-              {expanded ? "Collapse sidebar" : "Expand sidebar"}
+              {expanded ? sidebarCopy.collapse : sidebarCopy.expand}
             </TooltipContent>
           </Tooltip>
         ) : null}
       </div>
 
-      <RailTooltip expanded={expanded} label="New generation">
+      <RailTooltip expanded={expanded} label={sidebarCopy.newGeneration}>
         <Link
           href="/create/video"
           onClick={onNavigate}
-          aria-label="New generation"
+          aria-label={sidebarCopy.newGeneration}
           className={cn(
             "group relative mb-5 flex h-10 w-full shrink-0 items-center gap-2.5 overflow-hidden rounded-xl bg-brand text-[0.8125rem] font-semibold text-brand-foreground transition-[max-width,padding,opacity,transform,background-color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-hover active:scale-[0.97] motion-reduce:transition-none",
             expanded
@@ -108,13 +110,13 @@ export function SidebarBody({
               expanded ? "opacity-100" : "opacity-0",
             )}
           >
-            New generation
+            {sidebarCopy.newGeneration}
           </span>
         </Link>
       </RailTooltip>
 
       <nav
-        aria-label="Studio"
+        aria-label={sidebarCopy.studio}
         className="flex w-full shrink-0 flex-col gap-1.5"
       >
         {primaryLinks.map((item) => (
@@ -166,7 +168,7 @@ export function SidebarBody({
                   className="flex h-9 items-center gap-2 rounded-lg px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
                 >
                   <Coins className="size-3.5" />
-                  Balance
+                  {accountMenuCopy.balance}
                   <span className="ml-auto font-mono tabular-nums text-foreground">
                     {ACCOUNT.balance}
                   </span>
@@ -188,14 +190,14 @@ export function SidebarBody({
                   className="flex h-9 items-center gap-2 rounded-lg px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
                 >
                   <LogOut className="size-3.5" />
-                  Sign out
+                  {accountMenuCopy.signOut}
                 </button>
               </div>
             ) : null}
 
             <button
               type="button"
-              aria-label="Account menu"
+              aria-label={sidebarCopy.accountMenu}
               aria-expanded={accountOpen}
               onClick={() => setAccountOpen((value) => !value)}
               className="flex h-11 w-full items-center gap-2.5 rounded-xl px-2 text-left text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground"
@@ -224,7 +226,7 @@ export function SidebarBody({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                aria-label="Account menu"
+                aria-label={sidebarCopy.accountMenu}
                 className={cn(
                   "flex w-full shrink-0 items-center self-center overflow-hidden rounded-xl text-left text-muted-foreground outline-none transition-[max-width,height,padding,background-color,color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/25 motion-reduce:transition-none",
                   expanded

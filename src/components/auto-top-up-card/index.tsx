@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/ui/switch";
 import { cn } from "@/lib/utils";
+import { autoTopUpCopy } from "./constants";
 
 export function AutoTopUpCard() {
   const [enabled, setEnabled] = useState(true);
@@ -16,9 +17,11 @@ export function AutoTopUpCard() {
             <RefreshCw className="size-3.5" strokeWidth={1.8} />
           </span>
           <div>
-            <p className="text-[0.6875rem] font-medium">Auto top-up</p>
+            <p className="text-[0.6875rem] font-medium">
+              {autoTopUpCopy.title}
+            </p>
             <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-              {enabled ? "Refills at $5" : "Off"}
+              {enabled ? autoTopUpCopy.enabled : autoTopUpCopy.disabled}
             </p>
           </div>
         </div>
@@ -32,15 +35,19 @@ export function AutoTopUpCard() {
       >
         <div className="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-2">
           <p className="text-[0.6875rem] text-muted-foreground">
-            Threshold
+            {autoTopUpCopy.threshold}
           </p>
-          <p className="mt-1 font-mono text-[0.6875rem]">$5</p>
+          <p className="mt-1 font-mono text-[0.6875rem]">
+            {autoTopUpCopy.thresholdValue}
+          </p>
         </div>
         <div className="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-2">
           <p className="text-[0.6875rem] text-muted-foreground">
-            Pack
+            {autoTopUpCopy.pack}
           </p>
-          <p className="mt-1 font-mono text-[0.6875rem]">$10</p>
+          <p className="mt-1 font-mono text-[0.6875rem]">
+            {autoTopUpCopy.packValue}
+          </p>
         </div>
       </div>
     </div>

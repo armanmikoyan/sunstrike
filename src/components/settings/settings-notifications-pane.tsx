@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
-import { notificationDefaults, notificationRows } from "./constants";
+import { Switch } from "@/ui/switch";
+import { notificationDefaults, notificationRows, settingsCopy } from "./constants";
 import { SettingsSaveButton } from "./settings-save-button";
 import type { NotificationKey } from "./types";
 
@@ -16,9 +16,11 @@ export function SettingsNotificationsPane() {
   return (
     <div>
       <div className="border-b border-white/[0.06] px-5 py-4">
-        <h2 className="text-[0.8125rem] font-medium">Notifications</h2>
+        <h2 className="text-[0.8125rem] font-medium">
+          {settingsCopy.notifications.title}
+        </h2>
         <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-          Choose what reaches your inbox.
+          {settingsCopy.notifications.description}
         </p>
       </div>
       <div className="space-y-5 p-5">

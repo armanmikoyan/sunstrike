@@ -2,15 +2,9 @@ import Image from "next/image";
 import { Film } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { mediaById } from "@/lib/media";
-import type { ComponentProps } from "react";
+import type { VideoWallTileProps } from "./types";
 
-export function VideoWallTile({
-  id,
-  preload,
-}: {
-  id: string;
-  preload: ComponentProps<"video">["preload"];
-}) {
+export function VideoWallTile({ id, preload }: VideoWallTileProps) {
   const item = mediaById(id);
   if (!item) return null;
 

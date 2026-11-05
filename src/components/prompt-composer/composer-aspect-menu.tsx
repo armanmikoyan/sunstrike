@@ -1,23 +1,20 @@
 "use client";
 
 import { Check, ChevronDown } from "lucide-react";
-import { AspectShape } from "@/components/aspect-shape";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/ui/dropdown-menu";
 import { aspectRatios } from "@/lib/generation";
-import type { PromptComposerState } from "./hooks";
+import { cn } from "@/lib/utils";
+import { composerCopy } from "./constants";
+import type { ComposerAspectMenuProps } from "./types";
 
-export function ComposerAspectMenu({
-  composer,
-}: {
-  composer: PromptComposerState;
-}) {
+export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
   const { aspect, setAspect } = composer;
   const shape =
     aspectRatios.find((ratio) => ratio.value === aspect)?.shape ?? "h-3 w-4";
@@ -31,20 +28,30 @@ export function ComposerAspectMenu({
           size="sm"
           className="h-8 gap-1.5 rounded-lg px-2 text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
         >
-          <AspectShape className={shape} />
+          <span
+            className={cn(
+              "rounded-[0.125rem] border border-current opacity-80",
+              shape,
+            )}
+          />
           {aspect}
           <ChevronDown className="size-3 opacity-60" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48 p-1.5">
-        <DropdownMenuLabel>Aspect ratio</DropdownMenuLabel>
+        <DropdownMenuLabel>{composerCopy.aspectRatio}</DropdownMenuLabel>
         {aspectRatios.map((ratio) => (
           <DropdownMenuItem
             key={ratio.value}
             onSelect={() => setAspect(ratio.value)}
             className="gap-2 p-2"
           >
-            <AspectShape className={ratio.shape} />
+            <span
+              className={cn(
+                "rounded-[0.125rem] border border-current opacity-80",
+                ratio.shape,
+              )}
+            />
             <span className="text-[0.75rem]">{ratio.value}</span>
             <span className="ml-auto text-[0.6875rem] text-muted-foreground">
               {ratio.label}

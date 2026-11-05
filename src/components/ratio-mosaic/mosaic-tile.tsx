@@ -4,12 +4,9 @@ import { Film, ImageIcon } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { mediaById } from "@/lib/media";
 import { cn } from "@/lib/utils";
+import type { MosaicTileProps } from "./types";
 
-export function MosaicTile({ id, label, span }: {
-  id: string;
-  label: string;
-  span: string;
-}) {
+export function MosaicTile({ id, label, span }: MosaicTileProps) {
   const item = mediaById(id);
   if (!item) return null;
 

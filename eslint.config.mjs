@@ -21,7 +21,11 @@ const eslintConfig = defineConfig([
   // Test doubles strip props by destructuring and mark intentional discards
   // with an underscore; keep the report focused on real problems.
   {
-    files: ["tests/**/*.{ts,tsx}"],
+    files: [
+      "src/**/*.test.{ts,tsx}",
+      "src/**/*.e2e.ts",
+      "vitest.*.{ts,tsx}",
+    ],
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "warn",

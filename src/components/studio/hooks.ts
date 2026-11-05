@@ -6,6 +6,7 @@ import {
   aspectRatios,
   getGenerationCost,
   modelOptions,
+  type GenerationMode,
 } from "@/lib/generation";
 import {
   aspectRatioAtom,
@@ -15,8 +16,7 @@ import {
   modeAtom,
   promptAtom,
   selectedModelAtom,
-  type GenerationMode,
-} from "@/lib/store";
+} from "./state";
 import { imageTakes, studioModels, videoTakes } from "./constants";
 
 /** All generative state for one studio page, kept out of the view tree. */

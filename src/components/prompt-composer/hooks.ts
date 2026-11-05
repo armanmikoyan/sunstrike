@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { getGenerationCost, modelOptions } from "@/lib/generation";
+import {
+  getGenerationCost,
+  modelOptions,
+  type GenerationMode,
+} from "@/lib/generation";
 import {
   aspectRatioAtom,
   attachmentAtom,
@@ -11,15 +15,9 @@ import {
   modeAtom,
   promptAtom,
   selectedModelAtom,
-  type GenerationMode,
-} from "@/lib/store";
+} from "@/components/studio/state";
 import { defaultModel, promptIdeas } from "./constants";
-
-type TypingOptions = {
-  typeSpeed?: number;
-  deleteSpeed?: number;
-  pauseDuration?: number;
-};
+import type { TypingOptions } from "./types";
 
 /**
  * Types a word, pauses, deletes it, moves on. Returns the text to render;
