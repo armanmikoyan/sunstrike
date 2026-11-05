@@ -7,6 +7,9 @@ This is a single Next.js App Router app with local demo data — no backend,
 database or auth. Prices, media and generation results are simulated in
 `src/lib`.
 
+What is left before real users, real cards and real renders is tracked as
+small tickets in [`ROADMAP.md`](./ROADMAP.md).
+
 ## Run
 
 ```bash
