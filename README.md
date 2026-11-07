@@ -33,25 +33,25 @@ npm run check            # typecheck + lint + coverage
 ## Structure
 
 - `src/app` — metadata, root layout, the client shell (`shell.tsx`: rail and
-  top nav) and runtime wiring (`providers.tsx`). Two route groups pick the
-  chrome: `(website)` composes the shell with `<main>` and the site footer,
-  `(workspace)` composes it without the footer, and `/login` sits outside both
-  with no chrome. Group names never affect URLs. Each `page.tsx` only exports
-  metadata and renders its route component, so pages never own markup, styles
-  or chrome.
+  top nav) and runtime wiring (`providers.tsx`). The root layout mounts the
+  shell once; `(website)` adds `<main>` and the site footer, `(workspace)` adds
+  `<main>` only, and `AppShell` renders `/login` with no chrome. Group names
+  never affect URLs. Each `page.tsx` composes its route component and exports
+  `metadata` where the route has one, so markup, styles and chrome come from
+  the component and the layout.
 - `src/components/<feature>` — one folder per product feature and per route
   surface (`home`, `library`, `pricing`, …). The entry point `index.tsx` owns
-  the markup, styles and composition; supporting files are `constants.ts`,
-  `hooks.ts`, `state.ts`, `types.ts` and private parts. All visible copy lives
-  in `constants.ts`. Tests sit beside the file they cover (`index.test.tsx`,
-  `hooks.test.ts`).
+  the markup, styles and composition. A feature adds `constants.ts` for static
+  data and visible copy, `hooks.ts` for stateful logic, `state.ts` for shared
+  Jotai atoms, `types.ts` for shaped props, plus any private parts. Tests sit
+  beside the module they cover (`index.test.tsx`, `page.test.tsx`,
+  `pricing-order-tabs.test.tsx`).
 - `src/ui` — shadcn primitives, a sibling of `src/components`; keep their layout.
 - `src/lib/<name>/` — one folder per library (`media`, `pricing`, `generation`,
   `utils`) with `index.ts` and a colocated `index.test.ts`.
-- `src/e2e` — Playwright specs, beside the code they cover.
-- `vitest.setup.tsx` at the repo root — the only shared test file (framework
-  mocks, router state, `renderWithProviders`). There is no test directory;
-  unit and component tests are colocated.
+- `src/e2e` — Playwright specs and helpers, beside the code they cover.
+- `vitest.setup.tsx` at the repo root — the shared test setup (framework mocks,
+  router state, `renderWithProviders`); unit and component tests are colocated.
 - `public` — every static asset: brand art, favicons and local media.
 
 Read [`ARCHITECTURE.md`](./ARCHITECTURE.md) before changing structure, routes,

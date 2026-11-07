@@ -34,7 +34,7 @@ export function Login() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f1113] via-[#0f1113]/20 to-[#0f1113]/70" />
 
         <div className="relative flex min-h-screen flex-col justify-between p-8 xl:p-10">
-          <LogoLockup />
+          <LogoLockup className="w-72" />
 
           <div className="max-w-[31.25rem]">
             <p className="text-[0.75rem] text-white/70">
@@ -95,7 +95,7 @@ export function Login() {
 
       <section className="flex min-h-screen flex-col">
         <div className="flex items-center justify-between p-5 lg:hidden">
-          <LogoLockup compact />
+          <LogoLockup compact className="w-40" />
           <Link href="/" className="text-[0.6875rem] text-muted-foreground">
             {loginCopy.backToStudio}
           </Link>

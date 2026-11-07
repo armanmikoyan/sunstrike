@@ -42,7 +42,7 @@ export function SidebarBody({
           // The header keeps a fixed height, so the rail's contents cannot jump
           // while the toggle's hit area animates between 40 and 32px.
           "relative mb-4 flex h-11 w-full shrink-0 items-center",
-          expanded && !showToggle && "pr-9",
+          showToggle ? "pr-10" : "pr-12",
         )}
       >
         <LogoLockup
@@ -51,7 +51,7 @@ export function SidebarBody({
           className={cn(
             "min-w-0 overflow-hidden transition-opacity duration-200 motion-reduce:transition-none",
             expanded
-              ? "opacity-100"
+              ? "w-full opacity-100"
               : "pointer-events-none absolute w-0 opacity-0",
           )}
         />

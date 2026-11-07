@@ -2,7 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { AppShell } from "./shell";
-import { renderWithProviders } from "~/vitest.setup";
+import { renderWithProviders, setPathname } from "~/vitest.setup";
 
 function renderShell() {
   return renderWithProviders(
@@ -60,5 +60,23 @@ describe("app shell", () => {
     );
 
     expect(opener).toHaveFocus();
+  });
+
+  it("keeps the rail collapsed when a nav link is clicked", async () => {
+    renderShell();
+    await userEvent.click(screen.getByRole("link", { name: "Library" }));
+
+    expect(
+      screen.getByRole("button", { name: "Expand sidebar" }),
+    ).toBeInTheDocument();
+  });
+
+  it("omits the chrome on the login route", () => {
+    setPathname("/login");
+    renderShell();
+
+    expect(screen.getByRole("heading", { name: "Library" })).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Expand sidebar" })).toBeNull();
   });
 });

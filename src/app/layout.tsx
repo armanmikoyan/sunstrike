@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif, Space_Grotesk, Space_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "@/app/providers";
+import { AppShell } from "@/app/shell";
 import { SOCIAL_SRC } from "@/components/brand/constants";
 import "./globals.css";
 
@@ -77,7 +78,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`dark ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
     >
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );

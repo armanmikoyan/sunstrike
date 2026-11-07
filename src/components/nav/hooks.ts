@@ -4,6 +4,10 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 
 const NARROW_QUERY = "(max-width: 767px)";
 
+/** Matches the panel's `max-w-[70rem]` and keeps a small gutter to the shell edge. */
+const PANEL_MAX_WIDTH = 1120;
+const PANEL_GUTTER = 8;
+
 /** Nothing to subscribe to: the platform never changes during a session. */
 const subscribeNothing = () => () => {};
 
@@ -39,7 +43,8 @@ export function useCompactNav() {
  */
 export function useMegaMenu() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [panelLeft, setPanelLeft] = useState(0);
+  const [panelLeft, setPanelLeft] = useState(PANEL_GUTTER);
+  const [panelWidth, setPanelWidth] = useState(PANEL_MAX_WIDTH);
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -57,13 +62,20 @@ export function useMegaMenu() {
       const trigger = itemRefs.current[key];
       const header = trigger?.closest("header");
       if (trigger && header) {
-        const panelWidth = Math.min(1000, window.innerWidth - 32);
+        const headerWidth = header.getBoundingClientRect().width;
+        const width = Math.max(
+          0,
+          Math.min(PANEL_MAX_WIDTH, headerWidth - PANEL_GUTTER * 2),
+        );
         const offset =
           trigger.getBoundingClientRect().left -
           header.getBoundingClientRect().left;
-        setPanelLeft(
-          Math.max(8, Math.min(offset, window.innerWidth - panelWidth - 16)),
+        const maxLeft = Math.max(
+          PANEL_GUTTER,
+          headerWidth - width - PANEL_GUTTER,
         );
+        setPanelWidth(width);
+        setPanelLeft(Math.min(Math.max(PANEL_GUTTER, offset), maxLeft));
       }
 
       setOpenMenu(key);
@@ -99,6 +111,7 @@ export function useMegaMenu() {
   return {
     openMenu,
     panelLeft,
+    panelWidth,
     open,
     close,
     scheduleClose,

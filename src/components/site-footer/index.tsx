@@ -12,7 +12,7 @@ export function SiteFooter({ className }: { className?: string }) {
       <div className="flex w-full flex-col gap-10">
         <div className="flex flex-col justify-between gap-8 md:flex-row">
           <div>
-            <LogoLockup compact />
+            <LogoLockup compact className="w-48" />
             <p className="mt-3 max-w-[17.5rem] text-[0.75rem] leading-relaxed text-muted-foreground">
               {footerCopy.description}
             </p>

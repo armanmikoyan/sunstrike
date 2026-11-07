@@ -4,7 +4,7 @@ import WorkspaceLayout from "./layout";
 import { renderWithProviders } from "~/vitest.setup";
 
 describe("workspace layout", () => {
-  it("mounts the chrome without the footer", () => {
+  it("renders the page without the footer", () => {
     renderWithProviders(
       <WorkspaceLayout>
         <h1>Library</h1>
@@ -13,8 +13,8 @@ describe("workspace layout", () => {
 
     expect(screen.getByRole("heading", { name: "Library" })).toBeInTheDocument();
     expect(
-      screen.getByRole("searchbox", { name: "Search the studio" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("searchbox", { name: "Search the studio" }),
+    ).toBeNull();
     expect(screen.queryByRole("contentinfo")).toBeNull();
   });
 });

@@ -7,8 +7,7 @@ catalogue item, price and generation is local demo data.
 
 The product name is **Chronolab.ai**, always. Models are named
 `Chronolab <Name>` and account addresses use `@chronolab.ai`. The previous
-brand name is retired and must not be reintroduced; its old asset filenames
-exist only in git history.
+brand name is retired and lives only in git history.
 
 ## Stack
 
@@ -16,46 +15,46 @@ exist only in git history.
 | --- | --- |
 | Framework | Next.js `16.4` App Router, React `19.3`, TypeScript strict |
 | Styling | Tailwind CSS v4, CSS variables in `src/app/globals.css` |
-| Components | shadcn-style primitives (`radix-nova`) in `src/ui` |
+| Components | shadcn primitives (`radix-nova` style) in `src/ui` |
 | State | Jotai atoms for shared generation state, local hooks for the rest |
 | Motion | `motion/react` for number rolls, CSS for shell/video-wall motion |
 | Icons | `lucide-react` |
 | Tests | Vitest + Testing Library (jsdom), Playwright (Chrome) |
 
 `src/lib/utils/index.ts` re-exports `cn` from the `cn` package. Imports use the
-`@/` alias, which maps to `src/`.
+`@/` alias, which maps to `src/`, and the `~` alias, which maps to the repo
+root.
 
 ## Folder structure
 
 ```text
 src/
   app/
-    layout.tsx              html, fonts, metadata, providers (no chrome)
-    shell.tsx               client shell: rail and top nav
-    providers.tsx           client runtime wiring: Jotai + tooltips
+    layout.tsx              html, fonts, metadata, providers, <AppShell>
+    shell.tsx               client shell: rail and top nav, skips /login
+    providers.tsx           client runtime: Jotai, tooltips, hydrated flag
     globals.css             design tokens, theme mapping, base styles
     (website)/
-      layout.tsx            <AppShell> + <main> + <SiteFooter>
-      page.tsx              home: metadata + <Home />
+      layout.tsx            <main> + <SiteFooter>
+      page.tsx              home: <Home />
       page.test.tsx         rendered behaviour, colocated
       explore/ pricing/ billing/ settings/ help/
     (workspace)/
-      layout.tsx            <AppShell> + <main>, no footer
+      layout.tsx            <main>, no footer
       library/ assets/ favorites/
       create/[mode]/        video and image studio
-    login/                  outside the groups: split-screen, no chrome
+    login/                  chrome-free: AppShell returns only its children
   components/
     <feature>/              one folder per product feature
       index.tsx             public entry
       index.test.tsx        rendered behaviour, colocated
-      constants.ts          static data, copy and class strings
-      hooks.ts              stateful logic
-      hooks.test.ts         hook logic, colocated
-      state.ts              Jotai atoms owned by the feature
-      types.ts              local shared types
+      constants.ts          static data, copy and class strings (as needed)
+      hooks.ts              stateful logic (as needed)
+      state.ts              Jotai atoms owned by the feature (as needed)
+      types.ts              shared prop/state types (as needed)
       <feature>-<part>.tsx  private subcomponents
-  ui/                       shadcn primitives (do not restructure)
-  e2e/                      Playwright specs, production build
+  ui/                       shadcn primitives (keep their layout)
+  e2e/                      Playwright specs and helpers
   lib/
     <name>/                 one folder per library
       index.ts              public entry
@@ -65,65 +64,78 @@ public/
   brand/                    logo, orb, social card, orb custom element
   favicons/                 manifest, install icons, apple touch icon
   media/                    local media (gitignored, do not commit)
-vitest.setup.tsx            the only shared test file: framework mocks,
+vitest.setup.tsx            the shared test setup: framework mocks,
                             jsdom gaps, router state and renderWithProviders
 ```
 
-Tests live next to the code they cover. A file named `index.test.tsx`,
-`hooks.test.ts` or `page.test.tsx` belongs beside its entry file; there is no
-`test` directory and no mirrored test tree. Playwright specs sit beside the
-source as `src/e2e`, a sibling of `src/components` and `src/app`. The only
-shared test file is `vitest.setup.tsx` at the repo root, next to
-`vitest.config.mts`.
+Feature folders carry the files they need. A feature with static data or
+visible copy has a `constants.ts`; one with stateful logic has `hooks.ts`; one
+with shared Jotai atoms has `state.ts` (currently `studio`); one with shaped or
+reused props has `types.ts`. Presentational components can be a single
+`index.tsx` with no supporting files.
+
+Tests live next to the code they cover. Vitest picks up every `src/**/*.test.ts`
+and `src/**/*.test.tsx`; name the file after the module it covers
+(`index.test.tsx`, `pricing-order-tabs.test.tsx`, `page.test.tsx`). Playwright
+specs sit in `src/e2e` as a sibling of `src/components` and `src/app`, end in
+`.e2e.ts`, and share `src/e2e/helpers.ts`. `vitest.setup.tsx` at the repo root,
+next to `vitest.config.mts`, is the only shared test setup file.
 
 ### Route composition
 
-`src/app/**/page.tsx` owns the route but holds no markup. It exports
-`metadata` (plus dynamic-segment helpers such as `generateMetadata` and
-`generateStaticParams`) and renders one route component from
-`@/components/<route>`. All markup, styles, data and copy live in that
-component's entry point, `src/components/<route>/index.tsx`, with its strings
-in a colocated `constants.ts`.
+`src/app/**/page.tsx` composes the route. It exports `metadata` when the route
+has one (every page except home), plus dynamic-segment helpers such as
+`generateMetadata` and `generateStaticParams` where needed, and renders one
+route component from `@/components/<route>`. All markup, styles, data and copy
+live in that component's entry point, `src/components/<route>/index.tsx`, with
+its strings in `constants.ts`. A typical page is a small module:
 
-There is no intermediate `screens` layer and no wrapper `*-page` component.
-A page is: import the route component, export `metadata`, return
-`<Component />`.
+```tsx
+import { Explore } from "@/components/explore";
+
+export const metadata = { title: "Explore" };
+
+export default function Page() {
+  return <Explore />;
+}
+```
+
+The studio is the richer case:
+`src/app/(workspace)/create/[mode]/page.tsx` validates the segment, wraps the
+studio in `Suspense` with `StudioSkeleton`, and exports `generateMetadata` and
+`generateStaticParams`.
 
 Route groups describe chrome, not URLs. The root `src/app/layout.tsx` owns the
-document, fonts, metadata and providers, but no chrome. Two sibling groups
-mount `AppShell` from `src/app/shell.tsx`, and each layout decides its own
-footer:
+document, fonts, metadata, providers and one `<AppShell>` mount, so the rail and
+top nav have a single owner across navigation. The nested groups only decide
+their footer:
 
-- `src/app/(website)/layout.tsx` → `<AppShell>` with `<main>` and
-  `<SiteFooter>` for marketing and account pages (`/`, `/explore`, `/pricing`,
-  `/billing`, `/settings`, `/help`).
-- `src/app/(workspace)/layout.tsx` → `<AppShell>` with `<main>` only, for
-  library, assets, favorites and the studio.
+- `src/app/(website)/layout.tsx` → `<main>` and `<SiteFooter>` for marketing
+  and account pages (`/`, `/explore`, `/pricing`, `/billing`, `/settings`,
+  `/help`).
+- `src/app/(workspace)/layout.tsx` → `<main>` only, for library, assets,
+  favorites and the studio.
 
 `AppShell` owns the rail and the top nav; it takes only `children` and has no
-footer prop. Group names never appear in the URL. `/login` sits outside both
-groups, so it inherits only the chrome-free root layout — no route list decides
-that. Route components render their own content only; they never import
-`TopNav`, `Sidebar` or `SiteFooter`.
+footer prop. It returns just the children on `/login`, the one chrome-free
+route. Group names never appear in the URL. Route components render their own
+content; `TopNav`, `Sidebar` and `SiteFooter` come from the layouts.
 
 Route copy and data belong to the owning component
-(`src/components/pricing/constants.ts`, `src/components/login/constants.ts`),
-never to the page. The page test sits beside the route as `page.test.tsx` and
-renders the default export, so it exercises the composition end to end. Pages
-stay server components by default; interactive behaviour lives inside the
-client component islands the route component imports.
+(`src/components/pricing/constants.ts`, `src/components/login/constants.ts`).
+A page test sits beside the route as `page.test.tsx` and renders the default
+export, exercising the composition end to end. Pages are server components;
+interactive behaviour lives inside the client component islands the route
+component imports.
 
 `src/lib` follows the component-folder shape: `src/lib/<name>/index.ts` is the
-public entry and `index.test.ts` sits beside it. Imports still use
-`@/lib/<name>`, so the folder move is invisible to callers. `src/proxy.ts` is
-the exception: Next 16 only recognises it at the `src/` root, so it stays a
-single file with `src/proxy.test.ts` beside it.
+public entry and `index.test.ts` sits beside it. Imports use `@/lib/<name>`.
+`src/proxy.ts` is a single file at the `src/` root, because Next recognises the
+proxy entry point there, with `src/proxy.test.ts` beside it.
 
-All static assets live under `public/`. Next's app-router icon files
-(`favicon.ico`, `icon.png`, `apple-icon.png`) have also moved there and are
-declared through `metadata.icons` in `src/app/layout.tsx`; do not add icon
-files back to `src/app`.
-
+All static assets live under `public/`. The favicon, app icons and manifest
+live in `public/favicon.ico` and `public/favicons/`, and are declared through
+`metadata.icons` and `metadata.manifest` in `src/app/layout.tsx`.
 
 ### Feature-folder contract
 
@@ -131,35 +143,32 @@ Each product area owns one folder. `index.tsx` is its public API; other files
 are private unless deliberately imported by tests.
 
 - **`index.tsx`** exports the feature component (and occasionally sibling
-  exports a page needs). Named exports; pages use the Next default export.
+  exports a page needs, like `StudioSkeleton`). Use named exports; pages use
+  the Next default export.
 - **`constants.ts`** holds static arrays, config, reusable class strings and
   **all visible copy** — headings, labels, button text, placeholders,
-  `aria-label`s and tooltip text. Do not put React or state here.
-- **`hooks.ts`** holds stateful logic. Return one object and export its type as
-  `ReturnType<typeof useFeature>` when children need it.
-- **`state.ts`** holds the feature's Jotai atoms. There is no global store: put
-  new atoms in the folder that owns the behaviour. Shared generation state
-  lives in `src/components/studio/state.ts`; the home prompt composer reads the
-  same atoms because it is a compact front door to that studio.
-- **`types.ts`** holds shared, non-trivial prop/state types. Use `import type`.
-  Do **not** create a named type for a single flat prop: write it inline, e.g.
-  `function AppShell({ children }: { children: ReactNode })`. Name a type only
-  when props are shaped (nested objects) or reused across files.
-- **Copy** never lives in JSX. If a string is visible to a person, it belongs in
-  the owning folder's `constants.ts`. Vendor primitives in `src/ui`
-  are the only exception.
+  `aria-label`s and tooltip text. React and state stay out of it.
+- **`hooks.ts`** holds stateful logic, typically returning one object.
+- **`state.ts`** holds the feature's Jotai atoms. Shared generation state lives
+  in `src/components/studio/state.ts`; the home prompt composer reads the same
+  atoms because it is a compact front door to that studio.
+- **`types.ts`** holds shaped, non-trivial prop/state types with `import type`.
+  Single flat props are written inline, e.g.
+  `function AppShell({ children }: { children: ReactNode })`.
+- **Copy** lives in `constants.ts`, not in JSX. Vendor primitives in `src/ui`
+  are the exception.
 - **Tests** are named after the file they cover and sit beside it:
-  `index.test.tsx`, `hooks.test.ts`, `utils.test.ts`.
+  `index.test.tsx`, `page.test.tsx`, `pricing-order-tabs.test.tsx`.
 - **Subcomponents** are named after their role (`studio-preview.tsx`,
   `nav-search.tsx`) and stay in the same folder.
-- Do not reach into another feature's internals. Import its `index.tsx`.
-- Do not create cross-feature barrel files.
+- Features consume each other through their `index.tsx` entry.
 
 Client boundaries are as small as practical: `"use client"` goes on the
 interactive feature root or hook, not on pages, layouts or pure presentational
 components. Pages and layouts stay server components and export `metadata`.
-Runtime wiring (`Providers`) is not a component: it lives beside the root
-layout at `src/app/providers.tsx`.
+Runtime wiring (`Providers`) lives beside the root layout at
+`src/app/providers.tsx`; it mounts the Jotai provider, `NavigationProgress` and
+the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 
 ### Routes
 
@@ -186,14 +195,15 @@ two supported studios.
 
 - `media/index.ts` — media catalogue, categories, top-up packs, generation
   rates.
-- `pricing/index.ts` — image/video quantity clamping and quote maths.
+- `pricing/index.ts` — image/video quantity clamping, quote maths and
+  `formatUSD`.
 - `generation/index.ts` — model options, aspect ratios, durations, render cost,
   and the `GenerationMode` type.
 - `utils/index.ts` — the `cn` class-name helper.
 
-Pricing numbers and model lists live in one place. Never hard-code a duplicate
-rate in a component. All money is rounded to cents at the calculation boundary
-and formatted with `formatUSD` or `tabular-nums`.
+Pricing numbers and model lists live in one place. Components read rates from
+`src/lib`. All money is rounded to cents at the calculation boundary and
+formatted with `formatUSD` or `tabular-nums`.
 
 ## Design system
 
@@ -210,7 +220,7 @@ and formatted with `formatUSD` or `tabular-nums`.
 | `--muted-foreground` | `#9aa0a6` | Secondary text |
 | `--border` | `rgba(255,255,255,0.1)` | Hairlines |
 
-Surfaces stay cool neutral grey. Never tint panels warm, green or red.
+Surfaces stay cool neutral grey, without warm or green tinting.
 
 ### Brand
 
@@ -227,10 +237,11 @@ Rules:
 - Primary CTA: `bg-brand text-brand-foreground hover:bg-brand-hover`.
 - Section headings use one italic Instrument Serif key word in `text-brand`.
 - Cost figures, focus rings, active nav labels and chart surfaces stay neutral.
-- **Never introduce red, crimson or rose.** `--destructive` aliases the brand
-  tertiary.
-- Do not add colored glows, radial color washes, decorative status dots,
-  uppercase tracked eyebrows above page titles, or hover scaling on cards.
+- `--destructive` aliases the brand tertiary; red, crimson and rose stay out of
+  the palette.
+- Colored glows, radial color washes, decorative status dots, uppercase tracked
+  eyebrows above page titles and hover scaling on cards are not part of the
+  visual language.
 - Use the tokens. A one-off translucent white/black overlay is acceptable for
   glass depth; a new brand hue is not.
 
@@ -276,41 +287,43 @@ Type rules:
 - Decorative/infinite motion pauses under `prefers-reduced-motion`.
 - The rail measures 61px collapsed and 200px expanded; controls keep one
   vertical axis.
-- The top nav is fixed at 48px and **does not shrink on scroll**. The orb stays
+- The top nav is fixed at 48px and does not shrink on scroll. The orb stays
   36px, links 36px/12px.
 - The home video wall is product-critical: keep it full-bleed, starting at the
   beginning of the loop, with slightly darkened tiles.
-- The nav orb is the `violet-orb` WebGL element (18s per revolution) with a
+- The nav orb is the `violet-orb` WebGL element (12s per revolution) with a
   static poster fallback. Script: `public/brand/violet-orb.js`.
 
 ## Product chrome
 
 - `AppShell` lives in `src/app/shell.tsx`, beside `layout.tsx` and
   `providers.tsx`, because it is layout wiring rather than a feature. It owns
-  the desktop rail and the top nav; each route group's `layout.tsx` composes
-  it with a `<main>` element and, on `(website)`, a `<SiteFooter>`. Route
-  components never render `TopNav`, `Sidebar` or `SiteFooter` themselves.
-- The shell persists across route changes inside a group. Crossing between
-  `(website)` and `(workspace)` swaps layouts, so rail expansion lives in a Jotai
-  atom held by the root provider and survives the remount; the mobile drawer is
-  local and closes on navigation.
+  the desktop rail and the top nav; the root `layout.tsx` mounts it once, and
+  the `(website)`/`(workspace)` layouts add `<main>` and, on `(website)`, a
+  `<SiteFooter>`. Route components render their own content.
+- The shell persists across every route change because it sits above both
+  groups. Rail expansion lives in a Jotai atom held by the root provider; the
+  mobile drawer is local and closes on navigation. Mounting it once avoids a
+  second, cached `AppShell` rendering stale rail state when Next preserves the
+  previous route tree.
 - `layout.tsx` stays a server component because `metadata` and `viewport`
   exports are server-only; `shell.tsx` is the single `"use client"` boundary
-  that holds rail and drawer state.
+  that holds rail and drawer state and opts `/login` out of the chrome.
 - Desktop rail is sticky, collapsed by default, and expands from its top
   control. Mobile uses a focus-trapped drawer.
 - `TopNav` owns the mega menu, search, balance pill, notifications and brand
-  orb. The mega menu positions itself from the hovered trigger.
+  orb. The mega menu positions itself from the hovered trigger and clamps its
+  width to the header so it stays inside the shell.
 - `NavigationProgress` is a 3px brand-secondary bar driven by link clicks,
   popstate, and the `chronolab:navigation-start` custom event.
 - `SiteFooter` is rendered by `(website)/layout.tsx`; `(workspace)` omits it,
-  and `/login` has no shell at all.
+  and `AppShell` renders `/login` with no chrome at all.
 - `Providers` (`src/app/providers.tsx`) wires Jotai and tooltips and sets
   `data-hydrated="true"` on `<html>` after mount. E2E waits on that flag.
 
 ### Brand assets
 
-- `public/brand/chronolab-logo.png` — integrated wordmark (1200×400).
+- `public/brand/chronolab-logo.svg` — integrated wordmark (1758×301).
 - `public/brand/chronolab-orb-128.png` — nav fallback poster.
 - `public/brand/violet-orb.js` — self-contained WebGL orb custom element.
 - `public/brand/chronolab-social.png` — 1200×630 OG/Twitter card.
@@ -318,19 +331,20 @@ Type rules:
 - `public/favicons/icon-512.png` — transparent app icon.
 - `public/favicons/apple-touch-icon.png` — 180×180 touch icon.
 - `public/favicons/site.webmanifest` + `android-chrome-192/512.png` — install
-  icons. Do not add unused icon sizes.
+  icons.
 
 ## Data flow and conventions
 
 - Shared generation state lives in `src/components/studio/state.ts`: mode,
   prompt, model, aspect, duration, attachment, balance. The home composer and
   studio stay in sync because they read the same atoms.
-- Any other Jotai atoms belong in that feature's own `state.ts`. Do not add a
-  catch-all store under `src/lib`.
+- Other Jotai atoms belong in that feature's own `state.ts`, not in a catch-all
+  store under `src/lib`.
 - Ephemeral UI state (open menus, queues, active take) belongs in the feature's
   `hooks.ts`.
-- Actions are simulated. Submitting the composer navigates to
-  `/create/${mode}`; there is no fetch layer, database or auth.
+- Actions are simulated: submitting the composer navigates to
+  `/create/${mode}`, and every catalogue item, price and result comes from
+  `src/lib`.
 - Use the `chronolab:` prefix for custom events.
 - Route metadata is exported per page; the root layout owns global metadata,
   OG/Twitter, manifest and `themeColor: "#7c3aed"`.
@@ -341,7 +355,7 @@ Type rules:
 
 | Layer | Command | Contract |
 | --- | --- | --- |
-| Unit | `npm run test:unit` | `src/lib` maths and data |
+| Unit | `npm run test:unit` | `src/lib` maths and data, plus `src/proxy.test.ts` |
 | Component | `npm run test:components` | `src/components` and `src/app` behaviour |
 | All Vitest | `npm test` | every colocated `*.test.ts(x)` |
 | Coverage | `npm run test:coverage` | floors enforced |
@@ -353,8 +367,8 @@ Type rules:
 Conventions:
 
 - Tests are colocated: `src/lib/utils/index.test.ts`,
-  `src/components/nav/index.test.tsx`, `src/app/page.test.tsx`,
-  `src/components/studio/hooks.test.ts`.
+  `src/components/nav/index.test.tsx`, `src/app/(website)/page.test.tsx`,
+  `src/components/pricing/pricing-order-tabs.test.tsx`.
   Name the file after the module it covers and import it with `"."` or
   `"./hooks"`.
 - Playwright specs live in `src/e2e` and end in `.e2e.ts`.
@@ -394,19 +408,19 @@ Before calling a change done:
 ## Common recipes
 
 **Add a page:** create the route surface in `src/components/<route>/index.tsx`
-with its markup and a colocated `constants.ts` for every visible string, then
-make the page export `metadata` and return `<Route />`. Add it under
-`src/app/(website)/` if it shows the footer, or `src/app/(workspace)/` if it
-should not; a route with no chrome belongs outside both groups. Add
+with its markup and, when it owns copy, a colocated `constants.ts` for its
+visible strings, then make the page export `metadata` where the route needs it
+and return `<Route />`. Add it under `src/app/(website)/` if it shows the
+footer, or `src/app/(workspace)/` if it should not; a chrome-free route needs an
+opt-out in `AppShell` (see `/login`). Add
 `page.test.tsx` beside the route and an E2E route entry if it belongs in the
-shell. Do not add a `screens` folder, a wrapper `*-page` component, a route
-list, or markup in the page itself.
+shell.
 
 **Add a feature component:** create `src/components/<feature>/index.tsx` plus
-`constants.ts`, `hooks.ts`, `state.ts` and `types.ts` only as needed. Mark the
-interactive root `"use client"`. Put every visible string in `constants.ts`,
-write single flat props inline, and import shared data from `src/lib`, not from
-another feature. Add `index.test.tsx` beside it.
+`constants.ts`, `hooks.ts`, `state.ts` and `types.ts` as the feature needs them.
+Mark the interactive root `"use client"`. Put every visible string in
+`constants.ts`, write single flat props inline, and import shared data from
+`src/lib`. Add `index.test.tsx` beside it.
 
 **Add a model or price:** update `src/lib/generation/index.ts` (models, cost
 rules) or `src/lib/media/index.ts` (rates), then update

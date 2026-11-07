@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { RollingNumber } from "@/components/rolling-number";
-import { QuantityButton, pricingSliderStyles } from "@/components/pricing/pricing-quantity-button";
+import { QuantityButton } from "@/components/pricing/pricing-quantity-button";
+import { QuantitySlider } from "@/components/pricing/pricing-quantity-slider";
 import { Button } from "@/ui/button";
-import { Slider } from "@/ui/slider";
 import { pricingCardCopy } from "./constants";
 import {
   MAX_CLIPS,
@@ -71,14 +71,13 @@ export function VideoOrderCard() {
           </div>
         </div>
 
-        <Slider
-          value={[quantity]}
+        <QuantitySlider
+          value={quantity}
           min={MIN_CLIPS}
           max={MAX_CLIPS}
-          step={1}
-          onValueChange={([value]) => setQuantity(value)}
-          aria-label={pricingCardCopy.numberOfClips}
-          className={cn("mt-5 w-full", pricingSliderStyles)}
+          onValueChange={setQuantity}
+          ariaLabel={pricingCardCopy.numberOfClips}
+          className="mt-5"
         />
         <div className="mt-2 flex justify-between font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/70">
           <span>{pricingCardCopy.clipRangeStart}</span>

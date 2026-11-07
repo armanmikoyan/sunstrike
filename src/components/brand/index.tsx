@@ -73,7 +73,10 @@ export function LogoLockup({
         height={LOCKUP_HEIGHT}
         unoptimized
         loading="eager"
-        className={cn("w-auto", compact ? "h-11" : "h-16")}
+        className={cn(
+          "h-auto w-auto max-w-full",
+          compact ? "max-h-11" : "max-h-16",
+        )}
       />
     </Link>
   );

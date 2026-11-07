@@ -1,7 +1,7 @@
 /** One lockup drives the rail, the footer and the login hero. */
-export const LOCKUP_SRC = "/brand/chronolab-logo.png";
-export const LOCKUP_WIDTH = 1200;
-export const LOCKUP_HEIGHT = 400;
+export const LOCKUP_SRC = "/brand/chronolab-logo.svg";
+export const LOCKUP_WIDTH = 1758;
+export const LOCKUP_HEIGHT = 301;
 
 /** A 128px orb that holds the nav slot before the live element takes over. */
 export const MARK_POSTER_SRC = "/brand/chronolab-orb-128.png";

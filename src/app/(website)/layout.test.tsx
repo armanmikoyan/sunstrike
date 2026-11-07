@@ -4,7 +4,7 @@ import WebsiteLayout from "./layout";
 import { renderWithProviders } from "~/vitest.setup";
 
 describe("website layout", () => {
-  it("mounts the chrome and the footer", () => {
+  it("renders the page and the footer", () => {
     renderWithProviders(
       <WebsiteLayout>
         <h1>Home</h1>
@@ -13,8 +13,8 @@ describe("website layout", () => {
 
     expect(screen.getByRole("heading", { name: "Home" })).toBeInTheDocument();
     expect(
-      screen.getByRole("searchbox", { name: "Search the studio" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("searchbox", { name: "Search the studio" }),
+    ).toBeNull();
     expect(screen.getByRole("contentinfo")).toHaveAttribute(
       "id",
       "site-footer",

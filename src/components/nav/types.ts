@@ -24,6 +24,7 @@ export type MegaMenuPanelProps = {
   menu: MegaMenu;
   onClose: () => void;
   left: number;
+  width: number;
 };
 
 export type TopNavProps = {

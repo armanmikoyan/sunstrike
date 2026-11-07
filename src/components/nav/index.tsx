@@ -17,6 +17,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
   const {
     openMenu,
     panelLeft,
+    panelWidth,
     open,
     close,
     scheduleClose,
@@ -104,6 +105,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
             menu={activeMenu}
             onClose={close}
             left={panelLeft}
+            width={panelWidth}
           />
         </div>
       ) : null}

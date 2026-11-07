@@ -7,11 +7,16 @@ import { cn } from "@/lib/utils";
 import { megaMenuCopy } from "./constants";
 import type { MegaMenuPanelProps } from "./types";
 
-export function MegaMenuPanel({ menu, onClose, left }: MegaMenuPanelProps) {
+export function MegaMenuPanel({
+  menu,
+  onClose,
+  left,
+  width,
+}: MegaMenuPanelProps) {
   return (
     <div
-      className="absolute top-12 z-50 w-[min(70rem,calc(100vw-2rem))]"
-      style={{ left }}
+      className="absolute top-12 z-50"
+      style={{ left, width }}
     >
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1c1e20] shadow-[0_1.875rem_7.5rem_rgba(0,0,0,0.65)]">
         <div className="grid min-h-[21.375rem] lg:grid-cols-[15.625rem_1fr_18.75rem]">
