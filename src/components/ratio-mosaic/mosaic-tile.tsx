@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Film, ImageIcon } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import { cn } from "@/lib/utils";
 import type { MosaicTileProps } from "./types";
 

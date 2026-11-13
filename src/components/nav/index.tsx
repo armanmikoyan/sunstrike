@@ -30,7 +30,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
 
   return (
     <header
-      className="sticky top-0 z-40 h-12 border-b border-border bg-background/95"
+      className="chrome-bar sticky top-0 z-40 h-12 border-b border-border"
       onMouseLeave={scheduleClose}
     >
       <Script src="/brand/violet-orb.js" strategy="afterInteractive" />
@@ -47,7 +47,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
         <Link
           href="/"
           aria-label={navCopy.home}
-          className="shrink-0"
+          className="-m-1 shrink-0 rounded-lg p-1 outline-none transition-colors hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-white/30"
         >
           <Chronosphere className="size-8 sm:size-9" />
         </Link>
@@ -64,6 +64,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
                 ref={registerTrigger(menu.key)}
                 className="shrink-0"
                 onMouseEnter={() => open(menu.key)}
+                onMouseLeave={scheduleClose}
               >
                 <Link
                   href={menu.href}

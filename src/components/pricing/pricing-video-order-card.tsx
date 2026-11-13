@@ -13,19 +13,22 @@ import {
   MIN_CLIPS,
   formatUSD,
   getVideoQuote,
+} from "@/lib/pricing";
+import {
+  getVideoUnitPrice,
   videoModels,
   type VideoModelId,
-} from "@/lib/pricing";
+} from "@/mocks/pricing";
 import { cn } from "@/lib/utils";
 
 export function VideoOrderCard() {
   const [quantity, setQuantity] = useState(4);
   const [model, setModel] = useState<VideoModelId>("standard");
-  const quote = getVideoQuote(quantity, model);
+  const quote = getVideoQuote(quantity, getVideoUnitPrice(model));
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-white/[0.1] bg-[#1c1e20]">
-      <div className="p-5">
+    <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.1] glass-card">
+      <div className="flex h-full flex-col p-5">
         <div className="flex items-center justify-between">
           <span className="text-[0.75rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
           <span className="font-mono text-[0.6875rem] text-muted-foreground">
@@ -84,7 +87,7 @@ export function VideoOrderCard() {
           <span>{pricingCardCopy.clipRangeEnd}</span>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-2 min-[23.75rem]:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-2">
           {videoModels.map((item) => {
             const active = item.id === model;
             return (

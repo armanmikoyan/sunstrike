@@ -9,25 +9,23 @@ import {
   ImagePlus,
   Layers3,
   Upload,
-  WandSparkles,
   X,
 } from "lucide-react";
 import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/ui/dropdown-menu";
 import { Switch } from "@/ui/switch";
 import { Textarea } from "@/ui/textarea";
-import { aspectRatios, durations } from "@/lib/generation";
-import { mediaById } from "@/lib/media";
 import { formatUSD } from "@/lib/pricing";
+import { mediaById } from "@/mocks/media";
+import { templates } from "@/mocks/templates";
 import { cn } from "@/lib/utils";
-import { cameraMoves, starterPrompts, studioCopy } from "./constants";
+import { studioCopy } from "./constants";
 import type { StudioControlsProps } from "./types";
 
 export function StudioControls({ studio }: StudioControlsProps) {
@@ -40,53 +38,47 @@ export function StudioControls({ studio }: StudioControlsProps) {
     setAspect,
     duration,
     setDuration,
+    resolution,
+    setResolution,
+    audio,
+    setAudio,
+    templateId,
+    setTemplateId,
     attachment,
     setAttachment,
     credits,
-    camera,
-    setCamera,
-    loop,
-    setLoop,
     setQueued,
     fileInputRef,
     activeModels,
     selectedModel,
+    aspectOptions,
+    durationOptions,
+    resolutionOptions,
     cost,
     isVideo,
     aspectLabel,
   } = studio;
 
+  const selectedTemplate =
+    templates.find((template) => template.id === templateId) ?? null;
+
   return (
     <aside className="flex w-full shrink-0 flex-col border-b border-border bg-[#0f1113] lg:w-[24.25rem] lg:border-b-0 lg:border-r">
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor="studio-prompt"
-            className="text-[0.6875rem] font-medium text-muted-foreground"
-          >
-            {copy.prompt}
-          </label>
-          <button
-            type="button"
-            onClick={() => setPrompt(starterPrompts[isVideo ? "video" : "image"])}
-            className="flex items-center gap-1 text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <WandSparkles className="size-2.5" />
-            {copy.enhance}
-          </button>
-        </div>
+        <label
+          htmlFor="studio-prompt"
+          className="text-[0.6875rem] font-medium text-muted-foreground"
+        >
+          {copy.prompt}
+        </label>
         <div className="relative mt-2">
           <Textarea
             id="studio-prompt"
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
             placeholder={copy.placeholders[isVideo ? "video" : "image"]}
-            className="min-h-[7rem] resize-none rounded-xl border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-[0.75rem] leading-relaxed placeholder:text-muted-foreground/65 focus-visible:border-white/25 focus-visible:ring-white/10"
+            className="min-h-[7rem] resize-none rounded-xl border-white/[0.08] bg-white/[0.015] px-3 py-2.5 text-[0.75rem] leading-relaxed placeholder:text-muted-foreground/65 focus-visible:border-white/25 focus-visible:ring-white/10"
           />
-          <span className="absolute bottom-2 right-3 font-mono text-[0.6875rem] text-muted-foreground/70">
-            {prompt.length}
-            {copy.characterLimit}
-          </span>
         </div>
 
         <div className="mt-5">
@@ -105,7 +97,7 @@ export function StudioControls({ studio }: StudioControlsProps) {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             className="hidden"
             onChange={(event) => {
               const file = event.target.files?.[0];
@@ -142,7 +134,7 @@ export function StudioControls({ studio }: StudioControlsProps) {
             ) : (
               <Link
                 href="/library"
-                className="flex h-[4.375rem] flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.02] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
+                className="flex h-[4.375rem] flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.015] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
               >
                 <ImagePlus className="size-3.5" />
                 <span className="text-[0.6875rem]">{copy.library}</span>
@@ -167,34 +159,88 @@ export function StudioControls({ studio }: StudioControlsProps) {
 
         <div className="mt-5">
           <p className="text-[0.6875rem] font-medium text-muted-foreground">
-            {copy.model}
+            {copy.template}
           </p>
-          <Select value={selectedModel.name} onValueChange={setModel}>
-            <SelectTrigger className="mt-2 h-11 w-full rounded-xl border-white/[0.08] bg-white/[0.02] px-3 text-[0.6875rem] hover:bg-white/[0.035] focus-visible:border-white/25 focus-visible:ring-white/10">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-[21.25rem] p-1.5">
-              {activeModels.map((item) => (
-                <SelectItem
-                  key={item.name}
-                  value={item.name}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-2 flex h-11 w-full items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.015] px-3 text-[0.6875rem] font-normal hover:bg-white/[0.035]"
+              >
+                {selectedTemplate?.name ?? copy.noTemplate}
+                <ChevronDown className="size-3.5 text-muted-foreground/70" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="p-1.5">
+              <DropdownMenuRadioGroup
+                value={templateId ?? "none"}
+                onValueChange={(value) =>
+                  setTemplateId(value === "none" ? null : value)
+                }
+              >
+                <DropdownMenuRadioItem
+                  value="none"
                   className="p-2.5 text-[0.6875rem]"
                 >
-                  <span className="flex w-full items-center justify-between gap-4">
-                    <span>{item.name}</span>
-                    <span className="font-mono text-[0.6875rem] text-muted-foreground">
-                      {formatUSD(item.cost)}
+                  {copy.noTemplate}
+                </DropdownMenuRadioItem>
+                {templates.map((template) => (
+                  <DropdownMenuRadioItem
+                    key={template.id}
+                    value={template.id}
+                    className="p-2.5 text-[0.6875rem]"
+                  >
+                    {template.name}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="mt-5">
+          <p className="text-[0.6875rem] font-medium text-muted-foreground">
+            {copy.model}
+          </p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-2 flex h-11 w-full items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.015] px-3 text-[0.6875rem] font-normal hover:bg-white/[0.035]"
+              >
+                {selectedModel.displayName}
+                <ChevronDown className="size-3.5 text-muted-foreground/70" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="p-1.5">
+              <DropdownMenuRadioGroup
+                value={selectedModel.displayName}
+                onValueChange={setModel}
+              >
+                {activeModels.map((item) => (
+                  <DropdownMenuRadioItem
+                    key={item.id}
+                    value={item.displayName}
+                    className="p-2.5 text-[0.6875rem]"
+                  >
+                    <span className="flex w-full items-center justify-between gap-4">
+                      <span>{item.displayName}</span>
+                      <span className="font-mono text-[0.6875rem] text-muted-foreground">
+                        {formatUSD(item.cost)}
+                      </span>
                     </span>
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="mt-1.5 flex items-center justify-between gap-3 text-[0.6875rem]">
+            <span className="text-muted-foreground">{selectedModel.provider}</span>
             <span className="text-muted-foreground">
-              {selectedModel.description}
+              {selectedModel.capabilities.audio ? copy.audio : copy.silent}
             </span>
-            <span className="text-muted-foreground">{selectedModel.tag}</span>
           </div>
         </div>
 
@@ -203,7 +249,7 @@ export function StudioControls({ studio }: StudioControlsProps) {
             {copy.aspectRatio}
           </p>
           <div className="mt-2 grid grid-cols-6 gap-1 rounded-xl border border-white/[0.07] bg-white/[0.015] p-1">
-            {aspectRatios.map((ratio) => (
+            {aspectOptions.map((ratio) => (
               <button
                 key={ratio.value}
                 type="button"
@@ -230,103 +276,80 @@ export function StudioControls({ studio }: StudioControlsProps) {
           </div>
         </div>
 
-        {isVideo ? (
-          <>
-            <div className="mt-5">
-              <p className="text-[0.6875rem] font-medium text-muted-foreground">
-                {copy.duration}
-              </p>
-              <div className="mt-2 flex gap-1">
-                {durations.map((value) => (
-                  <button
+        <div className="mt-5">
+          <p className="text-[0.6875rem] font-medium text-muted-foreground">
+            {copy.resolution}
+          </p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-2 flex h-9 w-full items-center justify-between rounded-lg border border-white/[0.08] bg-white/[0.015] px-3 text-[0.6875rem] font-normal hover:bg-white/[0.035]"
+              >
+                {resolution}
+                <ChevronDown className="size-3.5 text-muted-foreground/70" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="p-1.5">
+              <DropdownMenuRadioGroup
+                value={resolution}
+                onValueChange={setResolution}
+              >
+                {resolutionOptions.map((value) => (
+                  <DropdownMenuRadioItem
                     key={value}
-                    type="button"
-                    onClick={() => setDuration(value)}
-                    className={cn(
-                      "h-7 flex-1 rounded-lg border border-white/[0.07] bg-white/[0.015] font-mono text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
-                      duration === value &&
-                        "border-white/20 bg-white/[0.08] text-foreground",
-                    )}
+                    value={value}
+                    className="p-2.5 text-[0.6875rem]"
                   >
                     {value}
-                  </button>
+                  </DropdownMenuRadioItem>
                 ))}
-              </div>
-            </div>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-            <div className="mt-5">
-              <p className="text-[0.6875rem] font-medium text-muted-foreground">
-                {copy.camera}
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {cameraMoves.map((move) => (
-                  <button
-                    key={move}
-                    type="button"
-                    onClick={() => setCamera(move)}
-                    className={cn(
-                      "h-7 rounded-lg border border-white/[0.07] bg-white/[0.015] px-2.5 text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
-                      camera === move &&
-                        "border-white/20 bg-white/[0.08] text-foreground",
-                    )}
-                  >
-                    {move}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        ) : null}
-
-        <details className="group mt-5 rounded-xl border border-white/[0.07] bg-white/[0.015]">
-          <summary className="flex cursor-pointer select-none items-center justify-between px-3 py-2.5 text-[0.6875rem] font-medium text-muted-foreground">
-            {copy.advanced}
-            <ChevronDown className="size-3 transition-transform group-open:rotate-180" />
-          </summary>
-          <div className="border-t border-white/[0.06] p-3">
-            <label className="text-[0.6875rem] text-muted-foreground">
-              {copy.negativePrompt}
-            </label>
-            <Input
-              placeholder={copy.negativePlaceholder}
-              className="mt-1.5 h-8 rounded-lg border-white/[0.08] bg-white/[0.02] text-[0.6875rem]"
-            />
-            <div className="mt-2.5 grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[0.6875rem] text-muted-foreground">
-                  {copy.seed}
-                </label>
-                <Input
-                  defaultValue={copy.seedValue}
-                  className="mt-1.5 h-8 rounded-lg border-white/[0.08] bg-white/[0.02] font-mono text-[0.6875rem]"
-                />
-              </div>
-              <div>
-                <label className="text-[0.6875rem] text-muted-foreground">
-                  {copy.motionStrength}
-                </label>
-                <Input
-                  defaultValue={copy.motionStrengthValue}
-                  className="mt-1.5 h-8 rounded-lg border-white/[0.08] bg-white/[0.02] font-mono text-[0.6875rem]"
-                />
-              </div>
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-              <div>
-                <p className="text-[0.6875rem] text-foreground/80">
-                  {copy.loopTake}
-                </p>
-                <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-                  {copy.loopTakeDescription}
-                </p>
-              </div>
-              <Switch checked={loop} onCheckedChange={setLoop} />
+        {durationOptions.length > 0 ? (
+          <div className="mt-5">
+            <p className="text-[0.6875rem] font-medium text-muted-foreground">
+              {copy.duration}
+            </p>
+            <div className="mt-2 flex gap-1">
+              {durationOptions.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setDuration(value)}
+                  className={cn(
+                    "h-7 flex-1 rounded-lg border border-white/[0.07] bg-white/[0.015] font-mono text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
+                    duration === value &&
+                      "border-white/20 bg-white/[0.08] text-foreground",
+                  )}
+                >
+                  {value}
+                </button>
+              ))}
             </div>
           </div>
-        </details>
+        ) : null}
+
+        {selectedModel.capabilities.audio ? (
+          <div className="mt-5 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[0.6875rem] font-medium text-foreground/80">
+                {copy.audio}
+              </p>
+              <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
+                {copy.audioHint}
+              </p>
+            </div>
+            <Switch checked={audio} onCheckedChange={setAudio} />
+          </div>
+        ) : null}
       </div>
 
-      <div className="border-t border-border bg-[#0f1113] p-4">
+      <div className="border-t border-border bg-white/[0.015] p-4">
         <div className="mb-2.5 flex items-center justify-between text-[0.6875rem]">
           <span className="text-muted-foreground">{copy.estimatedCost}</span>
           <span className="font-mono text-foreground/80">{formatUSD(cost)}</span>

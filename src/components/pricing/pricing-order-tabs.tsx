@@ -17,7 +17,7 @@ export function PricingOrderTabs() {
       <div
         role="tablist"
         aria-label={pricingCardCopy.orderTabsLabel}
-        className="grid grid-cols-2 gap-0.5 rounded-xl border border-white/[0.08] bg-white/[0.02] p-0.5"
+        className="grid grid-cols-2 gap-0.5 rounded-xl border border-white/[0.08] bg-white/[0.015] p-0.5"
       >
         {orderTabs.map((tab) => {
           const Icon = tab.icon;
@@ -45,13 +45,30 @@ export function PricingOrderTabs() {
         })}
       </div>
 
-      <div
-        role="tabpanel"
-        id={`order-panel-${active}`}
-        aria-labelledby={`order-tab-${active}`}
-        className="mt-2.5"
-      >
-        {active === "image" ? <ImageOrderCard /> : <VideoOrderCard />}
+      {/* Both cards share one grid cell so the taller one reserves the space.
+          Switching tabs only crossfades; the page below never shifts. */}
+      <div className="mt-2.5 grid">
+        {orderTabs.map((tab) => {
+          const selected = tab.id === active;
+          return (
+            <div
+              key={tab.id}
+              id={`order-panel-${tab.id}`}
+              role="tabpanel"
+              aria-labelledby={`order-tab-${tab.id}`}
+              aria-hidden={!selected}
+              inert={!selected}
+              className={cn(
+                "col-start-1 row-start-1 transition-opacity ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+                selected
+                  ? "opacity-100 duration-200"
+                  : "pointer-events-none opacity-0 duration-0",
+              )}
+            >
+              {tab.id === "image" ? <ImageOrderCard /> : <VideoOrderCard />}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

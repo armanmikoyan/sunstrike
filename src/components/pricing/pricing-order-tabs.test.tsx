@@ -32,6 +32,20 @@ describe("pricing order tabs", () => {
     expect(screen.getByRole("slider", { name: "Number of clips" })).toBeVisible();
   });
 
+  it("keeps both calculators mounted so the height never shifts", async () => {
+    const { container } = render(<PricingOrderTabs />);
+    expect(container.querySelector("#order-panel-video")).not.toBeNull();
+    expect(container.querySelector("#order-panel-image")).not.toBeNull();
+
+    await userEvent.click(screen.getByRole("tab", { name: "Images" }));
+
+    expect(container.querySelector("#order-panel-video")).not.toBeNull();
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "id",
+      "order-panel-image",
+    );
+  });
+
   it("labels the visible calculator with dollars", () => {
     render(<PricingOrderTabs />);
     const panel = screen.getByRole("tabpanel");

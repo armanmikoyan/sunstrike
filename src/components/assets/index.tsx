@@ -1,28 +1,41 @@
+"use client";
+
+import { useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
-  ArrowUpRight,
-  Folder,
+  Film,
   Image as ImageIcon,
-  MoreHorizontal,
-  Plus,
   UploadCloud,
 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/ui/button";
-import { mediaById } from "@/lib/media";
-import {
-  assetFolders,
-  assetIds,
-  assetsCopy,
-  recentAssetCount,
-} from "./constants";
+import { mediaById } from "@/mocks/media";
+import { instantTransition, layoutSpring } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { assetIds, assetsCopy } from "./constants";
 
 const assets = assetIds
   .map((id) => mediaById(id))
   .filter((item) => item !== undefined);
 
+type Filter = "all" | "video" | "image";
+
+const filters: { value: Filter; label: string }[] = [
+  { value: "all", label: assetsCopy.filters.all },
+  { value: "video", label: assetsCopy.filters.video },
+  { value: "image", label: assetsCopy.filters.image },
+];
+
 export function Assets() {
+  const [filter, setFilter] = useState<Filter>("all");
+  const reduceMotion = useReducedMotion();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const visible = assets.filter(
+    (asset) => filter === "all" || asset.kind === filter,
+  );
+
   return (
     <div className="w-full px-5 py-7">
       <PageHeader
@@ -32,7 +45,8 @@ export function Assets() {
         action={
           <Button
             variant="outline"
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            onClick={() => fileInputRef.current?.click()}
+            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
           >
             <UploadCloud className="size-3.5" />
             {assetsCopy.upload}
@@ -40,7 +54,15 @@ export function Assets() {
         }
       />
 
-      <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.11] bg-white/[0.012] px-5 py-8 text-center transition-colors hover:border-white/20 hover:bg-white/[0.03]">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept="image/*,video/*,audio/*"
+        className="hidden"
+      />
+
+      <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.11] bg-white/[0.015] px-5 py-8 text-center transition-colors hover:border-white/20 hover:bg-white/[0.03]">
         <span className="grid size-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
           <UploadCloud className="size-4" />
         </span>
@@ -53,119 +75,83 @@ export function Assets() {
         <input type="file" multiple className="hidden" />
       </label>
 
-      <div className="mt-7 flex items-center justify-between">
-        <h2 className="text-[0.8125rem] font-medium">
-          {assetsCopy.foldersTitle}
-        </h2>
-        <button
-          type="button"
-          className="flex items-center gap-1 text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Plus className="size-2.5" />
-          {assetsCopy.newFolder}
-        </button>
-      </div>
-
-      <div className="mt-3 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-        {assetFolders.map((folder) => {
-          const cover = mediaById(folder.cover);
-          return (
-            <Link
-              key={folder.id}
-              href={`/assets?folder=${folder.id}`}
-              className="group overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.015] transition-colors hover:border-white/15"
-            >
-              <div className="relative aspect-[16/9] overflow-hidden bg-secondary">
-                {cover ? (
-                  <Image
-                    src={cover.poster}
-                    alt={folder.name}
-                    fill
-                    sizes="300px"
-                    className="object-cover opacity-80 transition-opacity duration-300 group-hover:opacity-100"
-                  />
-                ) : null}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
-                <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-1 text-[0.6875rem] text-white/80 backdrop-blur">
-                  <Folder className="size-2.5" />
-                  {folder.count} {assetsCopy.files}
-                </span>
-              </div>
-              <div className="flex items-center justify-between px-3 py-2.5">
-                <div>
-                  <p className="text-[0.6875rem] font-medium">{folder.name}</p>
-                  <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-                    {folder.type}
-                  </p>
-                </div>
-                <ArrowUpRight className="size-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-
       <div className="mt-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-[0.8125rem] font-medium">
             {assetsCopy.recentTitle}
           </h2>
           <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
-            {recentAssetCount}
+            {visible.length}
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            className="flex h-7 items-center gap-1.5 rounded-md bg-white/[0.06] px-2 text-[0.6875rem] text-foreground"
-          >
-            <ImageIcon className="size-2.5" />
-            {assetsCopy.filterImages}
-          </button>
-          <button
-            type="button"
-            className="flex h-7 items-center gap-1.5 rounded-md px-2 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
-          >
-            <Folder className="size-2.5" />
-            {assetsCopy.filterAll}
-          </button>
+          {filters.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setFilter(item.value)}
+              className={cn(
+                "flex h-7 items-center gap-1.5 rounded-md px-2 text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
+                filter === item.value &&
+                  "bg-white/[0.06] text-foreground hover:bg-white/[0.06]",
+              )}
+            >
+              {item.value === "image" ? (
+                <ImageIcon className="size-2.5" />
+              ) : item.value === "video" ? (
+                <Film className="size-2.5" />
+              ) : null}
+              {item.label}
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {assets.map((asset) => (
-          <div
-            key={asset.id}
-            className="group relative overflow-hidden rounded-lg border border-white/[0.07] bg-secondary"
-          >
-            <div className="relative aspect-square">
-              <Image
-                src={asset.poster}
-                alt={asset.title}
-                fill
-                sizes="200px"
-                className="object-cover opacity-90 transition-opacity duration-300 group-hover:opacity-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/5" />
-              <button
-                type="button"
-                aria-label={assetsCopy.assetOptions}
-                className="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-md border border-white/10 bg-black/35 text-white/65 opacity-0 backdrop-blur transition-opacity group-hover:opacity-100"
+        <AnimatePresence initial={false} mode="popLayout">
+          {visible.map((asset) => {
+            const extension = asset.kind === "video" ? "mp4" : "jpg";
+            return (
+              <motion.div
+                key={asset.id}
+                layout
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={reduceMotion ? instantTransition : layoutSpring}
+                className="group relative overflow-hidden rounded-lg border border-white/[0.07] bg-secondary"
               >
-                <MoreHorizontal className="size-3" />
-              </button>
-              <div className="absolute inset-x-2 bottom-2">
-                <p className="truncate text-[0.6875rem] text-white/90">
-                  {asset.title.toLowerCase().replaceAll(" ", "-")}
-                  {assetsCopy.fileExtension}
-                </p>
-                <p className="mt-0.5 text-[0.6875rem] text-white/60">
-                  {asset.aspect} · {assetsCopy.fileSize}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
+                <div className="relative aspect-square">
+                  <Image
+                    src={asset.poster}
+                    alt={asset.title}
+                    fill
+                    sizes="200px"
+                    className="object-cover opacity-90 transition-opacity duration-300 group-hover:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/5" />
+                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded border border-white/15 bg-black/35 px-1.5 py-0.5 text-[0.6875rem] text-white/80 backdrop-blur">
+                    {asset.kind === "video" ? (
+                      <Film className="size-2.5" />
+                    ) : (
+                      <ImageIcon className="size-2.5" />
+                    )}
+                    {assetsCopy.kindLabels[asset.kind]}
+                  </span>
+                  <div className="absolute inset-x-2 bottom-2">
+                    <p className="truncate font-mono text-[0.6875rem] text-white/90">
+                      {assetsCopy.storagePrefix}
+                      {asset.id}.{extension}
+                    </p>
+                    <p className="mt-0.5 text-[0.6875rem] text-white/60">
+                      {asset.createdAt}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );

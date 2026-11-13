@@ -108,13 +108,14 @@ describe("sidebar profile menu", () => {
     await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
-    expect(within(menu).getByText("Arman Mikoyan")).toBeInTheDocument();
+    expect(within(menu).getByText("Account")).toBeInTheDocument();
     expect(
       within(menu).getByText("arman@chronolab.ai"),
     ).toBeInTheDocument();
+    expect(within(menu).queryByText("Arman Mikoyan")).not.toBeInTheDocument();
 
     const balance = within(menu).getByRole("menuitem", { name: /Balance/ });
-    expect(balance).toHaveAttribute("href", "/pricing");
+    expect(balance).toHaveAttribute("href", "/billing");
     expect(balance).toHaveTextContent("$10.54");
 
     expect(within(menu).getByRole("menuitem", { name: /Billing/ })).toHaveAttribute(
@@ -140,7 +141,6 @@ describe("sidebar profile menu", () => {
       expect.stringContaining("Balance"),
       "Billing",
       "Account settings",
-      "Workspace",
       "Help",
       "Sign out",
     ]);
@@ -190,7 +190,7 @@ describe("mobile drawer", () => {
     const panel = await screen.findByRole("dialog");
     expect(within(panel).getByRole("link", { name: /Balance/ })).toHaveAttribute(
       "href",
-      "/pricing",
+      "/billing",
     );
     expect(
       within(panel).getByRole("link", { name: /Account settings/ }),

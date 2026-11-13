@@ -4,14 +4,12 @@ import {
   MAX_IMAGES,
   MIN_CLIPS,
   MIN_IMAGES,
-  VIDEO_PRICE,
   clampClipQuantity,
   clampImageQuantity,
   formatUSD,
   getImageQuote,
   getImageUnitPrice,
   getVideoQuote,
-  videoModels,
 } from ".";
 
 describe("image tiers", () => {
@@ -99,16 +97,16 @@ describe("getImageQuote", () => {
 });
 
 describe("getVideoQuote", () => {
-  it("uses the standard clip rate by default", () => {
-    expect(getVideoQuote(4, "standard")).toEqual({
+  it("uses the supplied clip rate", () => {
+    expect(getVideoQuote(4, 0.51)).toEqual({
       quantity: 4,
       unit: 0.51,
       total: 2.04,
     });
   });
 
-  it("supports the turbo model", () => {
-    expect(getVideoQuote(4, "turbo")).toEqual({
+  it("supports a cheaper model rate", () => {
+    expect(getVideoQuote(4, 0.34)).toEqual({
       quantity: 4,
       unit: 0.34,
       total: 1.36,
@@ -116,22 +114,8 @@ describe("getVideoQuote", () => {
   });
 
   it("clamps to the clip range", () => {
-    expect(getVideoQuote(0, "standard").quantity).toBe(MIN_CLIPS);
-    expect(getVideoQuote(999, "standard").quantity).toBe(MAX_CLIPS);
-  });
-
-  it("falls back to the published rate for unknown models", () => {
-    // @ts-expect-error deliberately passing an unknown id
-    expect(getVideoQuote(2, "something-else").unit).toBe(VIDEO_PRICE);
-  });
-});
-
-describe("video models", () => {
-  it("is priced in dollars, not credits", () => {
-    for (const model of videoModels) {
-      expect(model.price).toBeGreaterThan(0);
-      expect(model.price).toBeLessThan(1);
-    }
+    expect(getVideoQuote(0, 0.51).quantity).toBe(MIN_CLIPS);
+    expect(getVideoQuote(999, 0.51).quantity).toBe(MAX_CLIPS);
   });
 });
 

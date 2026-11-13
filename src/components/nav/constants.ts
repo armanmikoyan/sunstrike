@@ -204,22 +204,6 @@ export const megaMenus: MegaMenu[] = [
 
 export const notificationsCopy = {
   label: "Notifications",
-  unread: "3 new",
-  items: [
-    {
-      title: "Your render is ready",
-      detail: "After Rain · 6 seconds · 1080p",
-    },
-    {
-      title: "Balance added",
-      detail: "$10.00 from your top-up",
-    },
-    {
-      title: "New: Chronolab Motion 2",
-      detail: "Better faces, longer shots.",
-    },
-  ],
-  viewAll: "View all activity",
 };
 
 export const megaMenuCopy = {

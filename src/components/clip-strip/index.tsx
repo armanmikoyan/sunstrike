@@ -1,6 +1,6 @@
 import { Coins } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 import type { ClipStripProps } from "./types";

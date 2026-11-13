@@ -41,7 +41,7 @@ export function Billing() {
         />
 
         <div className="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
-          <div className="rounded-xl border border-white/[0.1] bg-white/[0.02] p-4">
+          <div className="rounded-xl border border-white/[0.1] bg-white/[0.015] p-4">
             <div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
@@ -110,7 +110,7 @@ export function Billing() {
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_20.625rem]">
-          <div className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.012]">
+          <div className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.015]">
             <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
               <div className="flex items-center gap-2">
                 <ReceiptText className="size-3.5 text-muted-foreground" />
@@ -216,7 +216,7 @@ export function Billing() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/[0.08] bg-[#18191c] p-4">
+            <div className="rounded-xl border border-white/[0.08] glass-card p-4">
               <Coins className="size-3.5 text-muted-foreground" />
               <p className="mt-3 text-[0.75rem] font-medium">{low.title}</p>
               <p className="mt-1 text-[0.75rem] leading-relaxed text-muted-foreground">
@@ -233,7 +233,7 @@ export function Billing() {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.012] px-4 py-3 sm:flex-row sm:items-center">
+        <div className="mt-4 flex flex-col justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3 sm:flex-row sm:items-center">
           <p className="text-[0.6875rem] text-muted-foreground">
             {footer.note}
           </p>

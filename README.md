@@ -5,10 +5,13 @@ from a prompt, pay as you go, and keep every frame.
 
 This is a single Next.js App Router app with local demo data — no backend,
 database or auth. Prices, media and generation results are simulated in
-`src/lib`.
+`src/mocks`; `src/lib` holds the domain contract and pure rules.
 
-What is left before real users, real cards and real renders is tracked as
-small tickets in [`ROADMAP.md`](./ROADMAP.md).
+The UI is modelled on the high-level design contract in `src/lib/design`:
+six entities, the `/api/v1` surface and the generation user flow. What is left
+before real users, real cards and real renders is tracked in
+[`ROADMAP.md`](./ROADMAP.md), mapped to the design's functional and
+non-functional requirements.
 
 ## Run
 
@@ -47,8 +50,13 @@ npm run check            # typecheck + lint + coverage
   beside the module they cover (`index.test.tsx`, `page.test.tsx`,
   `pricing-order-tabs.test.tsx`).
 - `src/ui` — shadcn primitives, a sibling of `src/components`; keep their layout.
-- `src/lib/<name>/` — one folder per library (`media`, `pricing`, `generation`,
-  `utils`) with `index.ts` and a colocated `index.test.ts`.
+- `src/lib/<name>/` — one folder per library (`design`, `generation`,
+  `notifications`, `media`, `pricing`, `utils`) with `index.ts` and a
+  colocated `index.test.ts`. `design` is the product contract; no demo rows
+  live here.
+- `src/mocks` — the demo rows the UI renders today (`generation`, `media`,
+  `templates`, `notifications`, `pricing`) plus their lookups and tests. This
+  is the seam to replace with `/api/v1` data.
 - `src/e2e` — Playwright specs and helpers, beside the code they cover.
 - `vitest.setup.tsx` at the repo root — the shared test setup (framework mocks,
   router state, `renderWithProviders`); unit and component tests are colocated.

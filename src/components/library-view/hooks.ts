@@ -13,8 +13,7 @@ export function useLibraryView() {
       const typeMatch =
         tab === "all" ||
         (tab === "video" && item.kind === "video") ||
-        (tab === "image" && item.kind === "image") ||
-        (tab === "favorites" && Number(item.id) % 3 === 0);
+        (tab === "image" && item.kind === "image");
       const queryMatch =
         !normalized ||
         item.title.toLowerCase().includes(normalized) ||

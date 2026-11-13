@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:unit": "vitest run src/lib src/proxy.test.ts",
+    "test:unit": "vitest run src/lib src/mocks src/proxy.test.ts",
     "test:components": "vitest run src/components src/app",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",

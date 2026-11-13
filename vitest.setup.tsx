@@ -255,6 +255,7 @@ vi.mock("motion/react", async () => {
     AnimatePresence,
     LayoutGroup: ({ children }: WithChildrenProps) =>
       ReactModule.createElement(ReactModule.Fragment, null, children),
+    useReducedMotion: () => false,
   };
 });
 

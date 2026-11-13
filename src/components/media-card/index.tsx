@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Film, Heart, ImageIcon, Play } from "lucide-react";
+import { ArrowUpRight, Film, ImageIcon, Play } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { cn } from "@/lib/utils";
 import { mediaCardCopy } from "./constants";
@@ -59,14 +59,6 @@ export function MediaCard({
           </span>
         </div>
 
-        <button
-          type="button"
-          aria-label={`${mediaCardCopy.save} ${item.title}`}
-          className="absolute right-2.5 top-2.5 grid size-8 place-items-center rounded-full border border-white/15 bg-black/40 text-white/70 opacity-0 backdrop-blur-md transition-opacity hover:bg-black/60 hover:text-white focus-visible:opacity-100 group-hover:opacity-100"
-        >
-          <Heart className="size-3" />
-        </button>
-
         <div className="absolute inset-x-0 bottom-0">
           <div className="translate-y-1 p-3 opacity-0 transition-[transform,opacity] duration-200 group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100">
             <p className="line-clamp-2 text-[0.75rem] leading-relaxed text-white/75">
@@ -98,13 +90,9 @@ export function MediaCard({
                     {item.title}
                   </p>
                   <p className="mt-0.5 truncate text-[0.6875rem] text-white/65">
-                    {item.author}
+                    {item.model}
                   </p>
                 </div>
-                <span className="flex shrink-0 items-center gap-1 text-[0.6875rem] text-white/65">
-                  <Heart className="size-3" />
-                  {item.likes.toLocaleString("en-US")}
-                </span>
               </div>
             </div>
           ) : null}

@@ -32,8 +32,8 @@ export const composerCopy = {
   aspectRatio: "Aspect ratio",
   duration: "Duration",
   modelLabels: {
-    video: { title: "Motion model", tag: "Motion" },
-    image: { title: "Image model", tag: "Image" },
+    video: "Motion model",
+    image: "Image model",
   },
   compareModels: "Compare models and rates",
   attach: {

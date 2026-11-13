@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/ui/button";
 import {
   DropdownMenu,
@@ -9,15 +9,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { aspectRatios } from "@/lib/generation";
-import { cn } from "@/lib/utils";
 import { composerCopy } from "./constants";
+import { cn } from "@/lib/utils";
 import type { ComposerAspectMenuProps } from "./types";
 
 export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
-  const { aspect, setAspect } = composer;
+  const { aspect, setAspect, aspectOptions } = composer;
   const shape =
-    aspectRatios.find((ratio) => ratio.value === aspect)?.shape ?? "h-3 w-4";
+    aspectOptions.find((ratio) => ratio.value === aspect)?.shape ?? "h-3 w-4";
 
   return (
     <DropdownMenu>
@@ -40,11 +39,14 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48 p-1.5">
         <DropdownMenuLabel>{composerCopy.aspectRatio}</DropdownMenuLabel>
-        {aspectRatios.map((ratio) => (
+        {aspectOptions.map((ratio) => (
           <DropdownMenuItem
             key={ratio.value}
             onSelect={() => setAspect(ratio.value)}
-            className="gap-2 p-2"
+            className={cn(
+              "gap-2 p-2",
+              aspect === ratio.value && "bg-white/[0.08] text-foreground",
+            )}
           >
             <span
               className={cn(
@@ -56,9 +58,6 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
             <span className="ml-auto text-[0.6875rem] text-muted-foreground">
               {ratio.label}
             </span>
-            {aspect === ratio.value ? (
-              <Check className="size-3 text-foreground" />
-            ) : null}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

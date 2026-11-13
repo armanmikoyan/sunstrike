@@ -1,9 +1,7 @@
-import type { MediaCategory, MediaKind } from "@/lib/media";
+import type { MediaKind } from "@/lib/media";
 import type { ExploreGalleryState } from "./hooks";
 
-export type CategoryFilter = "All" | MediaCategory;
 export type KindFilter = "all" | MediaKind;
-export type SortOption = "Trending" | "Newest" | "Most liked";
 
 export type ExploreResultsProps = {
   gallery: ExploreGalleryState;

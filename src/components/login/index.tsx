@@ -5,7 +5,7 @@ import { LogoLockup } from "@/components/brand";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import {
   loginCopy,
   loginHeroId,
@@ -20,7 +20,7 @@ export function Login() {
   const hero = mediaById(loginHeroId);
 
   return (
-    <main className="min-h-screen bg-background lg:grid lg:grid-cols-[1.08fr_1fr]">
+    <main className="min-h-screen lg:grid lg:grid-cols-[1.08fr_1fr]">
       <section className="relative hidden min-h-screen overflow-hidden border-r border-border lg:block">
         {hero ? (
           <VideoWithFallback
@@ -31,7 +31,7 @@ export function Login() {
             className="absolute inset-0 size-full object-cover"
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1113] via-[#0f1113]/20 to-[#0f1113]/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-[#08090b]/20 to-[#08090b]/70" />
 
         <div className="relative flex min-h-screen flex-col justify-between p-8 xl:p-10">
           <LogoLockup className="w-72" />
@@ -164,7 +164,7 @@ export function Login() {
             <Button
               asChild
               variant="outline"
-              className="h-10 w-full rounded-lg border-white/[0.09] bg-white/[0.02] text-[0.6875rem] text-foreground hover:bg-white/[0.05]"
+              className="h-10 w-full rounded-lg border-white/[0.09] bg-white/[0.015] text-[0.6875rem] text-foreground hover:bg-white/[0.05]"
             >
               <Link href="/">
                 <Globe className="size-3.5" />

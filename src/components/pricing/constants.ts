@@ -104,16 +104,6 @@ export const pricingCopy = {
     refundNote: "Failed renders are refunded automatically.",
     action: "Start a render",
   },
-  autoTopUp: {
-    title: "Auto top-up, on your terms",
-    description:
-      "Set a floor and a pack size. Chronolab refills your balance only when it drops below your threshold. Switch it off whenever you want.",
-    balanceBelow: "Balance below",
-    balanceValue: "$5",
-    topUpWith: "Top up with",
-    topUpValue: "$10",
-    action: "Configure auto top-up",
-  },
   faq: {
     title: "Common questions",
   },
@@ -133,7 +123,7 @@ export const pricingFaqs = [
   {
     question: "Does my balance expire?",
     answer:
-      "No. Your balance stays in your studio account until you use it. Auto top-up is optional and can be switched off at any time.",
+      "No. Your balance stays in your account until you use it, and it never expires.",
   },
   {
     question: "What happens if a render fails?",
@@ -143,6 +133,6 @@ export const pricingFaqs = [
   {
     question: "Can I use the work commercially?",
     answer:
-      "Yes. Every output you generate on a paid plan comes with a commercial license. Teams can add a shared workspace from the billing page.",
+      "Yes. Every output you generate comes with a commercial license.",
   },
 ];

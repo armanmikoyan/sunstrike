@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Keep the conventional root favicon URL working while the asset lives with
+  // the rest of the brand files.
+  async rewrites() {
+    return [{ source: "/favicon.ico", destination: "/brand/favicon.ico" }];
+  },
   // The e2e server builds into its own folder so a running `next dev` cannot
   // rewrite the chunks underneath it mid-test.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",

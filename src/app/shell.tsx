@@ -21,8 +21,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (pathname === "/login") return <>{children}</>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto flex min-h-screen w-full max-w-[120rem] bg-background">
+    <div className="min-h-screen">
+      <div className="mx-auto flex min-h-screen w-full max-w-[120rem]">
         <Sidebar
           expanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded((value) => !value)}

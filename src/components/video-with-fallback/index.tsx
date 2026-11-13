@@ -21,6 +21,7 @@ export function VideoWithFallback({
 }: VideoWithFallbackProps) {
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [inView, setInView] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const aligned = useRef(false);
 
@@ -43,10 +44,6 @@ export function VideoWithFallback({
         }
       }
       setReady(true);
-      // Chrome can defer autoplay for offscreen elements, which makes tiles
-      // pop into motion as they scroll in. Start every player explicitly.
-      // jsdom has no media stack and returns undefined instead of a promise.
-      if (video.paused) void video.play()?.catch(() => {});
     };
 
     // Cached clips can already be ready before React attaches listeners, so
@@ -61,6 +58,32 @@ export function VideoWithFallback({
       if (players.get(src) === video) players.delete(src);
     };
   }, [src]);
+
+  // Only decode clips that are on screen. The wall repeats columns for its
+  // loop and the grids keep many players mounted, so playing them all at once
+  // stalls lower-end machines.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "200px 0px" },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !ready) return;
+
+    if (inView) {
+      if (video.paused) void video.play()?.catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [inView, ready]);
 
   if (failed) {
     return (
@@ -77,7 +100,6 @@ export function VideoWithFallback({
       ref={videoRef}
       src={src}
       poster={poster}
-      autoPlay
       muted
       loop
       playsInline

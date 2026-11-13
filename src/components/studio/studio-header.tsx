@@ -4,7 +4,6 @@ import {
   ArrowUpRight,
   Film,
   Image as ImageIcon,
-  Share2,
 } from "lucide-react";
 import { Button } from "@/ui/button";
 import { formatUSD } from "@/lib/pricing";
@@ -30,15 +29,10 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           </Link>
         </Button>
         <span className="h-4 w-px bg-border" />
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="truncate text-[0.75rem] font-medium">
-            {studioModels[mode].label}
-          </span>
-          <span className="hidden rounded border border-white/[0.08] bg-white/[0.025] px-1.5 py-0.5 text-[0.6875rem] text-muted-foreground sm:inline">
-            {copy.draft}
-          </span>
-        </div>
-        <div className="ml-1 hidden items-center gap-0.5 rounded-lg border border-white/[0.07] bg-white/[0.02] p-0.5 sm:flex">
+        <span className="truncate text-[0.75rem] font-medium">
+          {studioModels[mode].label}
+        </span>
+        <div className="ml-1 hidden items-center gap-0.5 rounded-lg border border-white/[0.07] bg-white/[0.015] p-0.5 sm:flex">
           <Link
             href="/create/video"
             className={cn(
@@ -66,14 +60,6 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
         <span className="hidden rounded-md border border-white/[0.07] px-2 py-1 text-[0.6875rem] text-muted-foreground md:block">
           {formatUSD(credits)}
         </span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
-          aria-label={copy.share}
-        >
-          <Share2 className="size-3.5" />
-        </Button>
         <Button
           asChild
           variant="outline"

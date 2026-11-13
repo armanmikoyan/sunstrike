@@ -38,19 +38,8 @@ export const metadata: Metadata = {
   },
   description:
     "Generate cinematic video and stills from a prompt. Pay as you go, keep every frame.",
-  manifest: "/favicons/site.webmanifest",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" },
-      { url: "/favicons/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [
-      {
-        url: "/favicons/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
+    icon: "/brand/favicon.ico",
   },
   openGraph: {
     title: "Chronolab.ai — Generative Studio",

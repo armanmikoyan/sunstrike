@@ -19,7 +19,7 @@ export function AccountMenu({ side, align }: AccountMenuProps) {
     >
       <DropdownMenuLabel className="px-2 py-2">
         <span className="block text-[0.75rem] font-medium text-foreground">
-          {ACCOUNT.name}
+          {accountMenuCopy.account}
         </span>
         <span className="mt-0.5 block text-[0.6875rem] font-normal text-muted-foreground">
           {ACCOUNT.email}
@@ -27,7 +27,7 @@ export function AccountMenu({ side, align }: AccountMenuProps) {
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild className="p-2">
-        <Link href="/pricing">
+        <Link href="/billing">
           <Coins className="size-4 text-muted-foreground" />
           <span className="flex-1">{accountMenuCopy.balance}</span>
           <span className="font-mono text-[0.6875rem] tabular-nums text-foreground">

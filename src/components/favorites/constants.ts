@@ -9,20 +9,10 @@ export const favoriteIds = [
   "11",
 ];
 
-export const favoriteCollections = [
-  { name: "Film references", count: 12, active: true },
-  { name: "Product looks", count: 8, active: false },
-  { name: "Faces", count: 6, active: false },
-];
-
 export const favoritesCopy = {
-  eyebrow: "Collection",
+  eyebrow: "Saved",
   title: "Favorites",
   description:
-    "Frames you've saved for later. Keep references close, then remix them into the studio.",
-  newCollection: "New collection",
-  singleFrames: "single frames",
-  panelTitle: "Your references, ready",
-  panelDescription: "Open a collection as a reference set in the studio.",
+    "Frames you have kept close. Open one in the studio and use it as a reference.",
   openInStudio: "Open in studio",
 };

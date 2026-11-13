@@ -6,4 +6,5 @@ export type PageHeaderProps = {
   description?: string;
   action?: ReactNode;
   className?: string;
+  divider?: boolean;
 };

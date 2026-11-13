@@ -7,7 +7,7 @@ describe("explore page", () => {
   it("renders its page heading", () => {
     renderWithProviders(<ExplorePage />);
     expect(
-      screen.getByRole("heading", { level: 1, name: "The feed" }),
+      screen.getByRole("heading", { level: 1, name: "Explore" }),
     ).toBeInTheDocument();
   });
 });

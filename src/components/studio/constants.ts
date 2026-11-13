@@ -1,8 +1,6 @@
 import type { GenerationMode } from "@/lib/generation";
-import { mediaById, type MediaItem } from "@/lib/media";
-
-/** The focus pull / camera moves offered to video renders. */
-export const cameraMoves = ["Static", "Dolly in", "Orbit", "Crane", "Handheld"];
+import type { MediaItem } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 
 const videoTakeIds = ["09", "07", "14", "16"];
 const imageTakeIds = ["05", "10", "17", "18"];
@@ -31,20 +29,18 @@ export const studioModels: Record<GenerationMode, { create: string; label: strin
 export const studioCopy = {
   header: {
     backHome: "Back home",
-    draft: "Draft",
     video: "Video",
     image: "Image",
-    share: "Share project",
     library: "Library",
   },
   controls: {
     prompt: "Prompt",
-    enhance: "Enhance",
     placeholders: {
       video: "Describe the shot, subject and movement...",
       image: "Describe the frame, light and lens...",
     },
-    characterLimit: "/1200",
+    template: "Template",
+    noTemplate: "No template",
     references: "References",
     library: "Library",
     dropReference: "Drop a frame or reference",
@@ -54,47 +50,31 @@ export const studioCopy = {
     model: "Model",
     aspectRatio: "Aspect ratio",
     duration: "Duration",
-    camera: "Camera",
-    advanced: "Advanced",
-    negativePrompt: "Negative prompt",
-    negativePlaceholder: "blur, extra fingers, text...",
-    seed: "Seed",
-    seedValue: "847291",
-    motionStrength: "Motion strength",
-    motionStrengthValue: "62",
-    loopTake: "Loop take",
-    loopTakeDescription: "Matches the first and last frame.",
+    resolution: "Resolution",
+    audio: "Native audio",
+    silent: "Silent",
+    audioHint: "Use the model's generated soundtrack.",
     estimatedCost: "Estimated cost",
     generate: { video: "Generate video", image: "Generate image" },
     available: "available · pay as you go",
   },
   summary: {
     model: "Model",
-    direction: "Direction",
+    template: "Template",
+    noTemplate: "None",
     output: "Output",
-    singleFrame: "Single frame",
-    resolution: "1080p",
     currentPrompt: "Current prompt",
-    promptOptions: "Prompt options",
-    promptMenuLabel: "Prompt",
-    copyPrompt: "Copy prompt",
-    saveToFavorites: "Save to favorites",
-    resetToLast: "Reset to last",
   },
   preview: {
     title: "Preview",
-    resolution: "1080p",
     downloadPreview: "Download preview",
     moreOptions: "More options",
-    take: "Take 03",
-    frameRate: "24fps",
     play: "Play preview",
     still: "still",
     imageUnit: "1 MP",
     times: { video: "00:02", image: "00:00" },
     pause: "Pause",
     volume: "Volume",
-    trim: "Trim",
     fullscreen: "Fullscreen",
     download: "Download",
   },
@@ -109,5 +89,30 @@ export const studioCopy = {
     recipe: "Recipe",
     reserved: "reserved.",
   },
+};
+
+/**
+ * Aspect and width classes are written out in full so Tailwind can see them.
+ * The frame animates between them with a CSS transition rather than a JS style.
+ *
+ * Every ratio is capped by the viewport height so the whole frame plus its info
+ * row fits without scrolling. The cap uses a smaller offset below `lg`, where
+ * the studio is stacked and the frame scrolls to the top of the page, and a
+ * larger offset at `lg`, where the nav, studio header and preview chrome sit
+ * above a height-locked panel.
+ */
+export const studioFrameClasses: Record<string, string> = {
+  "16:9":
+    "aspect-[16/9] max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.7778))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.7778))]",
+  "9:16":
+    "aspect-[9/16] max-w-[min(22.5rem,calc((100dvh_-_9.5rem)_*_0.5625))] lg:max-w-[min(22.5rem,calc((100dvh_-_16rem)_*_0.5625))]",
+  "1:1":
+    "aspect-square max-w-[min(47.5rem,calc(100dvh_-_9.5rem))] lg:max-w-[min(47.5rem,calc(100dvh_-_16rem))]",
+  "4:3":
+    "aspect-[4/3] max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.3333))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.3333))]",
+  "3:4":
+    "aspect-[3/4] max-w-[min(22.5rem,calc((100dvh_-_9.5rem)_*_0.75))] lg:max-w-[min(22.5rem,calc((100dvh_-_16rem)_*_0.75))]",
+  "21:9":
+    "aspect-[21/9] max-w-[min(61.25rem,calc((100dvh_-_9.5rem)_*_2.3333))] lg:max-w-[min(61.25rem,calc((100dvh_-_16rem)_*_2.3333))]",
 };
 

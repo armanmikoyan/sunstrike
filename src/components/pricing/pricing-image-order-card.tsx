@@ -20,8 +20,8 @@ export function ImageOrderCard() {
   const quote = getImageQuote(quantity);
 
   return (
-    <div className="relative mx-auto w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/[0.1] bg-[#1c1e20]">
-      <div className="p-5">
+    <div className="relative mx-auto h-full w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/[0.1] glass-card">
+      <div className="flex h-full flex-col p-5">
         <div className="flex items-center justify-between">
           <span className="text-[0.75rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
           <span className="font-mono text-[0.6875rem] text-muted-foreground">

@@ -4,11 +4,11 @@ import SettingsPage from "./page";
 import { renderWithProviders } from "~/vitest.setup";
 
 describe("settings page", () => {
-  it("opens on the profile pane", () => {
+  it("opens on the account pane", () => {
     renderWithProviders(<SettingsPage />);
     expect(
       screen.getByRole("heading", { level: 1, name: "Settings" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Profile" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Account" })).toBeInTheDocument();
   });
 });

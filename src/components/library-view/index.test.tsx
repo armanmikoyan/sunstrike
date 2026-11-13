@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { LibraryView } from ".";
-import { mediaItems } from "@/lib/media";
+import { mediaItems } from "@/mocks/media";
 
 const libraryCount = 14;
 const cards = () => screen.getAllByRole("article");

@@ -5,13 +5,13 @@ export function VideoWall() {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div className="absolute inset-0 flex justify-center">
-        <div className="flex w-full min-w-[67.5rem] gap-2.5 px-2 sm:gap-3">
+        <div className="flex w-full min-w-[45rem] gap-2 px-2">
           {wallColumns.map((column, columnIndex) => (
             <div
               key={columnIndex}
-              className="wall-column flex w-1/6 flex-col"
+              className="wall-column flex w-1/5 flex-col"
               style={{
-                animationDuration: `${9 + columnIndex * 1.4}s`,
+                animationDuration: `${6.5 + columnIndex * 1.1}s`,
               }}
             >
               {[0, 1].map((repeat) => (

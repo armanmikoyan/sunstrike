@@ -25,7 +25,7 @@ export function Library() {
         }
       />
 
-      <div className="mt-5 grid grid-cols-2 divide-x divide-border rounded-xl border border-border bg-white/[0.015] sm:grid-cols-4">
+      <div className="mt-5 grid grid-cols-1 divide-y divide-border rounded-xl border border-border bg-white/[0.015] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {libraryStats.map((stat) => (
           <div key={stat.label} className="px-4 py-3.5">
             <p className="text-[0.6875rem] text-muted-foreground">

@@ -1,7 +1,7 @@
 export const exploreCopy = {
-  eyebrow: "Community",
-  title: "The feed",
+  eyebrow: "Gallery",
+  title: "Explore",
   description:
-    "Fresh work from the Chronolab community. Inspect the prompt, model and render price, then remix it into your own studio.",
-  action: "Publish a frame",
+    "Work made with every Chronolab model. Inspect the prompt, model and render price, then remix it in your own studio.",
+  action: "Open studio",
 };

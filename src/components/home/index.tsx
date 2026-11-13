@@ -8,7 +8,7 @@ import { MediaCard } from "@/components/media-card";
 import { SectionHeader } from "@/components/section-header";
 import { ClipStrip } from "@/components/clip-strip";
 import { Button } from "@/ui/button";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import {
   featuredIds,
   homeCopy,
@@ -68,7 +68,7 @@ export function Home() {
       <RatioMosaic />
 
       <section className="w-full px-5 py-16">
-        <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-surface">
+        <div className="glass-panel overflow-hidden rounded-2xl border border-white/[0.1]">
           <div className="relative grid gap-10 p-7 sm:p-10 lg:grid-cols-[1fr_23.75rem] lg:p-12">
             <div className="flex flex-col gap-7">
               <div>

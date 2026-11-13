@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Film } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import type { VideoWallTileProps } from "./types";
 
 export function VideoWallTile({ id, preload }: VideoWallTileProps) {

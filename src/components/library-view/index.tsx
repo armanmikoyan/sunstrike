@@ -1,14 +1,17 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { MediaCard } from "@/components/media-card";
 import { Input } from "@/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
+import { instantTransition, layoutSpring } from "@/lib/motion";
 import { libraryItems, libraryTabs, libraryViewCopy } from "./constants";
 import { useLibraryView } from "./hooks";
 
 export function LibraryView() {
   const { tab, setTab, query, setQuery, filtered } = useLibraryView();
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className="mt-6">
@@ -42,9 +45,20 @@ export function LibraryView() {
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-4">
-        {filtered.map((item) => (
-          <MediaCard key={item.id} item={item} />
-        ))}
+        <AnimatePresence initial={false} mode="popLayout">
+          {filtered.map((item) => (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={reduceMotion ? instantTransition : layoutSpring}
+            >
+              <MediaCard item={item} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {!filtered.length ? (

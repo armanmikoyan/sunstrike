@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, Coins, LogOut, PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
+import { ChevronDown, Coins, LogOut, PanelLeftClose, PanelLeftOpen, Plus, UserRound } from "lucide-react";
 import { LogoLockup } from "@/components/brand";
 import {
   DropdownMenu,
@@ -36,25 +36,8 @@ export function SidebarBody({
   const [accountOpen, setAccountOpen] = useState(false);
 
   return (
-    <div className="no-scrollbar flex min-h-0 w-full flex-1 flex-col items-center overflow-y-auto overscroll-contain">
-      <div
-        className={cn(
-          // The header keeps a fixed height, so the rail's contents cannot jump
-          // while the toggle's hit area animates between 40 and 32px.
-          "relative mb-4 flex h-11 w-full shrink-0 items-center",
-          showToggle ? "pr-10" : "pr-12",
-        )}
-      >
-        <LogoLockup
-          compact
-          inactive={!expanded}
-          className={cn(
-            "min-w-0 overflow-hidden transition-opacity duration-200 motion-reduce:transition-none",
-            expanded
-              ? "w-full opacity-100"
-              : "pointer-events-none absolute w-0 opacity-0",
-          )}
-        />
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center">
+      <div className="mb-4 flex h-11 w-full shrink-0 items-center gap-2">
         {showToggle ? (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -63,16 +46,7 @@ export function SidebarBody({
                 onClick={onToggle}
                 aria-label={expanded ? sidebarCopy.collapse : sidebarCopy.expand}
                 aria-expanded={expanded}
-                className={cn(
-                  // The toggle is the one control that moves from the rail's
-                  // centre to its edge, so its offset has to animate with the
-                  // rail instead of being re-aligned by the flex row (that made
-                  // it teleport across the whole panel on collapse).
-                  "absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-[right,translate,width,height,background-color,color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground motion-reduce:transition-none",
-                  expanded
-                    ? "right-0 size-8 translate-x-0"
-                    : "right-1/2 size-10 translate-x-1/2",
-                )}
+                className="grid size-10 shrink-0 place-items-center rounded-lg text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/25"
               >
                 {expanded ? (
                   <PanelLeftClose className="size-4" strokeWidth={1.8} />
@@ -86,6 +60,14 @@ export function SidebarBody({
             </TooltipContent>
           </Tooltip>
         ) : null}
+        <LogoLockup
+          compact
+          inactive={!expanded}
+          className={cn(
+            "min-w-0 overflow-hidden",
+            expanded ? "flex opacity-100" : "hidden",
+          )}
+        />
       </div>
 
       <RailTooltip expanded={expanded} label={sidebarCopy.newGeneration}>
@@ -94,7 +76,7 @@ export function SidebarBody({
           onClick={onNavigate}
           aria-label={sidebarCopy.newGeneration}
           className={cn(
-            "group relative mb-5 flex h-10 w-full shrink-0 items-center gap-2.5 overflow-hidden rounded-xl bg-brand text-[0.8125rem] font-semibold text-brand-foreground transition-[max-width,padding,opacity,transform,background-color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-hover active:scale-[0.97] motion-reduce:transition-none",
+            "group relative mb-5 flex h-10 w-full shrink-0 items-center gap-2.5 overflow-hidden rounded-lg bg-brand text-[0.8125rem] font-semibold text-brand-foreground transition-[max-width,padding,opacity,transform,background-color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-hover active:scale-[0.97] motion-reduce:transition-none",
             expanded
               ? showToggle
                 ? "max-w-[11.25rem] px-3"
@@ -161,11 +143,11 @@ export function SidebarBody({
         {expanded && inlineAccount ? (
           <div className="flex w-full flex-col">
             {accountOpen ? (
-              <div className="mb-1.5 flex flex-col gap-0.5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-1.5">
+              <div className="mb-1.5 flex flex-col gap-0.5 rounded-lg border border-white/[0.07] bg-white/[0.025] p-1.5">
                 <Link
-                  href="/pricing"
+                  href="/billing"
                   onClick={onNavigate}
-                  className="flex h-9 items-center gap-2 rounded-lg px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                  className="flex h-9 items-center gap-2 rounded-md px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
                 >
                   <Coins className="size-3.5" />
                   {accountMenuCopy.balance}
@@ -179,7 +161,7 @@ export function SidebarBody({
                     key={item.label}
                     href={item.href}
                     onClick={onNavigate}
-                    className="flex h-9 items-center gap-2 rounded-lg px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                    className="flex h-9 items-center gap-2 rounded-md px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
                   >
                     <item.icon className="size-3.5" />
                     {item.label}
@@ -187,7 +169,7 @@ export function SidebarBody({
                 ))}
                 <button
                   type="button"
-                  className="flex h-9 items-center gap-2 rounded-lg px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                  className="flex h-9 items-center gap-2 rounded-md px-2 text-[0.75rem] text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
                 >
                   <LogOut className="size-3.5" />
                   {accountMenuCopy.signOut}
@@ -200,16 +182,13 @@ export function SidebarBody({
               aria-label={sidebarCopy.accountMenu}
               aria-expanded={accountOpen}
               onClick={() => setAccountOpen((value) => !value)}
-              className="flex h-11 w-full items-center gap-2.5 rounded-xl px-2 text-left text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground"
+              className="flex h-11 w-full items-center gap-2.5 rounded-lg px-2 text-left text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground"
             >
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-[0.6875rem] font-medium text-foreground ring-1 ring-white/10">
-                {ACCOUNT.initials}
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-foreground ring-1 ring-white/10">
+                <UserRound className="size-3.5" strokeWidth={1.8} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[0.75rem] font-medium text-foreground">
-                  {ACCOUNT.name}
-                </span>
-                <span className="block truncate text-[0.6875rem]">
                   {ACCOUNT.email}
                 </span>
               </span>
@@ -228,7 +207,7 @@ export function SidebarBody({
                 type="button"
                 aria-label={sidebarCopy.accountMenu}
                 className={cn(
-                  "flex w-full shrink-0 items-center self-center overflow-hidden rounded-xl text-left text-muted-foreground outline-none transition-[max-width,height,padding,background-color,color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/25 motion-reduce:transition-none",
+                  "flex w-full shrink-0 items-center self-center overflow-hidden rounded-lg text-left text-muted-foreground outline-none transition-[max-width,height,padding,background-color,color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/25 motion-reduce:transition-none",
                   expanded
                     ? showToggle
                       ? "h-10 max-w-[11.25rem] gap-2.5 px-2"
@@ -236,8 +215,8 @@ export function SidebarBody({
                     : "h-10 max-w-10 gap-0 pl-[0.375rem]",
                 )}
               >
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-[0.6875rem] font-medium text-foreground ring-1 ring-white/10">
-                  {ACCOUNT.initials}
+                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-foreground ring-1 ring-white/10">
+                  <UserRound className="size-3.5" strokeWidth={1.8} />
                 </span>
                 <span
                   className={cn(
@@ -246,9 +225,6 @@ export function SidebarBody({
                   )}
                 >
                   <span className="block truncate text-[0.75rem] font-medium text-foreground">
-                    {ACCOUNT.name}
-                  </span>
-                  <span className="block truncate text-[0.6875rem]">
                     {ACCOUNT.email}
                   </span>
                 </span>

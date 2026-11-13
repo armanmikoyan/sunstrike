@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Film, ImageIcon } from "lucide-react";
 import { Button } from "@/ui/button";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import { cn } from "@/lib/utils";
 import { megaMenuCopy } from "./constants";
 import type { MegaMenuPanelProps } from "./types";
@@ -18,7 +18,7 @@ export function MegaMenuPanel({
       className="absolute top-12 z-50"
       style={{ left, width }}
     >
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1c1e20] shadow-[0_1.875rem_7.5rem_rgba(0,0,0,0.65)]">
+      <div className="glass-menu mega-menu-panel overflow-hidden rounded-b-2xl border-x border-b border-white/10">
         <div className="grid min-h-[21.375rem] lg:grid-cols-[15.625rem_1fr_18.75rem]">
           <div className="flex flex-col justify-between border-b border-white/[0.07] p-6 lg:border-b-0 lg:border-r">
             <div>
@@ -60,7 +60,7 @@ export function MegaMenuPanel({
                   <span className="min-w-0">
                     <span className="flex items-center gap-1 text-[0.8125rem] font-medium text-foreground">
                       {feature.name}
-                      <ArrowUpRight className="size-3 -translate-x-1 opacity-0 transition-[transform,opacity] group-hover:translate-x-0 group-hover:opacity-100" />
+                      <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
                     </span>
                     <span className="mt-0.5 block text-[0.75rem] leading-relaxed text-muted-foreground">
                       {feature.description}

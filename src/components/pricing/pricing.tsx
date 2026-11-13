@@ -1,26 +1,20 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  RefreshCw,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, Check, ShieldCheck, Zap } from "lucide-react";
 import { ClipStrip } from "@/components/clip-strip";
 import { Button } from "@/ui/button";
-import { generationRates, topUpPacks } from "@/lib/media";
+import { generationRates, topUpPacks } from "@/mocks/pricing";
 import { cn } from "@/lib/utils";
 import {
   pricingClipIds,
   pricingCopy,
-  pricingFaqs,
   pricingIntro,
   pricingPoints,
 } from "./constants";
+import { PricingFaq } from "./pricing-faq";
 import { PricingOrderTabs } from "./pricing-order-tabs";
 
 export function Pricing() {
-  const { hero, topUps, rates, autoTopUp, faq } = pricingCopy;
+  const { hero, topUps, rates, faq } = pricingCopy;
 
   return (
     <>
@@ -142,8 +136,8 @@ export function Pricing() {
           </div>
         </div>
 
-        <div className="mt-16 grid gap-4 lg:grid-cols-[1fr_21.25rem]">
-          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.012]">
+        <div className="mt-16">
+          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.015]">
             <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
               <div>
                 <h2 className="text-[0.9375rem] font-medium">
@@ -191,69 +185,13 @@ export function Pricing() {
               </Link>
             </div>
           </div>
-
-          <div className="rounded-2xl border border-white/[0.08] bg-[#18191c] p-5">
-            <RefreshCw className="size-4 text-muted-foreground" />
-            <h3 className="mt-4 text-[0.9375rem] font-medium">
-              {autoTopUp.title}
-            </h3>
-            <p className="mt-2 text-[0.8125rem] leading-relaxed text-muted-foreground">
-              {autoTopUp.description}
-            </p>
-            <div className="mt-5 space-y-2">
-              <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <span className="text-[0.75rem] text-muted-foreground">
-                  {autoTopUp.balanceBelow}
-                </span>
-                <span className="font-mono text-[0.6875rem]">
-                  {autoTopUp.balanceValue}
-                </span>
-              </div>
-              <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <span className="text-[0.75rem] text-muted-foreground">
-                  {autoTopUp.topUpWith}
-                </span>
-                <span className="font-mono text-[0.6875rem]">
-                  {autoTopUp.topUpValue}
-                </span>
-              </div>
-            </div>
-            <Button
-              asChild
-              variant="outline"
-              className="mt-4 h-9 w-full rounded-lg border-white/10 bg-transparent text-[0.75rem] text-foreground hover:bg-white/[0.04]"
-            >
-              <Link href="/billing">
-                {autoTopUp.action}
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </Button>
-          </div>
         </div>
 
         <div className="mt-16 border-t border-border pt-10">
           <h2 className="text-[1.375rem] font-medium tracking-[-0.025em]">
             {faq.title}
           </h2>
-          <div className="mt-4 grid gap-x-12 md:grid-cols-2">
-            {pricingFaqs.map((item) => (
-              <details
-                key={item.question}
-                className="group border-b border-white/[0.07] py-4"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[0.8125rem] font-medium">
-                  {item.question}
-                  <span className="relative size-3">
-                    <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-muted-foreground" />
-                    <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-muted-foreground transition-transform group-open:rotate-90" />
-                  </span>
-                </summary>
-                <p className="mt-2 max-w-[30rem] text-[0.8125rem] leading-relaxed text-muted-foreground">
-                  {item.answer}
-                </p>
-              </details>
-            ))}
-          </div>
+          <PricingFaq />
         </div>
       </div>
     </>

@@ -1,25 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { AnimatedHeight } from "@/components/animated-height";
+import { contentFade, instantTransition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { settingsNav } from "./constants";
-import { SettingsApiPane } from "./settings-api-pane";
+import { SettingsAccountPane } from "./settings-account-pane";
 import { SettingsNotificationsPane } from "./settings-notifications-pane";
-import { SettingsPreferencesPane } from "./settings-preferences-pane";
-import { SettingsProfilePane } from "./settings-profile-pane";
-import { SettingsSecurityPane } from "./settings-security-pane";
 import type { SettingsTab } from "./types";
 
 const panes: Record<SettingsTab, () => React.JSX.Element> = {
-  profile: SettingsProfilePane,
-  preferences: SettingsPreferencesPane,
+  account: SettingsAccountPane,
   notifications: SettingsNotificationsPane,
-  security: SettingsSecurityPane,
-  api: SettingsApiPane,
 };
 
 export function SettingsView() {
-  const [tab, setTab] = useState<SettingsTab>("profile");
+  const [tab, setTab] = useState<SettingsTab>("account");
+  const reduceMotion = useReducedMotion();
   const Pane = panes[tab];
 
   return (
@@ -50,9 +48,18 @@ export function SettingsView() {
         })}
       </nav>
 
-      <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.012]">
-        <Pane />
-      </div>
+      <AnimatedHeight>
+        <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.015]">
+          <motion.div
+            key={tab}
+            initial={reduceMotion ? false : { opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={reduceMotion ? instantTransition : contentFade}
+          >
+            <Pane />
+          </motion.div>
+        </div>
+      </AnimatedHeight>
     </div>
   );
 }

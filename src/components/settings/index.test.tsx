@@ -2,48 +2,41 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { SettingsView } from ".";
+import { currentUser } from "./constants";
 
 describe("settings view", () => {
-  it("opens on the profile pane", () => {
+  it("opens on the account pane", () => {
     render(<SettingsView />);
-    expect(screen.getByRole("button", { name: "Profile" })).toHaveClass(
+    expect(screen.getByRole("button", { name: "Account" })).toHaveClass(
       "text-foreground",
     );
-    expect(screen.getByDisplayValue("Arman Mikoyan")).toBeInTheDocument();
+    expect(screen.getByDisplayValue(currentUser.email)).toBeInTheDocument();
+    expect(screen.getByText(currentUser.id)).toBeInTheDocument();
   });
 
-  it("switches panes", async () => {
+  it("switches to notifications", async () => {
     render(<SettingsView />);
-    await userEvent.click(screen.getByRole("button", { name: "Preferences" }));
+    await userEvent.click(screen.getByRole("button", { name: "Notifications" }));
 
-    expect(screen.getByRole("button", { name: "Preferences" })).toHaveClass(
+    expect(screen.getByRole("button", { name: "Notifications" })).toHaveClass(
       "text-foreground",
     );
-    expect(screen.queryByDisplayValue("Arman Mikoyan")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue(currentUser.email)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/Render (ready|failed)/).length).toBeGreaterThan(
+      0,
+    );
   });
 
-  it("masks and reveals the API key", async () => {
+  it("only shows the sections the model defines", () => {
     render(<SettingsView />);
-    await userEvent.click(screen.getByRole("button", { name: "Security" }));
-
-    const toggle = screen.getByRole("button", { name: "Show API key" });
-    await userEvent.click(toggle);
-
+    expect(screen.getByRole("button", { name: "Account" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Hide API key" }),
+      screen.getByRole("button", { name: "Notifications" }),
     ).toBeInTheDocument();
-  });
-
-  it("shows every settings section", () => {
-    render(<SettingsView />);
-    for (const label of [
-      "Profile",
-      "Preferences",
-      "Notifications",
-      "Security",
-      "API keys",
-    ]) {
-      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    for (const label of ["Profile", "Preferences", "Security", "API keys"]) {
+      expect(
+        screen.queryByRole("button", { name: label }),
+      ).not.toBeInTheDocument();
     }
   });
 });

@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import {
+  aspectRatiosFor,
+  durationsFor,
   getGenerationCost,
-  modelOptions,
   type GenerationMode,
 } from "@/lib/generation";
+import { modelOptions } from "@/mocks/generation";
 import {
   aspectRatioAtom,
   attachmentAtom,
@@ -78,14 +80,33 @@ export function usePromptComposer() {
   const [attachment, setAttachment] = useAtom(attachmentAtom);
 
   const activeModels = modelOptions[mode];
-  const cost = getGenerationCost(mode, model, duration);
+  const selectedModel =
+    activeModels.find((item) => item.displayName === model) ?? activeModels[0];
+  const cost = getGenerationCost(mode, selectedModel, duration);
+  const aspectOptions = aspectRatiosFor(selectedModel);
+  const durationOptions = durationsFor(selectedModel);
   const typedPlaceholder = useTypingCycle(promptIdeas[mode]);
+
+  // Model capabilities define which settings are legal.
+  useEffect(() => {
+    const caps = selectedModel.capabilities;
+    if (!caps.aspectRatios.includes(aspect)) {
+      setAspect(caps.aspectRatios[0]);
+    }
+    if (caps.durations.length > 0 && !caps.durations.includes(duration)) {
+      setDuration(caps.durations[0]);
+    }
+  }, [
+    selectedModel,
+    aspect,
+    duration,
+    setAspect,
+    setDuration,
+  ]);
 
   const switchMode = (next: GenerationMode) => {
     setMode(next);
     setModel(defaultModel[next]);
-    if (next === "image" && aspect === "16:9") setAspect("4:3");
-    if (next === "video" && aspect === "4:3") setAspect("16:9");
   };
 
   const submit = () => {
@@ -106,6 +127,9 @@ export function usePromptComposer() {
     attachment,
     setAttachment,
     activeModels,
+    selectedModel,
+    aspectOptions,
+    durationOptions,
     cost,
     typedPlaceholder,
     fileInputRef,

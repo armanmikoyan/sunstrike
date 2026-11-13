@@ -72,9 +72,11 @@ export function PromptComposer({ className }: { className?: string }) {
         <span className="mx-0.5 h-3.5 w-px bg-white/[0.08]" />
 
         <ComposerAspectMenu composer={composer} />
-        {composer.mode === "video" ? (
+        {composer.durationOptions.length > 0 ? (
           <ComposerDurationMenu composer={composer} />
-        ) : null}
+        ) : (
+          <span aria-hidden className="h-8 w-[3.5rem] shrink-0" />
+        )}
 
         <ComposerSubmit />
       </div>
