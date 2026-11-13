@@ -24,20 +24,23 @@ export function StudioQueueDialog({ studio }: StudioQueueDialogProps) {
     cost,
     prompt,
     selectedModel,
+    template,
     aspect,
     duration,
+    resolution,
   } = studio;
 
   const chips = [
-    selectedModel.name,
+    selectedModel.displayName,
+    template?.name,
     aspect,
+    resolution,
     isVideo ? duration : studioCopy.preview.imageUnit,
-    formatUSD(cost),
-  ];
+  ].filter((chip): chip is string => Boolean(chip));
 
   return (
     <Dialog open={queued} onOpenChange={setQueued}>
-      <DialogContent className="border-white/10 bg-[#1c1e20] sm:max-w-[25rem]">
+      <DialogContent className="border-white/10 sm:max-w-[25rem]">
         <DialogHeader>
           <div className="mb-1 flex size-10 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] text-muted-foreground">
             <Clock3 className="size-4" />
@@ -48,10 +51,10 @@ export function StudioQueueDialog({ studio }: StudioQueueDialogProps) {
           <DialogDescription className="text-[0.75rem] leading-relaxed">
             Your {isVideo ? "video" : "image"} is in the queue. This prototype
             holds the shot in the library while the real renderer is wired up.
-            {formatUSD(cost)} {copy.reserved}
+            <span className="tabular-nums font-normal">{formatUSD(cost)}</span> {copy.reserved}
           </DialogDescription>
         </DialogHeader>
-        <div className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-3">
+        <div className="rounded-lg border border-white/[0.08] bg-white/[0.015] p-3">
           <p className="text-[0.6875rem] text-muted-foreground">
             {copy.recipe}
           </p>
@@ -67,6 +70,9 @@ export function StudioQueueDialog({ studio }: StudioQueueDialogProps) {
                 {chip}
               </span>
             ))}
+            <span className="rounded border border-white/[0.08] bg-black/20 px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
+              <span className="tabular-nums font-normal">{formatUSD(cost)}</span>
+            </span>
           </div>
         </div>
         <DialogFooter className="border-white/[0.07] bg-white/[0.015]">

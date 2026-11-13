@@ -18,7 +18,7 @@ export const mosaicCopy = {
   titleBefore: "Every frame finds its ",
   titleAccent: "shape",
   description:
-    "Stills and motion across every ratio, without rebuilding the shot.",
+    "Images and motion across every ratio, without rebuilding the shot.",
   count: `${mosaicTiles.length} frames`,
   action: "Explore more",
 };

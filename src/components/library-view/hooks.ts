@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { libraryItems } from "./constants";
+import { libraryItems, libraryTabs } from "./constants";
+
+type LibraryTab = (typeof libraryTabs)[number]["value"];
 
 export function useLibraryView() {
-  const [tab, setTab] = useState("all");
+  const [tab, setTab] = useState<LibraryTab>("all");
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -13,8 +15,7 @@ export function useLibraryView() {
       const typeMatch =
         tab === "all" ||
         (tab === "video" && item.kind === "video") ||
-        (tab === "image" && item.kind === "image") ||
-        (tab === "favorites" && Number(item.id) % 3 === 0);
+        (tab === "image" && item.kind === "image");
       const queryMatch =
         !normalized ||
         item.title.toLowerCase().includes(normalized) ||

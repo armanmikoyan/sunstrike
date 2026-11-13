@@ -8,7 +8,7 @@ import {
 
 test.describe("routes", () => {
   for (const route of appRoutes) {
-    test(`${route.path} renders without errors`, async ({ page }) => {
+    test(`${route.path} loads without errors`, async ({ page }) => {
       const errors = collectErrors(page);
       const response = await page.goto(route.path, {
         waitUntil: "domcontentloaded",

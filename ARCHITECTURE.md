@@ -5,6 +5,12 @@ image/video studio, an explore feed, a library, account and billing screens.
 The repo is a single Next.js App Router application with no backend. Every
 catalogue item, price and generation is local demo data.
 
+The product is modelled on one contract: the high-level design's six entities,
+`/api/v1` surface and user flow. `src/lib/design` is that contract in code, and
+the UI shows only its fields. A screen that needs data the contract does not
+have is a design change first, not a new local field. `ROADMAP.md` maps every
+remaining ticket to `F1`–`F5` and `N1`–`N4`.
+
 The product name is **Chronolab.ai**, always. Models are named
 `Chronolab <Name>` and account addresses use `@chronolab.ai`. The previous
 brand name is retired and lives only in git history.
@@ -24,6 +30,39 @@ brand name is retired and lives only in git history.
 `src/lib/utils/index.ts` re-exports `cn` from the `cn` package. Imports use the
 `@/` alias, which maps to `src/`, and the `~` alias, which maps to the repo
 root.
+
+## Product contract
+
+`src/lib/design/index.ts` mirrors the design and is the only place entity and
+API shapes are declared:
+
+- **Entities** — `User`, `MediaAsset`, `Template`, `Generation`,
+  `GenerationModel` (with `GenerationModelCapabilities`), `Notification`, and
+  the inferred `BalanceTransaction`.
+- **DTOs** — `GenerationRequest`, `GenerationAccepted`, `GenerationResult`,
+  `MediaAssetUpload`, `TopUp`, `GenerationQuote`, list responses and `Balance`.
+- **API** — `API_PATHS` for the `/api/v1` surface.
+- **Rule** — `modelSupportsSettings(model, settings)`, shared by the studio and
+  the future server so a control can never offer a value the model rejects.
+
+`GenerationSettings` is the shape stored in `generations.settings`:
+`{ resolution, duration, aspectRatio, audio }`. `GenerationKind` is
+`create | edit` (a recorded decision in the roadmap). The working notification
+types are `generation_succeeded` and `generation_failed`.
+
+`src/mocks` holds every demo row the UI renders until the API is wired:
+`generation` (the `generation_models` catalogue and model costs), `media`,
+`templates`, `notifications`, and the marketing `pricing` data. Demo data never
+lives in `src/lib`; it is the seam that `UI-1` replaces with `/api/v1` calls.
+
+`src/lib` keeps the contract and the rules. `src/lib/generation` owns
+`ModelOption`, the aspect-ratio descriptors and the capability filters;
+`src/lib/pricing` owns quantity clamping, quote maths and `formatUSD`;
+`src/lib/notifications` owns the type-to-label map. A model carries `id`,
+`slug`, `displayName`, `provider`, `providerModelId`, `capabilities` and
+`isEnabled`; `cost` is kept beside the mock row until pricing moves to the
+server. The UI derives aspect ratios, durations and resolutions from the
+selected model's capabilities rather than from global lists.
 
 ## Folder structure
 
@@ -56,9 +95,19 @@ src/
   ui/                       shadcn primitives (keep their layout)
   e2e/                      Playwright specs and helpers
   lib/
+    design/                 the product contract: entities, DTOs, API, rules
+    generation/             model types, presets and capability filters
+    notifications/          notification type labels
+    media/ pricing/ utils/  types and pure helpers
     <name>/                 one folder per library
       index.ts              public entry
       index.test.ts         unit test, colocated
+  mocks/
+    generation.ts           demo generation_models rows and model costs
+    media.ts                demo media catalogue and lookups
+    templates.ts            demo templates rows and lookups
+    notifications.ts        demo notifications rows and unread lookup
+    pricing.ts              demo rates, video models and top-up packs
 public/
   favicon.ico               browser icon
   brand/                    logo, orb, social card, orb custom element
@@ -176,12 +225,12 @@ the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 | --- | --- |
 | `/` | Full-bleed video wall, prompt composer, featured gallery, ratio mosaic, pay-as-you-go panel |
 | `/create/video`, `/create/image` | Studio: controls, preview, takes, queue dialog |
-| `/explore` | Filterable community feed |
-| `/library` | Generated work with tabs and search |
-| `/assets`, `/favorites` | Asset folders and favourited work |
-| `/pricing` | Image/video order calculators, top-up packs, FAQ |
-| `/billing` | Balance, auto top-up, transactions |
-| `/settings` | Profile, preferences, notifications, security, API |
+| `/explore` | Gallery filtered by media kind, searchable by title, prompt and model |
+| `/library` | Generated work with kind tabs and search |
+| `/assets`, `/favorites` | Uploaded assets by kind; a saved grid (no favourites entity) |
+| `/pricing` | Image/video price calculators, top-up packs, FAQ (marketing only) |
+| `/billing` | Available balance, payment method, auto top-up, usage, receipts, tax and transactions |
+| `/settings` | Account (`email`, id, created) and read-only notifications |
 | `/help` | Guides and contact |
 | `/login` | Standalone split-screen sign-in |
 
@@ -191,19 +240,28 @@ two supported studios.
 
 ### Domain data
 
-`src/lib` is plain TypeScript with no React:
+`src/lib` is plain TypeScript with no React and no demo rows:
 
-- `media/index.ts` — media catalogue, categories, top-up packs, generation
-  rates.
+- `design/index.ts` — the contract: entities, DTOs, `API_PATHS`,
+  `modelSupportsSettings`.
+- `generation/index.ts` — `ModelOption`, aspect-ratio descriptors, capability
+  filters, duration presets and the per-model cost rule.
+- `notifications/index.ts` — the notification type-to-label map.
+- `media/index.ts` — `MediaItem`, `MediaKind` and `MediaCategory` types.
 - `pricing/index.ts` — image/video quantity clamping, quote maths and
   `formatUSD`.
-- `generation/index.ts` — model options, aspect ratios, durations, render cost,
-  and the `GenerationMode` type.
 - `utils/index.ts` — the `cn` class-name helper.
 
-Pricing numbers and model lists live in one place. Components read rates from
-`src/lib`. All money is rounded to cents at the calculation boundary and
-formatted with `formatUSD` or `tabular-nums`.
+`src/mocks` is the only place demo rows live. Each module exposes rows plus the
+lookup the UI needs (`mediaById`, `templateById`, `unreadNotifications`) and the
+model options (`modelOptions`). Components import types and pure helpers from
+`src/lib` and rows from `src/mocks`. `media.category` remains only to pick a
+gradient fallback; it is never shown as a product field.
+
+All money is rounded to cents at the calculation boundary and formatted with
+`formatUSD` or `tabular-nums`. The pricing calculators are marketing surfaces;
+production quotes come from `POST /generation-quotes`. When `UI-1` lands, replace
+the `src/mocks` imports with the `/api/v1` data source, not the other way round.
 
 ## Design system
 
@@ -211,16 +269,27 @@ formatted with `formatUSD` or `tabular-nums`.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--background` | `#131517` | Page |
-| `--surface` | `#18191c` | Section band |
-| `--surface-raised` | `#1c1e20` | Raised card |
+| `--background` | `#0f1113` | Page (shared by the rail and body) |
+| `--chrome` | `#131517` | Nav bars, sticky toolbars |
+| `--surface` | `#0f1113` | Section band |
+| `--surface-raised` | `#0f1113` | Raised card |
 | `--surface-inset` | `#0f1113` | Inset well |
-| `--sidebar` | `#0f1113` | Rail |
+| `--sidebar` | `var(--background)` | Rail |
 | `--foreground` | `#f4f5f7` | Primary text |
 | `--muted-foreground` | `#9aa0a6` | Secondary text |
 | `--border` | `rgba(255,255,255,0.1)` | Hairlines |
 
-Surfaces stay cool neutral grey, without warm or green tinting.
+The page stays the cool neutral grey studio, without warm or green tinting.
+Nav bars (top nav, sticky toolbars) are a solid `chrome-bar` lift in `--chrome`
+(`#131517`) — the same surface as library summary cards — so they never read as
+transparent over content. Overlays use frosted glass: `glass-menu` (menus,
+selects, dialogs), `glass-panel` (large content panels) and `glass-card` (raised
+cards and order panels). Glass combined with media behind it uses a strong
+backdrop — a nearly opaque tint plus `blur` and `brightness` — so text stays
+readable over video and images, notably the nav mega menu and dropdowns. Chrome
+is the darker material; content panels are lighter. Never stack a light glass
+surface on another. Glass falls back to solid grey surfaces under
+`prefers-reduced-transparency` and where `backdrop-filter` is unsupported.
 
 ### Brand
 
@@ -276,12 +345,39 @@ Type rules:
   sections instead of rebuilding the type/rhythm.
 - Small controls are 32–40px tall; icon buttons use `size-8`/`size-9`.
 
+### Overlays
+
+- Menus and selects are portalled and use popper positioning, so they open
+  above or below the trigger and flip near the viewport edge. Never use
+  item-aligned select overlays inside the page.
+- The studio template, model and resolution pickers use `DropdownMenu` radio
+  groups (`src/ui/dropdown-menu.tsx`), not `Select`. A menu has no
+  item-aligned mode, so it can only anchor above or below its trigger — the
+  mobile bug where the list covered the button cannot come back.
+- Menu and select content matches the trigger width unless a wider menu is set
+  explicitly.
+- Selected indicators in menus are 12px checks, not large checkbox tiles.
+
 ### Motion
 
 - Name the transition: `transition-[width]`, `transition-colors`,
   `transition-[opacity,transform]`; avoid `transition-all`.
 - Durations: 200ms for hover/nav, 260ms for the rail, 300ms for fades.
   Easing for layout: `cubic-bezier(0.32,0.72,0,1)`.
+- Layout changes use 400–450ms: a critically damped spring
+  (`layoutSpring` in `src/lib/motion.ts`) for measured containers and grid
+  reflows, a named CSS transition for dimension swaps such as the studio
+  aspect frame. Do not hand-write `style` for sizes; keep them in Tailwind
+  classes.
+- The studio aspect frame is capped by `100dvh` at every breakpoint, with a
+  smaller offset below `lg` (stacked page) and a larger one at `lg` (fixed
+  nav + studio header + preview chrome). A square or portrait preview must fit
+  with its info row without scrolling.
+- When two states differ in height by only a few pixels and the difference is
+  stable, reserve the taller height (shared grid cell) so nothing shifts.
+  Animate when the difference is large enough to read as movement.
+- Disclosure panels use the `grid-rows-[0fr]` → `grid-rows-[1fr]` transition
+  with a 300ms icon rotation; do not animate `height` from `auto`.
 - Add `motion-reduce:transition-none` (or `motion-reduce:animate-none`) to
   every non-essential animation.
 - Decorative/infinite motion pauses under `prefers-reduced-motion`.
@@ -336,15 +432,25 @@ Type rules:
 ## Data flow and conventions
 
 - Shared generation state lives in `src/components/studio/state.ts`: mode,
-  prompt, model, aspect, duration, attachment, balance. The home composer and
-  studio stay in sync because they read the same atoms.
+  prompt, model, aspect ratio, duration, resolution, audio, optional template,
+  attachment and balance. These map to `GenerationSettings` and the
+  `POST /generations` body. The home composer and studio stay in sync because
+  they read the same atoms.
 - Other Jotai atoms belong in that feature's own `state.ts`, not in a catch-all
   store under `src/lib`.
 - Ephemeral UI state (open menus, queues, active take) belongs in the feature's
   `hooks.ts`.
 - Actions are simulated: submitting the composer navigates to
   `/create/${mode}`, and every catalogue item, price and result comes from
-  `src/lib`.
+  `src/lib`. The studio and home composer validate every control against the
+  selected model's capabilities.
+- Settings shows only `users.email`, `users.id` and `users.created_at`, plus
+  the `notifications` rows; there are no preference, security or API-key panes.
+- Billing keeps its full payment page: available balance, payment method, auto
+  top-up, usage, receipts, tax and `balance_transactions` (top-up, charge,
+  credit). The card and invoices come from Lemon Squeezy; usage and the ledger
+  come from the API. The demo values in `src/components/billing/constants.ts`
+  are presentation data until BIL-6 wires the provider.
 - Use the `chronolab:` prefix for custom events.
 - Route metadata is exported per page; the root layout owns global metadata,
   OG/Twitter, manifest and `themeColor: "#7c3aed"`.
@@ -355,7 +461,7 @@ Type rules:
 
 | Layer | Command | Contract |
 | --- | --- | --- |
-| Unit | `npm run test:unit` | `src/lib` maths and data, plus `src/proxy.test.ts` |
+| Unit | `npm run test:unit` | `src/lib` maths and `src/mocks` data, plus `src/proxy.test.ts` |
 | Component | `npm run test:components` | `src/components` and `src/app` behaviour |
 | All Vitest | `npm test` | every colocated `*.test.ts(x)` |
 | Coverage | `npm run test:coverage` | floors enforced |
@@ -419,12 +525,13 @@ shell.
 **Add a feature component:** create `src/components/<feature>/index.tsx` plus
 `constants.ts`, `hooks.ts`, `state.ts` and `types.ts` as the feature needs them.
 Mark the interactive root `"use client"`. Put every visible string in
-`constants.ts`, write single flat props inline, and import shared data from
-`src/lib`. Add `index.test.tsx` beside it.
+`constants.ts`, write single flat props inline, and import types/rules from
+`src/lib` and demo rows from `src/mocks`. Add `index.test.tsx` beside it.
 
-**Add a model or price:** update `src/lib/generation/index.ts` (models, cost
-rules) or `src/lib/media/index.ts` (rates), then update
-`src/lib/pricing/index.ts` if quantity maths changes. Add a unit test.
+**Add a model or price:** add a `generation_models` row (with capabilities) in
+`src/mocks/generation.ts` and its price in `modelCosts`; update
+`src/lib/pricing/index.ts` if quantity maths changes. A model name, provider or
+capability must exist in the contract first. Add a unit test.
 
 **Add a design token:** add the variable in `:root`, mirror it in `@theme
 inline` as `--color-*`, use the generated Tailwind class, and update this doc.

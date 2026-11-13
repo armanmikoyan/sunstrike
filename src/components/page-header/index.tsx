@@ -7,11 +7,13 @@ export function PageHeader({
   description,
   action,
   className,
+  divider = true,
 }: PageHeaderProps) {
   return (
     <div
       className={cn(
-        "flex flex-col justify-between gap-5 border-b border-border pb-6 sm:flex-row sm:items-end",
+        "flex flex-col justify-between gap-5 pb-6 sm:flex-row sm:items-end",
+        divider && "border-b border-border",
         className,
       )}
     >

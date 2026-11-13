@@ -43,7 +43,13 @@ describe("studio", () => {
 
   it("prices the generation in dollars", () => {
     renderStudio("video");
-    expect(screen.getAllByText(/^\$0\.\d{2}$/).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        (_, node) =>
+          /^\$0\.\d{2}$/.test(node?.textContent ?? "") &&
+          Boolean(node?.classList.contains("tabular-nums")),
+      ).length,
+    ).toBeGreaterThan(0);
   });
 
   it("shows the aspect ratio presets", () => {

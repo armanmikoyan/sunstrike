@@ -1,6 +1,7 @@
 export type RollingNumberProps = {
   value: number;
   decimalPlaces?: number;
+  useGrouping?: boolean;
   prefix?: string;
   suffix?: string;
   className?: string;

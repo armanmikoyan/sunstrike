@@ -6,14 +6,14 @@
 
 :root {
   color-scheme: dark;
-  --background: #131517;
+  --background: #0f1113;
   --foreground: #f4f5f7;
-  --card: #1c1e20;
+  --card: #0f1113;
   --card-foreground: #f4f5f7;
   --popover: #23262a;
   --popover-foreground: #f4f5f7;
   --primary: #f4f5f7;
-  --primary-foreground: #131517;
+  --primary-foreground: #0f1113;
   --secondary: #23262a;
   --secondary-foreground: #eceef0;
   --muted: #18191c;
@@ -30,10 +30,10 @@
   --chart-4: #62676e;
   --chart-5: #3b3f45;
   --radius: 0.75rem;
-  --sidebar: #0f1113;
+  --sidebar: var(--background);
   --sidebar-foreground: #f4f5f7;
   --sidebar-primary: #f4f5f7;
-  --sidebar-primary-foreground: #131517;
+  --sidebar-primary-foreground: #0f1113;
   --sidebar-accent: #1c1e20;
   --sidebar-accent-foreground: #f4f5f7;
   --sidebar-border: rgba(255, 255, 255, 0.09);
@@ -43,20 +43,21 @@
   --brand-hover: #8b5cf6;
   --brand-secondary: #a78bfa;
   --brand-tertiary: #c4b5fd;
-  --surface: #18191c;
-  --surface-raised: #1c1e20;
+  --surface: #0f1113;
+  --surface-raised: #0f1113;
   --surface-inset: #0f1113;
+  --chrome: #131517;
 }
 
 .dark {
-  --background: #131517;
+  --background: #0f1113;
   --foreground: #f4f5f7;
-  --card: #1c1e20;
+  --card: #0f1113;
   --card-foreground: #f4f5f7;
   --popover: #23262a;
   --popover-foreground: #f4f5f7;
   --primary: #f4f5f7;
-  --primary-foreground: #131517;
+  --primary-foreground: #0f1113;
   --secondary: #23262a;
   --secondary-foreground: #eceef0;
   --muted: #18191c;
@@ -67,10 +68,10 @@
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.12);
   --ring: #f4f5f7;
-  --sidebar: #0f1113;
+  --sidebar: var(--background);
   --sidebar-foreground: #f4f5f7;
   --sidebar-primary: #f4f5f7;
-  --sidebar-primary-foreground: #131517;
+  --sidebar-primary-foreground: #0f1113;
   --sidebar-accent: #1c1e20;
   --sidebar-accent-foreground: #f4f5f7;
   --sidebar-border: rgba(255, 255, 255, 0.09);
@@ -163,7 +164,7 @@
 
   ::selection {
     background: rgba(244, 245, 247, 0.9);
-    color: #131517;
+    color: #0f1113;
   }
 }
 
@@ -185,11 +186,67 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .glass-panel {
-    background: rgba(28, 30, 32, 0.82);
-    backdrop-filter: blur(1.25rem) saturate(130%);
+  /* Structural nav bars match the library summary surface: a solid lift above
+     the page so labels always have contrast, with no see-through backdrop. */
+  .chrome-bar {
+    background-color: var(--chrome);
+    background-image: none;
+    box-shadow: none;
   }
 
+  /* Content panels and cards share one surface fill so no card reads lighter
+     than another. Borders, not a second background shade, define the edge. */
+  .glass-panel,
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.015);
+  }
+
+  .glass-card {
+    box-shadow: 0 1.5rem 3rem -2rem rgba(0, 0, 0, 0.55);
+  }
+
+  /* Portalled menus, select content and dialogs float over video and images.
+     The backdrop is strongly blurred and darkened, then lightly tinted, so the
+     media reads as frosted glass without hurting text contrast. */
+  .glass-menu {
+    background-color: rgba(16, 18, 21, 0.82);
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.008)
+    );
+    -webkit-backdrop-filter: blur(2.5rem) saturate(140%) brightness(0.5);
+    backdrop-filter: blur(2.5rem) saturate(140%) brightness(0.5);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 1.5rem 4rem -1rem rgba(0, 0, 0, 0.6);
+  }
+
+  /* The mega menu meets the navbar directly, so its top edge must not draw a
+     second hairline below the header's own border. */
+  .glass-menu.mega-menu-panel {
+    box-shadow: 0 1.5rem 4rem -1rem rgba(0, 0, 0, 0.6);
+  }
+
+  .glass-inset {
+    background-color: rgba(0, 0, 0, 0.22);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-menu {
+    background-color: #101215;
+    background-image: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-menu {
+    background-color: #101215;
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 @keyframes wall-rise {
@@ -211,8 +268,8 @@
 .wall-column-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding-bottom: 0.75rem;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

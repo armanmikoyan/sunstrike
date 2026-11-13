@@ -1,17 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { MediaCard } from ".";
-import { mediaById, type MediaItem } from "@/lib/media";
+import type { MediaItem } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 
 const video = mediaById("01") as MediaItem;
 const still = mediaById("05") as MediaItem;
 
 describe("media card", () => {
-  it("shows the title, author and like count", () => {
+  it("shows the title and the model that made it", () => {
     render(<MediaCard item={video} />);
     expect(screen.getByText(video.title)).toBeInTheDocument();
-    expect(screen.getByText(video.author)).toBeInTheDocument();
-    expect(screen.getByText(video.likes.toLocaleString("en-US"))).toBeInTheDocument();
+    expect(screen.getByText(video.model)).toBeInTheDocument();
   });
 
   it("marks videos with a duration", () => {
@@ -39,13 +39,6 @@ describe("media card", () => {
       "href",
       "/explore",
     );
-  });
-
-  it("exposes an accessible save control", () => {
-    render(<MediaCard item={video} />);
-    expect(
-      screen.getByRole("button", { name: `Save ${video.title}` }),
-    ).toBeInTheDocument();
   });
 
   it("can hide the meta block", () => {

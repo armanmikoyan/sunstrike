@@ -6,7 +6,18 @@ export const pricingPoints = [
   "Cost shown up front",
 ];
 
-export const pricingClipIds = ["02", "03", "04", "07", "08"];
+export const pricingMosaicTiles = [
+  { id: "01", label: "16:9", span: "col-span-2 row-span-2 lg:col-span-6 lg:row-span-2" },
+  { id: "05", label: "3:4", span: "col-span-1 lg:col-span-3 lg:row-span-2" },
+  { id: "08", label: "1:1", span: "col-span-1 lg:col-span-3" },
+  { id: "10", label: "4:3", span: "col-span-1 lg:col-span-3" },
+  { id: "12", label: "9:16", span: "col-span-1 lg:col-span-2 lg:row-span-2" },
+  { id: "15", label: "21:9", span: "col-span-1 lg:col-span-4" },
+  { id: "17", label: "3:4", span: "col-span-1 lg:col-span-3 lg:row-span-2" },
+  { id: "18", label: "1:1", span: "col-span-1 lg:col-span-3" },
+  { id: "02", label: "16:9", span: "col-span-1 lg:col-span-4" },
+  { id: "07", label: "4:3", span: "col-span-2 lg:col-span-3" },
+];
 
 export const homeCopy = {
   gallery: {
@@ -17,11 +28,14 @@ export const homeCopy = {
   },
   pricing: {
     titleBefore: "Pay for the ",
-    titleAccent: "render",
+    titleAccent: "output",
     titleAfter: ", not the plan",
     description:
-      "No monthly plan. No seat minimum. Choose how many images or clips you need, see the total before you pay, and keep the balance until you use it.",
+      "Top up once and spend the balance across every image and video model. No monthly plan, no seat minimum, and nothing expires.",
     primaryAction: "See pricing",
     secondaryAction: "Billing dashboard",
+    resultsTitle: "Results, priced up front",
+    resultsDescription: "A few outputs across every ratio, with the cost shown.",
+    resultsAction: "Open gallery",
   },
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { atom, useAtom } from "jotai";
 import { MobileSidebar, Sidebar } from "@/components/sidebar";
@@ -18,11 +18,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+
   if (pathname === "/login") return <>{children}</>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto flex min-h-screen w-full max-w-[120rem] bg-background">
+    <div className="min-h-screen">
+      <div className="mx-auto flex min-h-screen w-full max-w-[120rem]">
         <Sidebar
           expanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded((value) => !value)}

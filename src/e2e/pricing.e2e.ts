@@ -7,50 +7,73 @@ test.describe("pricing", () => {
     await openApp(page, "/pricing");
   });
 
-  test("leads with video and bills in dollars", async ({ page }) => {
-    await expect(page.getByRole("tab", { name: "Video" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    await expect(page.getByRole("tabpanel")).toContainText("$2.04");
-    await expect(page.getByRole("tabpanel")).toContainText("$0.51");
-  });
-
-  test("switches to the image calculator", async ({ page }) => {
-    await page.getByRole("tab", { name: "Images" }).click();
-
-    await expect(page.getByRole("tabpanel")).toContainText("$0.60");
+  test("lists every video model at a per-second rate", async ({ page }) => {
     await expect(
-      page.getByRole("slider", { name: "Number of images" }),
+      page.getByRole("heading", {
+        name: /Every second at the model's price/i,
+      }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Chronolab Motion 2" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Chronolab Loop" }),
+    ).toBeVisible();
+    await expect(page.getByText("$0.085", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("$0.10", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("$0.072", { exact: true })).toBeVisible();
+    await expect(page.getByText("$0.51 per 6-second clip")).toHaveCount(2);
   });
 
-  test("applies the 500 image volume tier", async ({ page }) => {
-    await page.getByRole("tab", { name: "Images" }).click();
-    await page.getByRole("button", { name: /50–500/ }).click();
+  test("filters the rate list to image models", async ({ page }) => {
+    await page.getByRole("button", { name: "Image models" }).click();
 
-    await expect(page.getByRole("tabpanel")).toContainText("$2.50");
-    await expect(page.getByRole("tabpanel")).toContainText("$0.05");
+    await expect(
+      page.getByRole("button", { name: "Image models" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.getByRole("heading", { name: "Chronolab Image 2" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Chronolab Motion 2" }),
+    ).toHaveCount(0);
+    await expect(page.getByText("$0.07", { exact: true })).toBeVisible();
   });
 
-  test("re-prices video by model and clip count", async ({ page }) => {
-    // The estimator only re-prices once React has hydrated, so a click that
-    // lands during hydration is silently dropped. Retry the interaction
-    // instead of trusting that the page is interactive.
-    await expect(async () => {
-      await page.getByRole("button", { name: /Motion Turbo/ }).click();
-      await expect(page.getByRole("tabpanel")).toContainText("$1.36", {
-        timeout: 2000,
-      });
-    }).toPass({ timeout: 15000 });
+  test("scrolls to the rates without running the route loader", async ({
+    page,
+  }) => {
+    await page.getByRole("link", { name: "See model rates" }).click();
 
-    await page.getByRole("button", { name: "Increase clips" }).click();
-    await expect(page.getByRole("tabpanel")).toContainText("$1.70");
+    await expect
+      .poll(() => page.evaluate(() => Math.round(window.scrollY)))
+      .toBeGreaterThan(100);
+
+    const bar = page.locator('[aria-hidden="true"]').first();
+    await expect(bar).not.toHaveClass(/opacity-100/);
   });
 
-  test("top-up packs are priced in dollars", async ({ page }) => {
-    await expect(page.getByText("$10", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("$25", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("$50", { exact: true }).first()).toBeVisible();
+  test("opens a question without moving the footer", async ({ page }) => {
+    const footerTop = () =>
+      page.evaluate(
+        () =>
+          Math.round(
+            document.querySelector("footer")!.getBoundingClientRect().top +
+              window.scrollY,
+          ),
+      );
+
+    const before = await footerTop();
+    await page.getByRole("button", { name: "How does billing work?" }).click();
+    await page.waitForTimeout(500);
+
+    expect(await footerTop()).toBe(before);
+  });
+
+  test("shows what each top-up buys", async ({ page }) => {
+    await expect(page.getByText("Up to 117 seconds")).toBeVisible();
+    await expect(page.getByText("Up to 142 images")).toBeVisible();
+    await expect(page.getByText("Up to 294 seconds")).toBeVisible();
+    await expect(page.getByText("Up to 588 seconds")).toBeVisible();
   });
 });

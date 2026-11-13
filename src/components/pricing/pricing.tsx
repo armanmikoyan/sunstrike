@@ -1,93 +1,89 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  RefreshCw,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
-import { ClipStrip } from "@/components/clip-strip";
+import { ArrowRight, Check, Film, Image as ImageIcon, ShieldCheck } from "lucide-react";
+import { SectionHeader } from "@/components/section-header";
 import { Button } from "@/ui/button";
-import { generationRates, topUpPacks } from "@/lib/media";
+import { imageRates, topUpPacks, videoRates } from "@/mocks/pricing";
 import { cn } from "@/lib/utils";
-import {
-  pricingClipIds,
-  pricingCopy,
-  pricingFaqs,
-  pricingIntro,
-  pricingPoints,
-} from "./constants";
-import { PricingOrderTabs } from "./pricing-order-tabs";
+import { pricingCopy, pricingPoints } from "./constants";
+import { PricingCustomTopUp } from "./pricing-custom-top-up";
+import { PricingFaq } from "./pricing-faq";
+import { PricingModelRates } from "./pricing-model-rates";
 
 export function Pricing() {
-  const { hero, topUps, rates, autoTopUp, faq } = pricingCopy;
+  const { hero, topUps, faq } = pricingCopy;
+  const motion = videoRates.find(
+    (model) => model.slug === "chronolab-motion-2",
+  ) ?? videoRates[0];
+  const image = imageRates.find(
+    (model) => model.slug === "chronolab-image-2",
+  ) ?? imageRates[0];
 
   return (
-    <>
-      <div className="w-full px-5 py-12 sm:py-16">
-        <div className="grid gap-12 lg:grid-cols-[1fr_22.5rem]">
-          <div className="flex flex-col gap-8">
-            <div>
-              <div className="text-[0.75rem] text-muted-foreground">
-                {hero.eyebrow}
-              </div>
-              <h1 className="mt-4 max-w-[43.75rem] text-balance text-[clamp(2.5rem,6vw,4rem)] font-medium leading-[1.02] tracking-[-0.05em]">
-                {hero.title}
-                <br />
-                <span className="font-display font-normal tracking-[-0.03em]">
-                  {hero.titleAccent}
-                </span>
-              </h1>
-              <p className="mt-4 max-w-[31.875rem] text-[0.9375rem] leading-relaxed text-muted-foreground">
-                {pricingIntro.map((segment) => (
-                  <span
-                    key={segment.text}
-                    className={segment.emphasis ? "text-foreground" : undefined}
-                  >
-                    {segment.text}
-                  </span>
-                ))}
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-4">
-                {pricingPoints.map((item) => (
-                  <span
-                    key={item}
-                    className="flex items-center gap-1.5 text-[0.75rem] text-muted-foreground"
-                  >
-                    <Check className="size-3.5 text-muted-foreground" />
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <ClipStrip
-              ids={pricingClipIds}
-              className="hidden min-h-[12.5rem] flex-1 lg:flex"
-            />
+    <div className="w-full px-5 py-8 sm:py-10">
+      <section className="flex flex-col justify-between gap-8 border-b border-border pb-8 lg:flex-row lg:items-end">
+        <div className="max-w-[48rem]">
+          <p className="text-[0.75rem] text-muted-foreground">{hero.eyebrow}</p>
+          <h1 className="mt-3 text-balance font-grotesk text-[2.25rem] font-medium leading-[1.02] tracking-[-0.045em] sm:text-[2.75rem]">
+            {hero.titleBefore}
+            <span className="font-serif font-normal italic text-brand">
+              {hero.titleAccent}
+            </span>
+            {hero.titleAfter}
+          </h1>
+          <p className="mt-4 max-w-[36rem] text-[0.9375rem] leading-relaxed text-muted-foreground">
+            {hero.description}
+          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            {pricingPoints.map((item) => (
+              <span
+                key={item}
+                className="flex items-center gap-1.5 text-[0.75rem] text-muted-foreground"
+              >
+                <Check className="size-3.5 text-muted-foreground" />
+                {item}
+              </span>
+            ))}
           </div>
-
-          <PricingOrderTabs />
         </div>
 
-        <div className="mt-16">
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-            <div>
-              <h2 className="text-[1.375rem] font-medium tracking-[-0.025em]">
-                {topUps.title}
-              </h2>
-              <p className="mt-1 text-[0.8125rem] text-muted-foreground">
-                {topUps.description}
-              </p>
-            </div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Button
+            asChild
+            className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+          >
+            <Link href="/create/video">
+              {hero.primaryAction}
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-[0.75rem] text-foreground hover:bg-white/[0.04]"
+          >
+            <a href="#model-rates">{hero.secondaryAction}</a>
+          </Button>
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <SectionHeader
+          title={topUps.title}
+          description={topUps.description}
+          action={
             <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
               <ShieldCheck className="size-3.5" />
               {topUps.secure}
             </span>
-          </div>
+          }
+        />
 
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {topUpPacks.map((pack) => (
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {topUpPacks.map((pack) => {
+            const seconds = Math.floor(pack.price / motion.perSecond);
+            const images = Math.floor(pack.price / image.perImage);
+
+            return (
               <div
                 key={pack.id}
                 className={cn(
@@ -105,157 +101,80 @@ export function Pricing() {
                 <p className="text-[0.75rem] font-medium text-muted-foreground">
                   {pack.name}
                 </p>
-                <div className="mt-6 flex items-end gap-2">
-                  <span className="text-[2.25rem] font-medium leading-none tracking-[-0.03em] tabular-nums">
-                    {topUps.currency}
-                    {pack.price}
-                  </span>
+                <p className="mt-1 text-[0.6875rem] leading-relaxed text-muted-foreground/75">
+                  {pack.note}
+                </p>
+                <div className="mt-5 flex items-end gap-2">
+                  <span className="tabular-nums font-normal text-[2.25rem] leading-none tracking-[-0.03em]">{`${topUps.currency}${pack.price}`}</span>
                   <span className="mb-1 text-[0.75rem] text-muted-foreground">
                     {topUps.oneTime}
                   </span>
                 </div>
-                <p className="mt-3 text-[0.8125rem] text-muted-foreground">
-                  {pack.note}
-                </p>
-                <div className="mt-6 flex items-center justify-between border-t border-white/[0.07] pt-4 text-[0.6875rem] text-muted-foreground">
+
+                <div className="mt-5 space-y-2.5 border-t border-white/[0.07] pt-4 text-[0.75rem]">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                      <Film className="size-3.5 shrink-0" />
+                      <span className="truncate">{motion.displayName}</span>
+                    </span>
+                    <span className="shrink-0 font-medium tabular-nums">
+                      {topUps.upTo} {seconds} {topUps.seconds}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                      <ImageIcon className="size-3.5 shrink-0" />
+                      <span className="truncate">{image.displayName}</span>
+                    </span>
+                    <span className="shrink-0 font-medium tabular-nums">
+                      {topUps.upTo} {images} {topUps.images}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-4 text-[0.6875rem] text-muted-foreground">
                   <span>{topUps.balance}</span>
                   <span>{topUps.neverExpires}</span>
                 </div>
-                <Button
-                  asChild
-                  variant={pack.popular ? "default" : "outline"}
-                  className={cn(
-                    "mt-5 h-10 rounded-lg text-[0.75rem] font-medium",
-                    pack.popular
-                      ? "bg-brand text-brand-foreground hover:bg-brand-hover"
-                      : "border-white/10 bg-transparent text-foreground hover:bg-white/[0.04]",
-                  )}
-                >
-                  <Link href="/billing">
-                    {topUps.topUp}
-                    {pack.price}
-                    <ArrowRight className="size-3.5" />
-                  </Link>
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-16 grid gap-4 lg:grid-cols-[1fr_21.25rem]">
-          <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.012]">
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
-              <div>
-                <h2 className="text-[0.9375rem] font-medium">
-                  {rates.title}
-                </h2>
-                <p className="mt-1 text-[0.75rem] text-muted-foreground">
-                  {rates.description}
-                </p>
-              </div>
-              <Zap className="size-4 text-muted-foreground" />
-            </div>
-            <div className="divide-y divide-white/[0.055]">
-              {generationRates.map((rate) => (
-                <div
-                  key={rate.name}
-                  className="flex items-center justify-between gap-4 px-5 py-3.5"
-                >
-                  <div className="min-w-0">
-                    <p className="text-[0.8125rem] font-medium">{rate.name}</p>
-                    <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-                      {rate.detail}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-baseline gap-2">
-                    <span className="font-mono text-[0.9375rem] font-medium text-foreground">
-                      {rate.price}
-                    </span>
-                    <span className="hidden text-[0.6875rem] text-muted-foreground min-[22.5rem]:inline">
-                      {rates.perRender}
-                    </span>
-                  </div>
+                <div className="mt-auto pt-5">
+                  <Button
+                    asChild
+                    variant={pack.popular ? "default" : "outline"}
+                    className={cn(
+                      "h-10 w-full rounded-lg text-[0.75rem] font-medium",
+                      pack.popular
+                        ? "bg-brand text-brand-foreground hover:bg-brand-hover"
+                        : "border-white/10 bg-transparent text-foreground hover:bg-white/[0.04]",
+                    )}
+                  >
+                    <Link href="/billing">
+                      {topUps.topUp}
+                      {pack.price}
+                      <ArrowRight className="size-3.5" />
+                    </Link>
+                  </Button>
                 </div>
-              ))}
-            </div>
-            <div className="flex items-center justify-between border-t border-white/[0.06] bg-white/[0.015] px-5 py-3">
-              <p className="text-[0.6875rem] text-muted-foreground">
-                {rates.refundNote}
-              </p>
-              <Link
-                href="/create/video"
-                className="flex items-center gap-1 text-[0.6875rem] font-medium text-foreground/80 transition-colors hover:text-foreground"
-              >
-                {rates.action}
-                <ArrowRight className="size-3" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.08] bg-[#18191c] p-5">
-            <RefreshCw className="size-4 text-muted-foreground" />
-            <h3 className="mt-4 text-[0.9375rem] font-medium">
-              {autoTopUp.title}
-            </h3>
-            <p className="mt-2 text-[0.8125rem] leading-relaxed text-muted-foreground">
-              {autoTopUp.description}
-            </p>
-            <div className="mt-5 space-y-2">
-              <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <span className="text-[0.75rem] text-muted-foreground">
-                  {autoTopUp.balanceBelow}
-                </span>
-                <span className="font-mono text-[0.6875rem]">
-                  {autoTopUp.balanceValue}
-                </span>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                <span className="text-[0.75rem] text-muted-foreground">
-                  {autoTopUp.topUpWith}
-                </span>
-                <span className="font-mono text-[0.6875rem]">
-                  {autoTopUp.topUpValue}
-                </span>
-              </div>
-            </div>
-            <Button
-              asChild
-              variant="outline"
-              className="mt-4 h-9 w-full rounded-lg border-white/10 bg-transparent text-[0.75rem] text-foreground hover:bg-white/[0.04]"
-            >
-              <Link href="/billing">
-                {autoTopUp.action}
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </Button>
-          </div>
+            );
+          })}
         </div>
+        <PricingCustomTopUp
+          videoModels={videoRates}
+          imageModels={imageRates}
+        />
+        <p className="mt-3 text-[0.6875rem] text-muted-foreground">
+          {topUps.capacityNote}
+        </p>
+      </section>
 
-        <div className="mt-16 border-t border-border pt-10">
-          <h2 className="text-[1.375rem] font-medium tracking-[-0.025em]">
-            {faq.title}
-          </h2>
-          <div className="mt-4 grid gap-x-12 md:grid-cols-2">
-            {pricingFaqs.map((item) => (
-              <details
-                key={item.question}
-                className="group border-b border-white/[0.07] py-4"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[0.8125rem] font-medium">
-                  {item.question}
-                  <span className="relative size-3">
-                    <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-muted-foreground" />
-                    <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-muted-foreground transition-transform group-open:rotate-90" />
-                  </span>
-                </summary>
-                <p className="mt-2 max-w-[30rem] text-[0.8125rem] leading-relaxed text-muted-foreground">
-                  {item.answer}
-                </p>
-              </details>
-            ))}
-          </div>
-        </div>
+      <div id="model-rates" className="mt-14 scroll-mt-20">
+        <PricingModelRates />
       </div>
-    </>
+
+      <section className="mt-14 border-t border-border pt-10">
+        <SectionHeader title={faq.title} description={faq.description} />
+        <PricingFaq />
+      </section>
+    </div>
   );
 }

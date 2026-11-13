@@ -23,16 +23,28 @@ describe("home prompt composer", () => {
   it("starts in video mode with a dollar estimate", () => {
     renderComposer();
     expect(prompt()).toBeInTheDocument();
-    expect(screen.getByText("$0.51")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Video" })).toHaveClass(
+    expect(
+      screen.getByText(
+        (_, node) =>
+          node?.textContent === "$0.51" &&
+          node.classList.contains("tabular-nums"),
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Video" })).toHaveClass(
       "text-foreground",
     );
   });
 
   it("re-prices when switching to images", async () => {
     renderComposer();
-    await userEvent.click(screen.getByRole("button", { name: "Image" }));
-    expect(screen.getByText("$0.07")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("tab", { name: "Image" }));
+    expect(
+      screen.getByText(
+        (_, node) =>
+          node?.textContent === "$0.07" &&
+          node.classList.contains("tabular-nums"),
+      ),
+    ).toBeInTheDocument();
   });
 
   it("accepts a prompt and starts a generation", async () => {
@@ -53,7 +65,7 @@ describe("home prompt composer", () => {
 
   it("routes image generations to the image studio", async () => {
     renderComposer();
-    await userEvent.click(screen.getByRole("button", { name: "Image" }));
+    await userEvent.click(screen.getByRole("tab", { name: "Image" }));
     await userEvent.type(prompt(), "a soft ceramic form");
     await userEvent.click(screen.getByRole("button", { name: "Start generation" }));
 

@@ -9,7 +9,7 @@ export const billingTransactions = [
   {
     id: "txn_20931",
     title: "Chronolab Motion 2 · After Rain",
-    detail: "Video render · 6s · 1080p",
+    detail: "Video generation · 6s · 1080p",
     date: "Today, 14:32",
     amount: "−$0.51",
     status: "Completed",
@@ -18,7 +18,7 @@ export const billingTransactions = [
   {
     id: "txn_20930",
     title: "Chronolab Image Pro · Soft Object",
-    detail: "Image render · 2 MP",
+    detail: "Image generation · 2 MP",
     date: "Today, 14:08",
     amount: "−$0.12",
     status: "Completed",
@@ -36,7 +36,7 @@ export const billingTransactions = [
   {
     id: "txn_20928",
     title: "Chronolab Motion Turbo · Orbit study",
-    detail: "Video render · 4s · 720p",
+    detail: "Video generation · 4s · 720p",
     date: "Oct 27, 08:44",
     amount: "−$0.34",
     status: "Completed",
@@ -44,7 +44,7 @@ export const billingTransactions = [
   },
   {
     id: "txn_20927",
-    title: "Failed render refund",
+    title: "Failed generation refund",
     detail: "Chronolab Motion 2 · automatic refund",
     date: "Oct 26, 19:03",
     amount: "+$0.51",

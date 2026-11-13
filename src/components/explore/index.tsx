@@ -13,6 +13,7 @@ export function Explore() {
           eyebrow={exploreCopy.eyebrow}
           title={exploreCopy.title}
           description={exploreCopy.description}
+          divider={false}
           action={
             <Button
               asChild

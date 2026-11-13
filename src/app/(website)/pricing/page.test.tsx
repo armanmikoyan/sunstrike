@@ -4,10 +4,17 @@ import PricingPage from "./page";
 import { renderWithProviders } from "~/vitest.setup";
 
 describe("pricing page", () => {
-  it("opens on the video calculator", () => {
+  it("opens on model rates billed by the second", () => {
     renderWithProviders(<PricingPage />);
-    expect(screen.getByText(/Pay for output/)).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Video" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: /Every second at the model's price/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/\/ second/).length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("button", { name: "All models" }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 
   it("talks about balance and dollars, never credits", () => {

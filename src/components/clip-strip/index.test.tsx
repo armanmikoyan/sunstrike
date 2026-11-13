@@ -5,7 +5,13 @@ import { ClipStrip } from ".";
 describe("clip strip", () => {
   it("prints a dollar price under every clip", () => {
     render(<ClipStrip ids={["01", "02"]} />);
-    expect(screen.getAllByText(/^\$\d+\.\d{2}$/)).toHaveLength(2);
+    expect(
+      screen.getAllByText(
+        (_, node) =>
+          /^\$\d+\.\d{2}$/.test(node?.textContent ?? "") &&
+          Boolean(node?.classList.contains("tabular-nums")),
+      ),
+    ).toHaveLength(2);
   });
 
   it("skips unknown ids", () => {

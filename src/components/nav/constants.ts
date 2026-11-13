@@ -19,8 +19,8 @@ export const megaMenus: MegaMenu[] = [
   {
     key: "image",
     label: "Image",
-    eyebrow: "Still generation",
-    title: "Stills with a point of view",
+    eyebrow: "Image generation",
+    title: "Images with a point of view",
     description:
       "Art-direct a frame with references, precise ratios and production-ready detail.",
     href: "/create/image",
@@ -71,7 +71,7 @@ export const megaMenus: MegaMenu[] = [
     eyebrow: "Motion generation",
     title: "Shots that hold up in the edit",
     description:
-      "Generate cinematic motion from a still or a prompt, then keep the good takes.",
+      "Generate cinematic motion from an image or a prompt, then keep the good takes.",
     href: "/create/video",
     cta: "Open video studio",
     features: [
@@ -83,7 +83,7 @@ export const megaMenus: MegaMenu[] = [
       },
       {
         name: "Image to video",
-        description: "Bring a still into motion with camera cues.",
+        description: "Bring an image into motion with camera cues.",
         href: "/create/video",
         icon: ImageIcon,
       },
@@ -204,29 +204,13 @@ export const megaMenus: MegaMenu[] = [
 
 export const notificationsCopy = {
   label: "Notifications",
-  unread: "3 new",
-  items: [
-    {
-      title: "Your render is ready",
-      detail: "After Rain · 6 seconds · 1080p",
-    },
-    {
-      title: "Balance added",
-      detail: "$10.00 from your top-up",
-    },
-    {
-      title: "New: Chronolab Motion 2",
-      detail: "Better faces, longer shots.",
-    },
-  ],
-  viewAll: "View all activity",
 };
 
 export const megaMenuCopy = {
   video: "Video",
   image: "Image",
-  priceNote: "Every render shows its price before you start.",
-  recentRenders: "Recent renders",
+  priceNote: "Every generation shows its price before you start.",
+  recentGenerations: "Recent generations",
   payg: "Pay as you go",
 };
 

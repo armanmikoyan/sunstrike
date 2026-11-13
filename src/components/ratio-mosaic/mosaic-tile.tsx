@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Film, ImageIcon } from "lucide-react";
+import { Coins, Film, ImageIcon } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
+import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 import type { MosaicTileProps } from "./types";
 
-export function MosaicTile({ id, label, span }: MosaicTileProps) {
+export function MosaicTile({ id, label, span, showCost = false }: MosaicTileProps) {
   const item = mediaById(id);
   if (!item) return null;
 
@@ -14,7 +15,7 @@ export function MosaicTile({ id, label, span }: MosaicTileProps) {
     <Link
       href={`/create/${item.kind}`}
       className={cn(
-        "group relative overflow-hidden rounded-xl bg-card transition-opacity hover:opacity-95",
+        "group relative overflow-hidden rounded-xl bg-card",
         span,
       )}
     >
@@ -35,9 +36,9 @@ export function MosaicTile({ id, label, span }: MosaicTileProps) {
         />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/20 transition-opacity duration-300 group-hover:opacity-0" />
 
-      <span className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 text-[0.6875rem] text-white/85 backdrop-blur-md">
+      <span className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 text-[0.6875rem] text-white/85 backdrop-blur-md transition-opacity duration-200 group-hover:opacity-0">
         {item.kind === "video" ? (
           <Film className="size-3" />
         ) : (
@@ -46,11 +47,24 @@ export function MosaicTile({ id, label, span }: MosaicTileProps) {
         {item.kind === "video" ? "Video" : "Image"}
       </span>
 
-      <span className="absolute right-2.5 top-2.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 font-mono text-[0.6875rem] text-white/80 backdrop-blur-md">
+      <span className="absolute right-2.5 top-2.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 font-mono text-[0.6875rem] text-white/80 backdrop-blur-md transition-opacity duration-200 group-hover:opacity-0">
         {label}
       </span>
 
-      <div className="absolute inset-x-0 bottom-0 p-3">
+      {showCost ? (
+        <span className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 rounded-md border border-white/25 bg-black/75 px-2.5 py-2 text-[0.8125rem] font-normal leading-none text-white shadow-[0_0.125rem_0.625rem_rgba(0,0,0,0.5)] backdrop-blur-md transition-opacity duration-200 group-hover:opacity-0">
+          <Coins className="size-3.5 text-white/70" aria-hidden />
+          <span className="tabular-nums font-normal">{formatUSD(item.cost)}</span>
+          <span className="sr-only"> to generate {item.title}</span>
+        </span>
+      ) : null}
+
+      <div
+        className={cn(
+          "absolute inset-x-0 bottom-0 p-3 transition-opacity duration-200 group-hover:opacity-0",
+          showCost && "pr-16",
+        )}
+      >
         <p className="truncate text-[0.75rem] font-medium text-white">
           {item.title}
         </p>

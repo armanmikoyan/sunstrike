@@ -17,10 +17,11 @@ export function Settings() {
             <Button
               asChild
               variant="outline"
-              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.02] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
             >
               <Link href="/billing">
-                {settingsCopy.balanceAction}
+                {settingsCopy.balanceActionPrefix}
+                <span className="tabular-nums font-normal">{settingsCopy.balance}</span>
                 <ArrowUpRight className="size-3" />
               </Link>
             </Button>

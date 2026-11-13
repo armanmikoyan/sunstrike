@@ -16,6 +16,7 @@ export function useNavigationProgress() {
   const firstPath = useRef(true);
   const running = useRef(false);
   const startedAt = useRef(0);
+  const lastRoute = useRef<string | null>(null);
   const trickle = useRef<number | null>(null);
   const safety = useRef<number | null>(null);
   const hide = useRef<number | null>(null);
@@ -71,10 +72,15 @@ export function useNavigationProgress() {
   }, [finish]);
 
   useEffect(() => {
+    const route = `${pathname}${window.location.search}`;
+
     if (firstPath.current) {
       firstPath.current = false;
+      lastRoute.current = route;
       return;
     }
+
+    lastRoute.current = route;
     finish();
   }, [pathname, finish]);
 
@@ -111,7 +117,13 @@ export function useNavigationProgress() {
       start();
     };
 
-    const onPopState = () => start();
+    const onPopState = () => {
+      const route = `${window.location.pathname}${window.location.search}`;
+      if (route === lastRoute.current) return;
+
+      lastRoute.current = route;
+      start();
+    };
     const onStart = () => start();
 
     document.addEventListener("click", onClick, true);

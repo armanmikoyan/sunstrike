@@ -1,36 +1,24 @@
-import { Film, Image as ImageIcon } from "lucide-react";
-import { MAX_CLIPS, MAX_IMAGES } from "@/lib/pricing";
+import { MAX_IMAGES } from "@/lib/pricing";
 
 export const pricingCardCopy = {
   yourOrder: "Your order",
   payg: "PAYG",
   images: "Images",
   imagesLower: "images",
-  clips: "Clips",
-  clipsLower: "clips",
   decreaseImages: "Decrease images",
   increaseImages: "Increase images",
-  decreaseClips: "Decrease clips",
-  increaseClips: "Increase clips",
   numberOfImages: "Number of images",
-  numberOfClips: "Number of clips",
   imageRangeStart: "1 image",
   imageRangeEnd: `${MAX_IMAGES} images`,
-  clipRangeStart: "1 clip",
-  clipRangeEnd: `${MAX_CLIPS} clips`,
   perImage: "Per image",
-  perClip: "Per clip",
   imageUnit: "/ image",
-  clipUnit: "/ clip",
   volumeSaving: "Volume saving",
   total: "Total",
   get: "Get",
   currency: "$",
   negativeCurrency: "−$",
   paymentNote: "One-time payment · No subscription",
-  orderTabsLabel: "What do you want to make?",
 };
-
 
 /** Image price breaks, shown as the slider legend. */
 export const imageTiers = [
@@ -54,41 +42,27 @@ export const imageTiers = [
   },
 ];
 
-export const orderTabs = [
-  { id: "video", label: "Video", icon: Film },
-  { id: "image", label: "Images", icon: ImageIcon },
-] as const;
-
-export type OrderTabId = (typeof orderTabs)[number]["id"];
-
-export const pricingClipIds = ["01", "02", "03", "04", "07", "08"];
-
 export const pricingPoints = [
   "No monthly fee",
   "Balance never expires",
   "Commercial use",
 ];
 
-export const pricingIntro = [
-  { text: "One balance for stills and motion — clips from " },
-  { text: "$0.34", emphasis: true },
-  { text: ", stills from " },
-  { text: "$0.07", emphasis: true },
-  {
-    text: ". Top up from $10, see the exact cost of every render before you start, and keep what you don't spend.",
-  },
-];
-
 export const pricingCopy = {
   hero: {
     eyebrow: "Pay as you go",
-    title: "Pay for output",
-    titleAccent: "Not seats",
+    titleBefore: "Every ",
+    titleAccent: "second",
+    titleAfter: " at the model's price",
+    description:
+      "Video is billed by the second in US dollars. Choose a model, check its rate, and know what a 5, 6 or 12 second shot costs before you generate.",
+    primaryAction: "Open video studio",
+    secondaryAction: "See model rates",
   },
   topUps: {
     title: "Top-ups",
     description:
-      "Buy any amount from $10. One-time payment, no recurring charge.",
+      "Add any amount from $5. One-time payment, no recurring charge.",
     secure: "Secure checkout · instant delivery",
     popular: "Most popular",
     oneTime: "one time",
@@ -96,26 +70,52 @@ export const pricingCopy = {
     balance: "Added to your balance",
     neverExpires: "Never expires",
     topUp: "Top up $",
+    upTo: "Up to",
+    seconds: "seconds",
+    videos: "videos",
+    images: "images",
+    capacityNote:
+      "Capacity uses the Motion 2 and Image 2 rates and rounds down to whole units.",
+    custom: {
+      name: "Custom top-up",
+      description: "Use the buttons, slider, or a preset.",
+      modeLabel: "Mode",
+      modelLabel: "Model",
+      videoSeconds: 6,
+      min: 5,
+      max: 10000,
+      step: 5,
+      minMax: "From $5 to $10,000",
+      video: "Video",
+      image: "Image",
+      topUp: "Top up",
+      amountLabel: "Custom top-up amount",
+      decreaseAmount: "Decrease amount",
+      increaseAmount: "Increase amount",
+      presets: [20, 50, 100, 250],
+    },
   },
   rates: {
-    title: "What a render costs",
-    description: "Exact price per render, before you hit generate.",
-    perRender: "per render",
-    refundNote: "Failed renders are refunded automatically.",
-    action: "Start a render",
-  },
-  autoTopUp: {
-    title: "Auto top-up, on your terms",
+    titleBefore: "Model ",
+    titleAccent: "rates",
     description:
-      "Set a floor and a pack size. Chronolab refills your balance only when it drops below your threshold. Switch it off whenever you want.",
-    balanceBelow: "Balance below",
-    balanceValue: "$5",
-    topUpWith: "Top up with",
-    topUpValue: "$10",
-    action: "Configure auto top-up",
+      "Dollar prices from the Chronolab catalogue. Video is priced per second; images are priced per image.",
+    action: "Open video studio",
+    filterLabel: "Model type",
+    all: "All models",
+    video: "Video models",
+    image: "Image models",
+    videoLabel: "Video",
+    imageLabel: "Image",
+    perSecond: "/ second",
+    perImage: "/ image",
+    sixSecond: "per 6-second clip",
+    audio: "Native audio",
+    silent: "Silent",
   },
   faq: {
     title: "Common questions",
+    description: "Billing, balance and generation answers.",
   },
 };
 
@@ -123,7 +123,7 @@ export const pricingFaqs = [
   {
     question: "How does billing work?",
     answer:
-      "Pay as you go in US dollars. Add funds whenever you need them, and every render is charged at the price shown in the composer before you start.",
+      "Pay as you go in US dollars. Add funds whenever you need them, and every video is charged by the second at the rate shown before you start.",
   },
   {
     question: "Is there a subscription?",
@@ -133,16 +133,16 @@ export const pricingFaqs = [
   {
     question: "Does my balance expire?",
     answer:
-      "No. Your balance stays in your studio account until you use it. Auto top-up is optional and can be switched off at any time.",
+      "No. Your balance stays in your account until you use it, and it never expires.",
   },
   {
-    question: "What happens if a render fails?",
+    question: "What happens if a generation fails?",
     answer:
-      "The amount is held when a job starts and only charged when it completes. Failed renders are refunded automatically.",
+      "The amount is held when a job starts and only charged when it completes. Failed generations are refunded automatically.",
   },
   {
     question: "Can I use the work commercially?",
     answer:
-      "Yes. Every output you generate on a paid plan comes with a commercial license. Teams can add a shared workspace from the billing page.",
+      "Yes. Every output you generate comes with a commercial license.",
   },
 ];

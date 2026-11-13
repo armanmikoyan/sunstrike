@@ -70,6 +70,18 @@ describe("navigation progress", () => {
     link.remove();
   });
 
+  it("ignores hash-only history changes", () => {
+    render(<NavigationProgress />);
+
+    act(() => {
+      window.history.pushState({}, "", "#model-rates");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+
+    expect(bar()).toHaveClass("opacity-0");
+    window.history.pushState({}, "", "/");
+  });
+
   it("hides again once the route settles", () => {
     const { rerender } = render(<NavigationProgress />);
     act(() => {

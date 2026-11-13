@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Film } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import type { VideoWallTileProps } from "./types";
 
 export function VideoWallTile({ id, preload }: VideoWallTileProps) {
@@ -46,7 +46,7 @@ export function VideoWallTile({ id, preload }: VideoWallTileProps) {
         </div>
         <span className="flex shrink-0 items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-0.5 font-mono text-[0.6875rem] text-white/80 backdrop-blur">
           <Film className="size-3" />
-          {item.kind === "video" ? item.duration : "Still"}
+          {item.kind === "video" ? item.duration : "Image"}
         </span>
       </div>
     </div>

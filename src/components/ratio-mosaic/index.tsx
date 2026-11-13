@@ -7,8 +7,8 @@ import { MosaicTile } from "./mosaic-tile";
 
 export function RatioMosaic() {
   return (
-    <section className="border-y border-border bg-surface">
-      <div className="w-full px-5 py-12">
+    <section className="border-t border-border/70">
+      <div className="w-full px-5 py-16">
         <SectionHeader
           title={
             <>
@@ -20,9 +20,21 @@ export function RatioMosaic() {
           }
           description={mosaicCopy.description}
           action={
-            <p className="font-mono text-[0.6875rem] text-muted-foreground/70">
-              {mosaicCopy.count}
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="font-mono text-[0.6875rem] text-muted-foreground/70">
+                {mosaicCopy.count}
+              </p>
+              <Button
+                asChild
+                variant="ghost"
+                className="hidden h-8 rounded-lg px-2.5 text-[0.75rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
+              >
+                <Link href="/explore">
+                  {mosaicCopy.action}
+                  <ArrowUpRight className="size-3.5" />
+                </Link>
+              </Button>
+            </div>
           }
           className="mb-6"
         />
@@ -33,17 +45,6 @@ export function RatioMosaic() {
           ))}
         </div>
 
-        <div className="mt-6 flex justify-center">
-          <Button
-            asChild
-            className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
-          >
-            <Link href="/explore">
-              {mosaicCopy.action}
-              <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </section>
   );

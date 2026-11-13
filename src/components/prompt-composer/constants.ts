@@ -12,7 +12,7 @@ export const promptIdeas: Record<GenerationMode, readonly string[]> = {
     "An editorial portrait in cool blue light, direct gaze, subtle film grain, 85mm lens, shallow focus.",
     "Iridescent ceramic form floating in pastel haze, softbox lighting, product study, muted backdrop.",
     "A lone cabin beside an alpine lake, low clouds on the ridge, muted film stock, overcast light.",
-    "Chrome and magenta liquid metal, high contrast studio light, abstract still life, glossy surface.",
+    "Chrome and magenta liquid metal, high contrast studio light, abstract tabletop scene, glossy surface.",
   ],
 };
 
@@ -32,8 +32,8 @@ export const composerCopy = {
   aspectRatio: "Aspect ratio",
   duration: "Duration",
   modelLabels: {
-    video: { title: "Motion model", tag: "Motion" },
-    image: { title: "Image model", tag: "Image" },
+    video: "Motion model",
+    image: "Image model",
   },
   compareModels: "Compare models and rates",
   attach: {

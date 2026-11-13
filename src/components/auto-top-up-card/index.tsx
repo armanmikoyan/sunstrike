@@ -21,7 +21,13 @@ export function AutoTopUpCard() {
               {autoTopUpCopy.title}
             </p>
             <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
-              {enabled ? autoTopUpCopy.enabled : autoTopUpCopy.disabled}
+              {enabled ? (
+                <>
+                  {autoTopUpCopy.enabled} <span className="tabular-nums font-normal">$5</span>
+                </>
+              ) : (
+                autoTopUpCopy.disabled
+              )}
             </p>
           </div>
         </div>
@@ -38,7 +44,7 @@ export function AutoTopUpCard() {
             {autoTopUpCopy.threshold}
           </p>
           <p className="mt-1 font-mono text-[0.6875rem]">
-            {autoTopUpCopy.thresholdValue}
+            <span className="tabular-nums font-normal">{autoTopUpCopy.thresholdValue}</span>
           </p>
         </div>
         <div className="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-2">
@@ -46,7 +52,7 @@ export function AutoTopUpCard() {
             {autoTopUpCopy.pack}
           </p>
           <p className="mt-1 font-mono text-[0.6875rem]">
-            {autoTopUpCopy.packValue}
+            <span className="tabular-nums font-normal">{autoTopUpCopy.packValue}</span>
           </p>
         </div>
       </div>

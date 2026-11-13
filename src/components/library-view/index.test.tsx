@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { LibraryView } from ".";
-import { mediaItems } from "@/lib/media";
+import { mediaItems } from "@/mocks/media";
 
 const libraryCount = 14;
 const cards = () => screen.getAllByRole("article");
@@ -26,9 +26,9 @@ describe("library view", () => {
 
   it("filters to images", async () => {
     render(<LibraryView />);
-    await userEvent.click(screen.getByRole("tab", { name: "Images" }));
+    await userEvent.click(screen.getByRole("tab", { name: "Image" }));
     expect(cards().length).toBeGreaterThan(0);
-    expect(screen.getByRole("tab", { name: "Images" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Image" })).toHaveAttribute(
       "aria-selected",
       "true",
     );

@@ -1,34 +1,39 @@
 "use client";
 
-import {
-  Clapperboard,
-  Layers3,
-  MoreHorizontal,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { Clapperboard, Layers3, LayoutTemplate } from "lucide-react";
 import { starterPrompts, studioCopy } from "./constants";
 import type { StudioSummaryProps } from "./types";
 
 export function StudioSummary({ studio }: StudioSummaryProps) {
   const copy = studioCopy.summary;
-  const { selectedModel, aspect, camera, duration, prompt, isVideo } = studio;
+  const {
+    selectedModel,
+    template,
+    aspect,
+    resolution,
+    duration,
+    audio,
+    prompt,
+    isVideo,
+  } = studio;
   const shownPrompt = prompt || starterPrompts[isVideo ? "video" : "image"];
+  const output = [
+    aspect,
+    resolution,
+    isVideo && duration ? duration : null,
+    audio ? "Audio" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   const facts = [
-    { icon: Layers3, label: copy.model, value: selectedModel.name },
+    { icon: Layers3, label: copy.model, value: selectedModel.displayName },
     {
-      icon: Clapperboard,
-      label: copy.direction,
-      value: isVideo ? `${camera} · ${duration}` : copy.singleFrame,
+      icon: LayoutTemplate,
+      label: copy.template,
+      value: template?.name ?? copy.noTemplate,
     },
-    { icon: Layers3, label: copy.output, value: `${aspect} · ${copy.resolution}` },
+    { icon: Clapperboard, label: copy.output, value: output },
   ];
 
   return (
@@ -37,7 +42,7 @@ export function StudioSummary({ studio }: StudioSummaryProps) {
         {facts.map((fact) => (
           <div
             key={fact.label}
-            className="flex items-center gap-2.5 rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-2.5"
+            className="flex items-center gap-2.5 rounded-lg border border-white/[0.07] bg-white/[0.015] px-3 py-2.5"
           >
             <fact.icon
               className="size-3 text-muted-foreground"
@@ -54,35 +59,9 @@ export function StudioSummary({ studio }: StudioSummaryProps) {
       </div>
 
       <div className="mx-auto mt-2.5 max-w-[61.25rem] rounded-lg border border-white/[0.07] bg-white/[0.015] p-3">
-        <div className="flex items-center justify-between">
-          <p className="text-[0.6875rem] text-muted-foreground">
-            {copy.currentPrompt}
-          </p>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="text-muted-foreground hover:text-foreground"
-                aria-label={copy.promptOptions}
-              >
-                <MoreHorizontal className="size-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44 p-1.5">
-              <DropdownMenuLabel>{copy.promptMenuLabel}</DropdownMenuLabel>
-              <DropdownMenuItem className="p-2 text-[0.6875rem]">
-                {copy.copyPrompt}
-              </DropdownMenuItem>
-              <DropdownMenuItem className="p-2 text-[0.6875rem]">
-                {copy.saveToFavorites}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="p-2 text-[0.6875rem]">
-                {copy.resetToLast}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <p className="text-[0.6875rem] text-muted-foreground">
+          {copy.currentPrompt}
+        </p>
         <p className="mt-1.5 line-clamp-2 text-[0.75rem] leading-relaxed text-muted-foreground">
           {shownPrompt}
         </p>

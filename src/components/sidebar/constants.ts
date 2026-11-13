@@ -2,7 +2,6 @@ import {
   CircleHelp,
   Coins,
   Compass,
-  CreditCard,
   Film,
   FolderOpen,
   Heart,
@@ -18,13 +17,12 @@ export const EXIT_MS = 260;
 export const CTA_BEVEL = "inset 0 -0.1875rem 0 0 rgba(0, 0, 0, 0.43)";
 
 export const ACCOUNT = {
-  name: "Arman Mikoyan",
   email: "arman@chronolab.ai",
-  initials: "AM",
   balance: "$10.54",
 } as const;
 
 export const accountMenuCopy = {
+  account: "Account",
   balance: "Balance",
   signOut: "Sign out",
 };
@@ -58,11 +56,9 @@ export const secondaryLinks: NavLink[] = [
   { label: "Help", href: "/help", icon: CircleHelp },
 ];
 
-// One set of account entries, shared by the desktop menu and the drawer panel,
-// so billing and settings appear in exactly one place.
+// One set of account entries, shared by the desktop menu and the drawer panel.
+// Balance already opens the account page, so Billing is not repeated here.
 export const accountLinks: NavLink[] = [
-  { label: "Billing", href: "/billing", icon: CreditCard },
   { label: "Account settings", href: "/settings", icon: Settings },
-  { label: "Workspace", href: "/settings", icon: Layers },
   { label: "Help", href: "/help", icon: CircleHelp },
 ];

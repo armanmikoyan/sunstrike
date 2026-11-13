@@ -1,6 +1,6 @@
 import { Coins } from "lucide-react";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
 import { formatUSD } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 import type { ClipStripProps } from "./types";
@@ -29,7 +29,7 @@ export function ClipStrip({ ids, className }: ClipStripProps) {
           />
           <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md border border-white/25 bg-black/75 px-2 py-1.5 font-mono text-[0.75rem] font-medium leading-none text-white shadow-[0_0.125rem_0.625rem_rgba(0,0,0,0.5)] backdrop-blur-md">
             <Coins className="size-3 text-white/70" aria-hidden />
-            {formatUSD(item.cost)}
+            <span className="tabular-nums font-normal">{formatUSD(item.cost)}</span>
             <span className="sr-only">
               {" "}
               to generate {item.title}

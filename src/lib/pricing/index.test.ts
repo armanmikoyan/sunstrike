@@ -1,17 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  MAX_CLIPS,
   MAX_IMAGES,
-  MIN_CLIPS,
   MIN_IMAGES,
-  VIDEO_PRICE,
-  clampClipQuantity,
   clampImageQuantity,
   formatUSD,
+  formatUSDRate,
   getImageQuote,
   getImageUnitPrice,
-  getVideoQuote,
-  videoModels,
+  getVideoSecondQuote,
 } from ".";
 
 describe("image tiers", () => {
@@ -45,20 +41,6 @@ describe("clampImageQuantity", () => {
   it("rounds fractional input", () => {
     expect(clampImageQuantity(3.4)).toBe(3);
     expect(clampImageQuantity(3.6)).toBe(4);
-  });
-});
-
-describe("clampClipQuantity", () => {
-  it("keeps clips between one and fifty", () => {
-    expect(clampClipQuantity(0)).toBe(MIN_CLIPS);
-    expect(clampClipQuantity(-4)).toBe(MIN_CLIPS);
-    expect(clampClipQuantity(51)).toBe(MAX_CLIPS);
-    expect(clampClipQuantity(10_000)).toBe(MAX_CLIPS);
-  });
-
-  it("rounds fractional clip counts", () => {
-    expect(clampClipQuantity(3.2)).toBe(3);
-    expect(clampClipQuantity(3.7)).toBe(4);
   });
 });
 
@@ -98,40 +80,26 @@ describe("getImageQuote", () => {
   });
 });
 
-describe("getVideoQuote", () => {
-  it("uses the standard clip rate by default", () => {
-    expect(getVideoQuote(4, "standard")).toEqual({
-      quantity: 4,
-      unit: 0.51,
-      total: 2.04,
+describe("getVideoSecondQuote", () => {
+  it("multiplies seconds by the model rate", () => {
+    expect(getVideoSecondQuote(6, 0.085)).toEqual({
+      seconds: 6,
+      perSecond: 0.085,
+      total: 0.51,
     });
   });
 
-  it("supports the turbo model", () => {
-    expect(getVideoQuote(4, "turbo")).toEqual({
-      quantity: 4,
-      unit: 0.34,
-      total: 1.36,
+  it("rounds seconds and totals to cents", () => {
+    expect(getVideoSecondQuote(5.4, 0.1)).toEqual({
+      seconds: 5,
+      perSecond: 0.1,
+      total: 0.5,
     });
   });
 
-  it("clamps to the clip range", () => {
-    expect(getVideoQuote(0, "standard").quantity).toBe(MIN_CLIPS);
-    expect(getVideoQuote(999, "standard").quantity).toBe(MAX_CLIPS);
-  });
-
-  it("falls back to the published rate for unknown models", () => {
-    // @ts-expect-error deliberately passing an unknown id
-    expect(getVideoQuote(2, "something-else").unit).toBe(VIDEO_PRICE);
-  });
-});
-
-describe("video models", () => {
-  it("is priced in dollars, not credits", () => {
-    for (const model of videoModels) {
-      expect(model.price).toBeGreaterThan(0);
-      expect(model.price).toBeLessThan(1);
-    }
+  it("never quotes less than one second", () => {
+    expect(getVideoSecondQuote(0, 0.085).seconds).toBe(1);
+    expect(getVideoSecondQuote(-4, 0.085).seconds).toBe(1);
   });
 });
 
@@ -141,5 +109,13 @@ describe("formatUSD", () => {
     expect(formatUSD(0.6)).toBe("$0.60");
     expect(formatUSD(25)).toBe("$25.00");
     expect(formatUSD(0)).toBe("$0.00");
+  });
+});
+
+describe("formatUSDRate", () => {
+  it("keeps three decimals only when the rate needs them", () => {
+    expect(formatUSDRate(0.085)).toBe("$0.085");
+    expect(formatUSDRate(0.072)).toBe("$0.072");
+    expect(formatUSDRate(0.1)).toBe("$0.10");
   });
 });

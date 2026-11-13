@@ -8,7 +8,7 @@ export function NavBalance() {
       className="group flex h-9 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
     >
       <Coins className="hidden size-3.5 text-muted-foreground sm:block" />
-      <span className="text-[0.75rem] font-medium tabular-nums">$10.54</span>
+      <span className="tabular-nums font-normal text-[0.8125rem]">$10.54</span>
       <span className="hidden text-[0.6875rem] text-muted-foreground lg:inline">
         balance
       </span>

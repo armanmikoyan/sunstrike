@@ -113,7 +113,7 @@ export function MobileSidebar({
         aria-hidden="true"
         tabIndex={-1}
         onClick={() => onOpenChange(false)}
-        className="absolute inset-0 size-full cursor-default bg-black/65"
+        className="absolute inset-0 size-full cursor-default bg-black/55 backdrop-blur-sm"
       />
 
       <div
@@ -122,7 +122,7 @@ export function MobileSidebar({
         aria-modal="true"
         aria-label={sidebarCopy.navigation}
         tabIndex={-1}
-        className="absolute inset-y-0 left-0 flex w-[80%] max-w-[27.5rem] transform-gpu flex-col rounded-r-2xl border-r border-white/[0.07] bg-sidebar outline-none will-change-transform"
+        className="glass-menu absolute inset-y-0 left-0 flex w-[80%] max-w-[27.5rem] transform-gpu flex-col rounded-r-2xl border-r border-white/10 outline-none will-change-transform"
         style={{ height: "100dvh" }}
       >
         <button

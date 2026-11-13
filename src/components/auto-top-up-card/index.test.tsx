@@ -6,7 +6,9 @@ import { AutoTopUpCard } from ".";
 describe("auto top-up card", () => {
   it("is on by default and shows the refill amount", () => {
     render(<AutoTopUpCard />);
-    expect(screen.getByText("Refills at $5")).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => node?.textContent === "Refills at $5"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("switch")).toBeChecked();
   });
 

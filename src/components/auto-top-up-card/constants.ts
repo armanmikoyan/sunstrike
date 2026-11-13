@@ -1,6 +1,6 @@
 export const autoTopUpCopy = {
   title: "Auto top-up",
-  enabled: "Refills at $5",
+  enabled: "Refills at",
   disabled: "Off",
   threshold: "Threshold",
   thresholdValue: "$5",

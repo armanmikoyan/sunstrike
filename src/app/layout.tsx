@@ -37,25 +37,14 @@ export const metadata: Metadata = {
     template: "%s — Chronolab.ai",
   },
   description:
-    "Generate cinematic video and stills from a prompt. Pay as you go, keep every frame.",
-  manifest: "/favicons/site.webmanifest",
+    "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" },
-      { url: "/favicons/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [
-      {
-        url: "/favicons/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
+    icon: "/brand/favicon.ico",
   },
   openGraph: {
     title: "Chronolab.ai — Generative Studio",
     description:
-      "Generate cinematic video and stills from a prompt. Pay as you go, keep every frame.",
+      "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
     siteName: "Chronolab.ai",
     type: "website",
     images: [{ url: SOCIAL_SRC, width: 1200, height: 630, alt: "Chronolab.ai" }],
@@ -75,7 +64,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`dark ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
+      className={`dark scroll-smooth motion-reduce:scroll-auto ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
     >
       <body>
         <Providers>

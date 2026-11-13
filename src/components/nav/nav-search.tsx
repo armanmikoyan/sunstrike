@@ -59,7 +59,7 @@ export function NavSearch() {
         }
         aria-label={navCopy.search}
         className={cn(
-          "h-9 w-full appearance-none rounded-lg border border-white/[0.08] bg-white/[0.035] pl-8 text-[0.75rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:border-white/25 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
+          "h-9 w-full appearance-none rounded-lg border border-white/[0.08] bg-white/[0.035] pl-8 text-[0.75rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:bg-white/[0.05] [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
           query.length === 0 ? "pr-2.5 lg:pr-11" : "pr-9 lg:pr-11",
         )}
       />

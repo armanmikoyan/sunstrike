@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { PromptComposer } from "@/components/prompt-composer";
-import { ImageOrderCard } from "@/components/pricing";
 import { RatioMosaic } from "@/components/ratio-mosaic";
 import { VideoWall } from "@/components/video-wall";
 import { MediaCard } from "@/components/media-card";
 import { SectionHeader } from "@/components/section-header";
-import { ClipStrip } from "@/components/clip-strip";
 import { Button } from "@/ui/button";
-import { mediaById } from "@/lib/media";
+import { mediaById } from "@/mocks/media";
+import { MosaicTile } from "@/components/ratio-mosaic/mosaic-tile";
 import {
   featuredIds,
   homeCopy,
-  pricingClipIds,
+  pricingMosaicTiles,
   pricingPoints,
 } from "./constants";
 
@@ -68,9 +67,9 @@ export function Home() {
       <RatioMosaic />
 
       <section className="w-full px-5 py-16">
-        <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-surface">
-          <div className="relative grid gap-10 p-7 sm:p-10 lg:grid-cols-[1fr_23.75rem] lg:p-12">
-            <div className="flex flex-col gap-7">
+        <div className="glass-panel overflow-hidden rounded-2xl border border-white/[0.1]">
+          <div className="p-7 sm:p-10 lg:p-12">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
               <div>
                 <h2 className="max-w-[35rem] font-grotesk text-[clamp(1.875rem,4vw,2.875rem)] font-medium leading-[1.05] tracking-[-0.045em]">
                   {homeCopy.pricing.titleBefore}
@@ -79,7 +78,7 @@ export function Home() {
                   </span>
                   {homeCopy.pricing.titleAfter}
                 </h2>
-                <p className="mt-3 max-w-[28.75rem] text-[0.8125rem] leading-relaxed text-muted-foreground">
+                <p className="mt-3 max-w-[30rem] text-[0.8125rem] leading-relaxed text-muted-foreground">
                   {homeCopy.pricing.description}
                 </p>
                 <div className="mt-5 flex flex-wrap gap-4">
@@ -93,35 +92,53 @@ export function Home() {
                     </span>
                   ))}
                 </div>
-                <div className="mt-7 flex flex-wrap items-center gap-2">
-                  <Button
-                    asChild
-                    className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
-                  >
-                    <Link href="/pricing">
-                      {homeCopy.pricing.primaryAction}
-                      <ArrowRight className="size-3.5" />
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-[0.75rem] text-foreground hover:bg-white/[0.04]"
-                  >
-                    <Link href="/billing">
-                      {homeCopy.pricing.secondaryAction}
-                    </Link>
-                  </Button>
-                </div>
               </div>
-
-              <ClipStrip
-                ids={pricingClipIds}
-                className="hidden min-h-[7.5rem] flex-1 lg:flex"
-              />
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  asChild
+                  className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+                >
+                  <Link href="/pricing">
+                    {homeCopy.pricing.primaryAction}
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-[0.75rem] text-foreground hover:bg-white/[0.04]"
+                >
+                  <Link href="/billing">
+                    {homeCopy.pricing.secondaryAction}
+                  </Link>
+                </Button>
+              </div>
             </div>
 
-            <ImageOrderCard />
+            <div className="mt-10 border-t border-white/[0.07] pt-6">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <h3 className="text-[0.8125rem] font-medium">
+                    {homeCopy.pricing.resultsTitle}
+                  </h3>
+                  <p className="mt-1 text-[0.75rem] text-muted-foreground">
+                    {homeCopy.pricing.resultsDescription}
+                  </p>
+                </div>
+                <Link
+                  href="/explore"
+                  className="flex items-center gap-1 text-[0.75rem] text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {homeCopy.pricing.resultsAction}
+                  <ArrowUpRight className="size-3.5" />
+                </Link>
+              </div>
+              <div className="mt-4 grid auto-rows-[8rem] grid-cols-2 gap-3 lg:auto-rows-[7.5rem] lg:grid-cols-12">
+                {pricingMosaicTiles.map((tile) => (
+                  <MosaicTile key={tile.id} {...tile} showCost />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

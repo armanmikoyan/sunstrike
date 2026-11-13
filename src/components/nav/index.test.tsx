@@ -120,14 +120,16 @@ describe("nav search", () => {
 });
 
 describe("notifications", () => {
-  it("opens a panel with recent activity", async () => {
+  it("opens a panel listing generation notifications", async () => {
     renderTopNav();
     await userEvent.click(screen.getByRole("button", { name: "Notifications" }));
 
     const panel = await screen.findByRole("menu");
-    expect(within(panel).getByText("Your render is ready")).toBeInTheDocument();
-    expect(
-      within(panel).getByRole("menuitem", { name: /View all activity/i }),
-    ).toHaveAttribute("href", "/library");
+    expect(within(panel).getAllByText("Generation ready").length).toBeGreaterThan(0);
+    for (const item of within(panel).getAllByRole("menuitem", {
+      name: /Generation (ready|failed)/i,
+    })) {
+      expect(item).toHaveAttribute("href", "/library");
+    }
   });
 });

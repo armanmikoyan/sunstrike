@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,12 +10,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { durations } from "@/lib/generation";
 import { composerCopy } from "./constants";
 import type { ComposerDurationMenuProps } from "./types";
 
 export function ComposerDurationMenu({ composer }: ComposerDurationMenuProps) {
-  const { duration, setDuration } = composer;
+  const { duration, setDuration, durationOptions } = composer;
 
   return (
     <DropdownMenu>
@@ -23,7 +23,7 @@ export function ComposerDurationMenu({ composer }: ComposerDurationMenuProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 gap-1 rounded-lg px-2 text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
+          className="h-8 w-[3.5rem] justify-center gap-1 rounded-lg px-2 text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
         >
           {duration}
           <ChevronDown className="size-3 opacity-60" />
@@ -31,16 +31,16 @@ export function ComposerDurationMenu({ composer }: ComposerDurationMenuProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-36 p-1.5">
         <DropdownMenuLabel>{composerCopy.duration}</DropdownMenuLabel>
-        {durations.map((value) => (
+        {durationOptions.map((value) => (
           <DropdownMenuItem
             key={value}
             onSelect={() => setDuration(value)}
-            className="p-2 text-[0.75rem]"
+            className={cn(
+              "p-2 text-[0.75rem]",
+              duration === value && "bg-white/[0.08] text-foreground",
+            )}
           >
             {value}
-            {duration === value ? (
-              <Check className="ml-auto size-3 text-foreground" />
-            ) : null}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
