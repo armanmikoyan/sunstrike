@@ -49,13 +49,13 @@ export function PromptComposer({ className }: { className?: string }) {
               submit();
             }
           }}
-          className="min-h-[4.875rem] resize-none border-0 bg-transparent px-3 py-2 text-[0.875rem] leading-relaxed shadow-none placeholder:text-muted-foreground/65 focus-visible:ring-0 dark:bg-transparent"
+          className="min-h-[4.875rem] resize-none border-0 bg-transparent px-3 py-2 text-sm lg:text-[0.8125rem] leading-relaxed shadow-none placeholder:text-muted-foreground/65 focus-visible:ring-0 dark:bg-transparent"
           aria-label={composerCopy.promptLabel}
         />
         {prompt.length === 0 ? (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-x-3 top-2 text-[0.875rem] leading-relaxed text-muted-foreground/65"
+            className="pointer-events-none absolute inset-x-3 top-2 text-sm lg:text-[0.8125rem] leading-relaxed text-muted-foreground/65"
           >
             {composer.typedPlaceholder}
             <span className="ml-0.5 inline-block h-[1.05em] w-px translate-y-[0.12em] animate-pulse bg-muted-foreground/60 motion-reduce:animate-none" />
@@ -65,20 +65,25 @@ export function PromptComposer({ className }: { className?: string }) {
 
       <ComposerAttachmentChip composer={composer} />
 
+      {/* Phones stack the bar into two rows — attachment and model on top,
+          ratio, duration and submit below. From sm up the groups dissolve and
+          every control sits on one line, with the submit at the right end. */}
       <div className="flex flex-wrap items-center gap-1 px-0.5 pb-0.5">
-        <ComposerAttachMenu composer={composer} />
-        <ComposerModelMenu composer={composer} />
+        <div className="flex w-full min-w-0 items-center gap-1 sm:contents">
+          <ComposerAttachMenu composer={composer} />
+          <ComposerModelMenu composer={composer} />
+        </div>
 
-        <span className="mx-0.5 h-3.5 w-px bg-white/[0.08]" />
-
-        <ComposerAspectMenu composer={composer} />
-        {composer.durationOptions.length > 0 ? (
-          <ComposerDurationMenu composer={composer} />
-        ) : (
-          <span aria-hidden className="h-8 w-[3.5rem] shrink-0" />
-        )}
-
-        <ComposerSubmit />
+        <div className="flex w-full items-center gap-1 sm:contents">
+          <span className="mx-0.5 hidden h-3.5 w-px bg-white/[0.08] sm:block" />
+          <ComposerAspectMenu composer={composer} />
+          {composer.durationOptions.length > 0 ? (
+            <ComposerDurationMenu composer={composer} />
+          ) : (
+            <span aria-hidden className="h-8 w-[3.5rem] shrink-0" />
+          )}
+          <ComposerSubmit />
+        </div>
       </div>
     </form>
   );

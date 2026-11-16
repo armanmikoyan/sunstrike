@@ -18,7 +18,7 @@ export function SectionHeader({
         <h2 className="font-grotesk text-[1.0625rem] font-semibold uppercase leading-tight tracking-[0.1em] text-foreground sm:text-[1.1875rem]">
           {title}
         </h2>
-        <p className="mt-2 max-w-[35rem] text-[0.875rem] leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-[35rem] text-sm lg:text-[0.8125rem] leading-relaxed text-muted-foreground">
           {description}
         </p>
       </hgroup>

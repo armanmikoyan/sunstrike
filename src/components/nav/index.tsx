@@ -30,7 +30,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
 
   return (
     <header
-      className="chrome-bar sticky top-0 z-40 h-12 border-b border-border"
+      className="chrome-bar sticky top-0 z-40 h-11 border-b border-border"
       onMouseLeave={scheduleClose}
     >
       <Script src="/brand/violet-orb.js" strategy="afterInteractive" />
@@ -40,16 +40,16 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
           ref={menuButtonRef}
           onClick={onOpenMenu}
           aria-label={navCopy.openNavigation}
-          className="-ml-1 grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:hidden"
+          className="-ml-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:hidden"
         >
           <PanelLeft className="size-[1.125rem]" strokeWidth={1.8} />
         </button>
         <Link
           href="/"
           aria-label={navCopy.home}
-          className="-m-1 shrink-0 rounded-lg p-1 outline-none transition-colors hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-white/30"
+          className="-ml-1 my-1 shrink-0 rounded-lg p-0.5 outline-none transition-colors hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-white/30"
         >
-          <Chronosphere className="size-8 sm:size-9" />
+          <Chronosphere className="size-7 sm:size-8" />
         </Link>
 
         <nav
@@ -72,7 +72,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
                   onClick={close}
                   aria-expanded={active}
                   className={cn(
-                    "flex h-9 items-center gap-1 rounded-lg px-3 text-[0.75rem] font-medium text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
+                    "flex h-8 items-center gap-1 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
                     active && "bg-white/[0.055] text-foreground",
                   )}
                 >

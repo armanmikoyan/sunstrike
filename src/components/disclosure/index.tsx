@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DisclosureProps } from "./types";
 
@@ -30,20 +31,20 @@ export function Disclosure({
         aria-controls={panelId}
         onClick={() => setOpen(!open)}
         className={cn(
-          "flex w-full cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-[0.8125rem] font-medium",
+          "flex w-full cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-sm lg:text-[0.75rem] font-medium",
           questionClassName,
         )}
       >
         <span>{question}</span>
-        <span className={cn("relative size-3 shrink-0", iconClassName)}>
-          <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-muted-foreground" />
-          <span
-            className={cn(
-              "absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
-              open && "rotate-90",
-            )}
-          />
-        </span>
+        <ChevronDown
+          aria-hidden
+          strokeWidth={1.8}
+          className={cn(
+            "size-3.5 shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+            open && "rotate-180",
+            iconClassName,
+          )}
+        />
       </button>
 
       <div
@@ -58,7 +59,7 @@ export function Disclosure({
         <div className="overflow-hidden">
           <p
             className={cn(
-              "max-w-[30rem] pb-4 pt-2 text-[0.8125rem] leading-relaxed text-muted-foreground transition-opacity duration-200 motion-reduce:transition-none",
+              "max-w-[30rem] pb-4 pt-2 text-sm lg:text-[0.75rem] leading-relaxed text-muted-foreground transition-opacity duration-200 motion-reduce:transition-none",
               open ? "opacity-100" : "opacity-0",
               answerClassName,
             )}

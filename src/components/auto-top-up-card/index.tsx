@@ -17,10 +17,10 @@ export function AutoTopUpCard() {
             <RefreshCw className="size-3.5" strokeWidth={1.8} />
           </span>
           <div>
-            <p className="text-[0.6875rem] font-medium">
+            <p className="text-xs lg:text-[0.6875rem] font-medium">
               {autoTopUpCopy.title}
             </p>
-            <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
+            <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
               {enabled ? (
                 <>
                   {autoTopUpCopy.enabled} <span className="tabular-nums font-normal">$5</span>
@@ -40,18 +40,18 @@ export function AutoTopUpCard() {
         )}
       >
         <div className="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-2">
-          <p className="text-[0.6875rem] text-muted-foreground">
+          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
             {autoTopUpCopy.threshold}
           </p>
-          <p className="mt-1 font-mono text-[0.6875rem]">
+          <p className="mt-1 font-mono text-xs lg:text-[0.6875rem]">
             <span className="tabular-nums font-normal">{autoTopUpCopy.thresholdValue}</span>
           </p>
         </div>
         <div className="rounded-lg border border-white/[0.06] bg-black/15 px-2.5 py-2">
-          <p className="text-[0.6875rem] text-muted-foreground">
+          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
             {autoTopUpCopy.pack}
           </p>
-          <p className="mt-1 font-mono text-[0.6875rem]">
+          <p className="mt-1 font-mono text-xs lg:text-[0.6875rem]">
             <span className="tabular-nums font-normal">{autoTopUpCopy.packValue}</span>
           </p>
         </div>

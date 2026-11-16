@@ -40,9 +40,9 @@ export function NavSearch() {
         );
       }}
       role="search"
-      className="group relative flex h-9 min-w-0 flex-1 items-center md:w-[11.25rem] md:flex-none lg:w-[15rem] xl:w-[18.75rem]"
+      className="group relative flex h-9 min-w-0 max-w-[10.5rem] flex-1 items-center md:w-[10rem] md:flex-none lg:h-8 lg:max-w-none lg:w-[13rem] xl:w-[16rem]"
     >
-      <Search className="pointer-events-none absolute left-2.5 size-3.5 text-muted-foreground" />
+      <Search className="pointer-events-none absolute left-2.5 size-4 text-muted-foreground lg:size-3.5" />
       <input
         ref={searchRef}
         type="search"
@@ -59,7 +59,7 @@ export function NavSearch() {
         }
         aria-label={navCopy.search}
         className={cn(
-          "h-9 w-full appearance-none rounded-lg border border-white/[0.08] bg-white/[0.035] pl-8 text-[0.75rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:bg-white/[0.05] [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
+          "h-9 w-full appearance-none rounded-lg border border-white/[0.08] bg-white/[0.035] pl-8 text-sm text-foreground lg:h-8 lg:text-[0.6875rem] outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:bg-white/[0.05] [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
           query.length === 0 ? "pr-2.5 lg:pr-11" : "pr-9 lg:pr-11",
         )}
       />
@@ -70,7 +70,7 @@ export function NavSearch() {
         {query.length === 0 ? (
           <kbd
             aria-hidden
-            className="pointer-events-none hidden items-center rounded border border-white/[0.08] bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] leading-none text-muted-foreground lg:flex"
+            className="pointer-events-none hidden items-center rounded border border-white/[0.08] bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] leading-none text-muted-foreground lg:flex"
           >
             {shortcut}
           </kbd>

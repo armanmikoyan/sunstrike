@@ -37,14 +37,14 @@ export function VideoWallTile({ id, preload }: VideoWallTileProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:p-4">
         <div className="min-w-0">
-          <p className="truncate text-[0.6875rem] font-medium text-white sm:text-[0.75rem]">
+          <p className="truncate text-xs font-medium text-white lg:text-[0.6875rem]">
             {item.title}
           </p>
-          <p className="mt-0.5 truncate text-[0.6875rem] text-white/60">
+          <p className="mt-0.5 truncate text-xs lg:text-[0.6875rem] text-white/60">
             {item.model}
           </p>
         </div>
-        <span className="flex shrink-0 items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-0.5 font-mono text-[0.6875rem] text-white/80 backdrop-blur">
+        <span className="flex shrink-0 items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-white/80 backdrop-blur">
           <Film className="size-3" />
           {item.kind === "video" ? item.duration : "Image"}
         </span>

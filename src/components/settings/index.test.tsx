@@ -1,42 +1,53 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { SettingsView } from ".";
-import { currentUser } from "./constants";
+import { setPathname } from "~/vitest.setup";
+import { SettingsNav } from "./settings-nav";
 
-describe("settings view", () => {
-  it("opens on the account pane", () => {
-    render(<SettingsView />);
-    expect(screen.getByRole("button", { name: "Account" })).toHaveClass(
-      "text-foreground",
+describe("settings nav", () => {
+  it("links every settings section to its own path", () => {
+    setPathname("/settings/account");
+    render(<SettingsNav />);
+
+    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute(
+      "href",
+      "/settings/account",
     );
-    expect(screen.getByDisplayValue(currentUser.email)).toBeInTheDocument();
-    expect(screen.getByText(currentUser.id)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Notifications" })).toHaveAttribute(
+      "href",
+      "/settings/notifications",
+    );
+    expect(screen.getByRole("link", { name: "Billing" })).toHaveAttribute(
+      "href",
+      "/settings/billing",
+    );
+    expect(screen.getByRole("link", { name: "Usage" })).toHaveAttribute(
+      "href",
+      "/settings/usage",
+    );
   });
 
-  it("switches to notifications", async () => {
-    render(<SettingsView />);
-    await userEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  it("marks only the current section", () => {
+    setPathname("/settings/billing");
+    render(<SettingsNav />);
 
-    expect(screen.getByRole("button", { name: "Notifications" })).toHaveClass(
-      "text-foreground",
+    expect(screen.getByRole("link", { name: "Billing" })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
-    expect(screen.queryByDisplayValue(currentUser.email)).not.toBeInTheDocument();
-    expect(screen.getAllByText(/Generation (ready|failed)/).length).toBeGreaterThan(
-      0,
-    );
-  });
-
-  it("only shows the sections the model defines", () => {
-    render(<SettingsView />);
-    expect(screen.getByRole("button", { name: "Account" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Notifications" }),
-    ).toBeInTheDocument();
-    for (const label of ["Profile", "Preferences", "Security", "API keys"]) {
-      expect(
-        screen.queryByRole("button", { name: label }),
-      ).not.toBeInTheDocument();
-    }
+      screen.getByRole("link", { name: "Account" }),
+    ).not.toHaveAttribute("aria-current");
+  });
+
+  it("keeps account active only on the exact settings path", () => {
+    setPathname("/settings/notifications");
+    render(<SettingsNav />);
+
+    expect(
+      screen.getByRole("link", { name: "Account" }),
+    ).not.toHaveAttribute("aria-current");
+    expect(
+      screen.getByRole("link", { name: "Notifications" }),
+    ).toHaveAttribute("aria-current", "page");
   });
 });

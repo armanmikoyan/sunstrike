@@ -16,6 +16,7 @@ export function MobileSidebar({
   const panelRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLButtonElement>(null);
   const lastPathname = useRef(pathname);
+  const wasOpen = useRef(open);
   const [rendered, setRendered] = useState(open);
 
   // Mount during render when it opens: that keeps the panel in the same commit
@@ -23,6 +24,19 @@ export function MobileSidebar({
   if (open && !rendered) {
     setRendered(true);
   }
+
+  // A short buzz confirms the drawer opening or closing. Devices without a
+  // vibration motor (and Safari) simply ignore it.
+  useEffect(() => {
+    if (wasOpen.current === open) return;
+    wasOpen.current = open;
+
+    try {
+      navigator.vibrate?.(open ? 12 : 8);
+    } catch {
+      // Vibration is a nicety; never let it break the drawer.
+    }
+  }, [open]);
 
   // Stay mounted through the exit animation, then drop the panel.
   useEffect(() => {
@@ -129,7 +143,7 @@ export function MobileSidebar({
           type="button"
           onClick={() => onOpenChange(false)}
           aria-label={sidebarCopy.closeNavigation}
-          className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="absolute right-3 top-4 z-10 grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <PanelLeftClose className="size-[1.125rem]" strokeWidth={1.8} />
         </button>

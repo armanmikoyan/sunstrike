@@ -1,13 +1,25 @@
+import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { imageRates, videoRates } from "@/mocks/pricing";
 import { PricingCustomTopUp } from "./pricing-custom-top-up";
 
-function renderCard() {
-  return render(
-    <PricingCustomTopUp videoModels={videoRates} imageModels={imageRates} />,
+function Harness() {
+  const [amount, setAmount] = useState(5);
+
+  return (
+    <PricingCustomTopUp
+      videoModels={videoRates}
+      imageModels={imageRates}
+      amount={amount}
+      onAmountChange={setAmount}
+    />
   );
+}
+
+function renderCard() {
+  return render(<Harness />);
 }
 
 describe("custom top-up", () => {
@@ -21,12 +33,13 @@ describe("custom top-up", () => {
     ).toBeDisabled();
   });
 
-  it("keeps the preset buttons in sync with the amount", () => {
+  it("steps the amount up one dollar per press", async () => {
     renderCard();
-    expect(screen.getByRole("button", { name: "$20" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    await userEvent.click(screen.getByRole("button", { name: "Increase amount" }));
+
+    expect(
+      screen.getByRole("slider", { name: "Custom top-up amount" }),
+    ).toHaveAttribute("aria-valuenow", "6");
   });
 
   it("shows the selected model's rate and asset estimate in the box", async () => {

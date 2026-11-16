@@ -62,12 +62,7 @@ export const billingTransactions = [
   },
 ];
 
-export const billingUsage = [
-  22, 38, 30, 58, 46, 72, 34, 55, 88, 62, 40, 76, 48, 64,
-];
-
 export const billingCopy = {
-  eyebrow: "Account",
   title: "Billing",
   description:
     "One balance for every model. No subscription, no expiry, no seat minimum.",
@@ -89,15 +84,12 @@ export const billingCopy = {
     manage: "Manage payment methods",
   },
   receipts: {
-    title: "Usage & receipts",
     download: "Download all",
     history: "View full transaction history",
   },
   usage: {
-    title: "Last 14 days",
-    total: "$12.40",
-    start: "Oct 18",
-    end: "Oct 31",
+    title: "Usage",
+    description: "Every charge, top-up and refund on your balance, newest first.",
   },
   low: {
     title: "Running low?",

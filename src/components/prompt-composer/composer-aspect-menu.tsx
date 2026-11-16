@@ -25,7 +25,7 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 gap-1.5 rounded-lg px-2 text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
+          className="h-8 gap-1.5 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
         >
           <span
             className={cn(
@@ -37,14 +37,14 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
           <ChevronDown className="size-3 opacity-60" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48 p-1.5">
+      <DropdownMenuContent align="start" className="w-48 p-1">
         <DropdownMenuLabel>{composerCopy.aspectRatio}</DropdownMenuLabel>
         {aspectOptions.map((ratio) => (
           <DropdownMenuItem
             key={ratio.value}
             onSelect={() => setAspect(ratio.value)}
             className={cn(
-              "gap-2 p-2",
+              "gap-2 px-2 py-1.5",
               aspect === ratio.value && "bg-white/[0.08] text-foreground",
             )}
           >
@@ -54,8 +54,8 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
                 ratio.shape,
               )}
             />
-            <span className="text-[0.75rem]">{ratio.value}</span>
-            <span className="ml-auto text-[0.6875rem] text-muted-foreground">
+            <span className="text-xs lg:text-[0.6875rem]">{ratio.value}</span>
+            <span className="ml-auto text-xs lg:text-[0.6875rem] text-muted-foreground">
               {ratio.label}
             </span>
           </DropdownMenuItem>

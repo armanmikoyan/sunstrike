@@ -11,6 +11,7 @@ export type ChronosphereProps = {
 
 export type LogoLockupProps = {
   className?: string;
+  imageClassName?: string;
   href?: string;
   compact?: boolean;
   /** Kept in the layout for a reveal transition but out of reach. */

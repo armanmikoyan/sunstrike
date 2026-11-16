@@ -19,15 +19,15 @@ export function PageHeader({
     >
       <div>
         {eyebrow ? (
-          <div className="mb-2 text-[0.75rem] text-muted-foreground">
+          <div className="mb-2 text-xs text-muted-foreground lg:text-[0.6875rem]">
             {eyebrow}
           </div>
         ) : null}
-        <h1 className="text-[1.875rem] font-medium leading-tight tracking-[-0.035em] sm:text-[2.25rem]">
+        <h1 className="text-[1.75rem] font-medium leading-tight tracking-[-0.035em] sm:text-[2rem]">
           {title}
         </h1>
         {description ? (
-          <p className="mt-2 max-w-xl text-[0.8125rem] leading-relaxed text-muted-foreground">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground lg:text-[0.75rem]">
             {description}
           </p>
         ) : null}

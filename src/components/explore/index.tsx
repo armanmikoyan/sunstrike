@@ -17,7 +17,7 @@ export function Explore() {
           action={
             <Button
               asChild
-              className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+              className="h-10 rounded-lg bg-brand px-4 text-sm font-medium text-brand-foreground hover:bg-brand-hover lg:text-[0.6875rem]"
             >
               <Link href="/create/video">
                 {exploreCopy.action}

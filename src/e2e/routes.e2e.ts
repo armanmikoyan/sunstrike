@@ -89,8 +89,34 @@ test.describe("routes", () => {
     await expect(page.getByText("$0.51").first()).toBeVisible();
   });
 
-  test("billing shows transactions in dollars", async ({ page }) => {
-    await openApp(page, "/billing");
+  test("/settings redirects to the account tab", async ({ page }) => {
+    const response = await page.goto("/settings", {
+      waitUntil: "domcontentloaded",
+    });
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page).toHaveURL(/\/settings\/account$/);
+  });
+
+  test("billing lives in the settings tabs", async ({ page }) => {
+    await openApp(page, "/settings/billing");
+    await expect(
+      page
+        .getByRole("navigation", { name: "Settings sections" })
+        .getByRole("link", { name: "Billing" }),
+    ).toHaveAttribute("aria-current", "page");
+    await expect(page.getByText("Available balance")).toBeVisible();
+    await expect(
+      page.getByText("Auto top-up", { exact: true }),
+    ).toBeVisible();
+  });
+
+  test("usage lists the ledger", async ({ page }) => {
+    await openApp(page, "/settings/usage");
+    await expect(
+      page
+        .getByRole("navigation", { name: "Settings sections" })
+        .getByRole("link", { name: "Usage" }),
+    ).toHaveAttribute("aria-current", "page");
     await expect(page.getByText(/\+\$25\.00/)).toBeVisible();
     await expect(page.getByText(/−\$0\.51/)).toBeVisible();
   });

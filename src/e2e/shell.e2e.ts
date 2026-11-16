@@ -30,7 +30,7 @@ test.describe("app shell", () => {
     await openApp(page, "/library");
 
     const rail = page.locator("aside").first();
-    expect((await rail.boundingBox())!.width).toBeCloseTo(61, 0);
+    expect((await rail.boundingBox())!.width).toBeCloseTo(57, 0);
 
     // Record the width on every frame until the rail settles. Sampling starts
     // before the click and keeps going for a couple of seconds so a slow first
@@ -46,7 +46,7 @@ test.describe("app shell", () => {
         if (aside) samples.push(aside.getBoundingClientRect().width);
         const last = samples.slice(-3);
         const settled =
-          last.length === 3 && last.every((width) => width > 199.95);
+          last.length === 3 && last.every((width) => width > 183.95);
         if (!settled && performance.now() - started < 20_000) {
           requestAnimationFrame(tick);
         }
@@ -60,19 +60,19 @@ test.describe("app shell", () => {
     ).toBeVisible();
     await page.waitForFunction(() => {
       const samples = (window as unknown as { __rail: number[] }).__rail;
-      return samples.length > 3 && Math.abs(samples.at(-1)! - 200) < 0.05;
+      return samples.length > 3 && Math.abs(samples.at(-1)! - 184) < 0.05;
     });
 
     const samples = await page.evaluate(
       () => (window as unknown as { __rail: number[] }).__rail,
     );
-    const between = samples.filter((value) => value > 63 && value < 198);
+    const between = samples.filter((value) => value > 59 && value < 182);
 
-    expect(Math.min(...samples)).toBeLessThanOrEqual(63);
-    expect(Math.max(...samples)).toBeGreaterThanOrEqual(198);
+    expect(Math.min(...samples)).toBeLessThanOrEqual(59);
+    expect(Math.max(...samples)).toBeGreaterThanOrEqual(182);
     // At least a few frames land in the middle of the travel.
     expect(between.length).toBeGreaterThanOrEqual(2);
-    expect((await rail.boundingBox())!.width).toBeCloseTo(200, 0);
+    expect((await rail.boundingBox())!.width).toBeCloseTo(184, 0);
   });
 
   test("grows the rail out of one axis instead of shifting its controls", async ({
@@ -81,13 +81,12 @@ test.describe("app shell", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, "/library");
 
-    // The collapsed rail is the 40px control plus the same 10px inset the open
+    // The collapsed rail is the 36px control plus the same 10px inset the open
     // rail uses, so a nav pill sits at x=10 in both states and must not move
     // sideways at all. An earlier, 80px-wide rail centred the pill at x=19.5
     // and flipped `self-center` off with the state, so it jumped 9.5px before
-    // the rail moved. The header toggle is the one control with a real trip —
-    // rail centre to rail edge — and it must make it with the rail instead of
-    // teleporting because the flex row re-aligned it.
+    // the rail moved. The header toggle shares that inset in both states, so
+    // the whole column grows without any control drifting sideways.
     const sample = (run: () => Promise<void>, target: number) =>
       page
         .evaluate((target) => {
@@ -152,24 +151,24 @@ test.describe("app shell", () => {
 
     const expanding = await sample(
       () => page.getByRole("button", { name: "Expand sidebar" }).click(),
-      200,
+      184,
     );
     expect(expanding.length).toBeGreaterThan(4);
     for (const frame of expanding) {
       // Pinned to the rail's inset: the pill never leads or lags the rail.
       expect(Math.abs(frame.x - 10)).toBeLessThan(0.6);
     }
-    expect(Math.abs(expanding.at(-1)!.toggle - 157)).toBeLessThan(1);
+    expect(Math.abs(expanding.at(-1)!.toggle - 10)).toBeLessThan(1);
     expectNoTeleport(expanding);
 
     const collapsing = await sample(
       () => page.getByRole("button", { name: "Collapse sidebar" }).click(),
-      61,
+      57,
     );
     for (const frame of collapsing) {
       expect(Math.abs(frame.x - 10)).toBeLessThan(0.6);
       // While the rail is still fully open, nothing may have moved yet.
-      if (frame.rail > 199) expect(frame.toggle).toBeCloseTo(157, 0);
+      if (frame.rail > 183) expect(frame.toggle).toBeCloseTo(10, 0);
     }
     expect(Math.abs(collapsing.at(-1)!.toggle - 10)).toBeLessThan(1);
     expectNoTeleport(collapsing);
@@ -233,7 +232,7 @@ test.describe("app shell", () => {
     // Let the width transition settle before reading the layout.
     await page.waitForFunction(() => {
       const rail = document.querySelector("aside")!;
-      return Math.abs(rail.getBoundingClientRect().width - 200) < 0.05;
+      return Math.abs(rail.getBoundingClientRect().width - 184) < 0.05;
     });
 
     const expanded = await Promise.all(
@@ -276,7 +275,7 @@ test.describe("app shell", () => {
     await expect(page.getByRole("tooltip")).toContainText("Explore");
   });
 
-  test("keeps billing and settings inside the profile menu", async ({ page }) => {
+  test("keeps balance and settings inside the profile menu", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, "/library");
     await page.getByRole("button", { name: "Expand sidebar" }).click();
@@ -286,15 +285,11 @@ test.describe("app shell", () => {
     const menu = page.getByRole("menu");
     await expect(menu.getByRole("menuitem", { name: /Balance/ })).toHaveAttribute(
       "href",
-      "/pricing",
-    );
-    await expect(menu.getByRole("menuitem", { name: "Billing" })).toHaveAttribute(
-      "href",
-      "/billing",
+      "/settings/billing",
     );
     await expect(
-      menu.getByRole("menuitem", { name: "Account settings" }),
-    ).toHaveAttribute("href", "/settings");
+      menu.getByRole("menuitem", { name: "Settings" }),
+    ).toHaveAttribute("href", "/settings/account");
     await expect(menu.getByRole("menuitem", { name: "Sign out" })).toHaveAttribute(
       "href",
       "/login",
@@ -310,8 +305,7 @@ test.describe("app shell", () => {
       .locator("aside a")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
 
-    expect(hrefs).not.toContain("/billing");
-    expect(hrefs).not.toContain("/settings");
+    expect(hrefs.filter((href) => href?.startsWith("/settings"))).toEqual([]);
     expect(hrefs).toContain("/pricing");
     expect(hrefs).toContain("/help");
   });
@@ -323,7 +317,7 @@ test.describe("app shell", () => {
     await page.getByRole("link", { name: "Explore" }).click();
     await expect(page).toHaveURL(/\/explore$/);
     await expect(
-      page.getByRole("heading", { level: 1, name: "The feed" }),
+      page.getByRole("heading", { level: 1, name: "Explore" }),
     ).toBeVisible();
   });
 
@@ -342,7 +336,7 @@ test.describe("app shell", () => {
     expect(box!.width).toBeLessThanOrEqual(440);
     expect(box!.width).toBeLessThan(412);
 
-    // The drawer is wider than the 200px rail, so its controls must stretch
+    // The drawer is wider than the 184px rail, so its controls must stretch
     // with it rather than inherit the rail's 180px content cap.
     const item = await dialog
       .getByRole("link", { name: "Explore" })
@@ -387,10 +381,10 @@ test.describe("app shell", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByRole("link", { name: /Balance/ })).toHaveAttribute(
       "href",
-      "/pricing",
+      "/settings/billing",
     );
     await expect(
-      dialog.getByRole("link", { name: "Account settings" }),
+      dialog.getByRole("link", { name: "Settings" }),
     ).toBeVisible();
   });
 

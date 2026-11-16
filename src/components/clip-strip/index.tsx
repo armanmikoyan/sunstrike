@@ -27,7 +27,7 @@ export function ClipStrip({ ids, className }: ClipStripProps) {
             aria-hidden
             className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"
           />
-          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md border border-white/25 bg-black/75 px-2 py-1.5 font-mono text-[0.75rem] font-medium leading-none text-white shadow-[0_0.125rem_0.625rem_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md border border-white/25 bg-black/75 px-2 py-1.5 font-mono text-xs lg:text-[0.6875rem] font-medium leading-none text-white shadow-[0_0.125rem_0.625rem_rgba(0,0,0,0.5)] backdrop-blur-md">
             <Coins className="size-3 text-white/70" aria-hidden />
             <span className="tabular-nums font-normal">{formatUSD(item.cost)}</span>
             <span className="sr-only">

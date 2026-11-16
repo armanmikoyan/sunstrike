@@ -49,20 +49,20 @@ export function StudioSummary({ studio }: StudioSummaryProps) {
               strokeWidth={1.8}
             />
             <div className="min-w-0">
-              <p className="text-[0.6875rem] text-muted-foreground">
+              <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
                 {fact.label}
               </p>
-              <p className="mt-0.5 truncate text-[0.6875rem]">{fact.value}</p>
+              <p className="mt-0.5 truncate text-xs lg:text-[0.6875rem]">{fact.value}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div className="mx-auto mt-2.5 max-w-[61.25rem] rounded-lg border border-white/[0.07] bg-white/[0.015] p-3">
-        <p className="text-[0.6875rem] text-muted-foreground">
+        <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
           {copy.currentPrompt}
         </p>
-        <p className="mt-1.5 line-clamp-2 text-[0.75rem] leading-relaxed text-muted-foreground">
+        <p className="mt-1.5 line-clamp-2 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
           {shownPrompt}
         </p>
       </div>

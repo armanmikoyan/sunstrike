@@ -3,9 +3,12 @@ import { imageRates, topUpPacks, videoRates } from "./pricing";
 import { mediaItems } from "./media";
 
 describe("pricing data", () => {
-  it("offers three top-up packs in dollars", () => {
-    expect(topUpPacks.map((pack) => pack.price)).toEqual([10, 25, 50]);
-    expect(topUpPacks.filter((pack) => pack.popular)).toHaveLength(1);
+  it("offers six top-up presets in dollars", () => {
+    expect(topUpPacks.map((pack) => pack.price)).toEqual([
+      5, 50, 250, 1000, 5000, 10000,
+    ]);
+    expect(topUpPacks.map((pack) => pack.note)).not.toContain("");
+    expect(topUpPacks.find((pack) => pack.popular)?.price).toBe(50);
   });
 
   it("publishes a per-second rate for every video model", () => {

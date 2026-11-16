@@ -11,7 +11,7 @@ describe("site footer", () => {
     );
     expect(screen.getByRole("link", { name: /Billing/ })).toHaveAttribute(
       "href",
-      "/billing",
+      "/settings/billing",
     );
   });
 

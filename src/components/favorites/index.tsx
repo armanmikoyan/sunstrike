@@ -20,7 +20,7 @@ export function Favorites() {
           <Button
             asChild
             variant="outline"
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
           >
             <Link href="/create/video">{favoritesCopy.openInStudio}</Link>
           </Button>

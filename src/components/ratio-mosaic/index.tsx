@@ -21,13 +21,13 @@ export function RatioMosaic() {
           description={mosaicCopy.description}
           action={
             <div className="flex items-center gap-4">
-              <p className="font-mono text-[0.6875rem] text-muted-foreground/70">
+              <p className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground/70">
                 {mosaicCopy.count}
               </p>
               <Button
                 asChild
                 variant="ghost"
-                className="hidden h-8 rounded-lg px-2.5 text-[0.75rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
+                className="hidden h-8 rounded-lg px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
               >
                 <Link href="/explore">
                   {mosaicCopy.action}

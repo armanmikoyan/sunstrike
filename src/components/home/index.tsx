@@ -45,7 +45,7 @@ export function Home() {
               <Button
                 asChild
                 variant="ghost"
-                className="hidden h-8 rounded-lg px-2.5 text-[0.75rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
+                className="hidden h-8 rounded-lg px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
               >
                 <Link href="/explore">
                   {homeCopy.gallery.action}
@@ -71,21 +71,21 @@ export function Home() {
           <div className="p-7 sm:p-10 lg:p-12">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
               <div>
-                <h2 className="max-w-[35rem] font-grotesk text-[clamp(1.875rem,4vw,2.875rem)] font-medium leading-[1.05] tracking-[-0.045em]">
+                <h2 className="max-w-[35rem] font-grotesk text-[clamp(1.75rem,3.6vw,2.5rem)] font-medium leading-[1.05] tracking-[-0.045em]">
                   {homeCopy.pricing.titleBefore}
                   <span className="font-serif italic text-brand">
                     {homeCopy.pricing.titleAccent}
                   </span>
                   {homeCopy.pricing.titleAfter}
                 </h2>
-                <p className="mt-3 max-w-[30rem] text-[0.8125rem] leading-relaxed text-muted-foreground">
+                <p className="mt-3 max-w-[30rem] text-sm lg:text-[0.75rem] leading-relaxed text-muted-foreground">
                   {homeCopy.pricing.description}
                 </p>
                 <div className="mt-5 flex flex-wrap gap-4">
                   {pricingPoints.map((item) => (
                     <span
                       key={item}
-                      className="flex items-center gap-1.5 text-[0.75rem] text-muted-foreground"
+                      className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-muted-foreground"
                     >
                       <Check className="size-3.5 text-muted-foreground" />
                       {item}
@@ -96,7 +96,7 @@ export function Home() {
               <div className="flex flex-wrap items-center gap-2">
                 <Button
                   asChild
-                  className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+                  className="h-10 rounded-lg bg-brand px-4 text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
                 >
                   <Link href="/pricing">
                     {homeCopy.pricing.primaryAction}
@@ -106,9 +106,9 @@ export function Home() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-[0.75rem] text-foreground hover:bg-white/[0.04]"
+                  className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/[0.04]"
                 >
-                  <Link href="/billing">
+                  <Link href="/settings/billing">
                     {homeCopy.pricing.secondaryAction}
                   </Link>
                 </Button>
@@ -118,16 +118,16 @@ export function Home() {
             <div className="mt-10 border-t border-white/[0.07] pt-6">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <h3 className="text-[0.8125rem] font-medium">
+                  <h3 className="text-sm lg:text-[0.75rem] font-medium">
                     {homeCopy.pricing.resultsTitle}
                   </h3>
-                  <p className="mt-1 text-[0.75rem] text-muted-foreground">
+                  <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
                     {homeCopy.pricing.resultsDescription}
                   </p>
                 </div>
                 <Link
                   href="/explore"
-                  className="flex items-center gap-1 text-[0.75rem] text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-center gap-1 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {homeCopy.pricing.resultsAction}
                   <ArrowUpRight className="size-3.5" />

@@ -160,8 +160,7 @@ top nav have a single owner across navigation. The nested groups only decide
 their footer:
 
 - `src/app/(website)/layout.tsx` → `<main>` and `<SiteFooter>` for marketing
-  and account pages (`/`, `/explore`, `/pricing`, `/billing`, `/settings`,
-  `/help`).
+  and account pages (`/`, `/explore`, `/pricing`, `/settings`, `/help`).
 - `src/app/(workspace)/layout.tsx` → `<main>` only, for library, assets,
   favorites and the studio.
 
@@ -229,8 +228,7 @@ the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 | `/library` | Generated work with kind tabs and search |
 | `/assets`, `/favorites` | Uploaded assets by kind; a saved grid (no favourites entity) |
 | `/pricing` | Image/video price calculators, top-up packs, FAQ (marketing only) |
-| `/billing` | Available balance, payment method, auto top-up, usage, receipts, tax and transactions |
-| `/settings` | Account (`email`, id, created) and read-only notifications |
+| `/settings/account`, `/settings/notifications`, `/settings/billing`, `/settings/usage` | Account (`email`, id, created), read-only notifications, balance, payment method and auto top-up, and the `balance_transactions` ledger; `/settings` redirects to the account tab |
 | `/help` | Guides and contact |
 | `/login` | Standalone split-screen sign-in |
 
@@ -446,11 +444,12 @@ Type rules:
   selected model's capabilities.
 - Settings shows only `users.email`, `users.id` and `users.created_at`, plus
   the `notifications` rows; there are no preference, security or API-key panes.
-- Billing keeps its full payment page: available balance, payment method, auto
-  top-up, usage, receipts, tax and `balance_transactions` (top-up, charge,
-  credit). The card and invoices come from Lemon Squeezy; usage and the ledger
-  come from the API. The demo values in `src/components/billing/constants.ts`
-  are presentation data until BIL-6 wires the provider.
+- Billing is a settings tab, not its own route: available balance, payment
+  method, auto top-up and tax. The card and invoices come from Lemon Squeezy.
+- Usage is its own settings tab so the ledger is not mixed into billing: the
+  `balance_transactions` rows (top-up, charge, credit) come from the API. The
+  demo values in `src/components/billing/constants.ts` are presentation data
+  until BIL-6 wires the provider.
 - Use the `chronolab:` prefix for custom events.
 - Route metadata is exported per page; the root layout owns global metadata,
   OG/Twitter, manifest and `themeColor: "#7c3aed"`.

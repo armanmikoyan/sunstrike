@@ -1,9 +1,9 @@
-import { Billing } from "@/components/billing";
+import { BillingPane } from "@/components/billing";
 
 export const metadata = {
   title: "Billing",
 };
 
 export default function Page() {
-  return <Billing />;
+  return <BillingPane />;
 }

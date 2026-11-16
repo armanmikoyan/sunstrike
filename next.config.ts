@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [{ source: "/favicon.ico", destination: "/brand/favicon.ico" }];
   },
+  // Settings is a set of tab pages; the bare path lands on the account tab.
+  async redirects() {
+    return [
+      {
+        source: "/settings",
+        destination: "/settings/account",
+        permanent: false,
+      },
+    ];
+  },
   // The e2e server builds into its own folder so a running `next dev` cannot
   // rewrite the chunks underneath it mid-test.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",

@@ -12,8 +12,8 @@ export const footerGroups = [
     title: "Account",
     links: [
       { label: "Pricing", href: "/pricing" },
-      { label: "Billing", href: "/billing" },
-      { label: "Settings", href: "/settings" },
+      { label: "Billing", href: "/settings/billing" },
+      { label: "Settings", href: "/settings/account" },
       { label: "Help", href: "/help" },
     ],
   },

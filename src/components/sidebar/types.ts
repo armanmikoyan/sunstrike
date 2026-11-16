@@ -27,6 +27,7 @@ export type SidebarBodyProps = {
   onToggle: () => void;
   showToggle?: boolean;
   onNavigate?: () => void;
+  /** Drawer only: the account pane expands inline over the footer links. */
   inlineAccount?: boolean;
 };
 

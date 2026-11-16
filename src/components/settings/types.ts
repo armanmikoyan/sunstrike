@@ -1,4 +1,4 @@
-export type SettingsTab = "account" | "notifications";
+export type SettingsTab = "account" | "notifications" | "billing" | "usage";
 
 export type FieldProps = {
   label: string;

@@ -21,14 +21,14 @@ export function ComposerModelMenu({ composer }: ComposerModelMenuProps) {
   const modelCopy = composerCopy.modelLabels[mode];
 
   return (
-    <div className="w-[10rem] shrink-0">
+    <div className="w-[10.75rem] shrink-0">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="h-8 max-w-full gap-1.5 rounded-lg px-2 text-[0.6875rem] font-medium text-foreground/80 hover:bg-white/[0.055] hover:text-foreground"
+            className="h-8 max-w-full gap-1.5 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-foreground/80 hover:bg-white/[0.055] hover:text-foreground"
           >
             <WandSparkles className="size-3 shrink-0 text-muted-foreground" />
             <span className="min-w-0 truncate" title={model}>
@@ -37,7 +37,7 @@ export function ComposerModelMenu({ composer }: ComposerModelMenuProps) {
             <ChevronDown className="size-3 shrink-0 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-[17.875rem] p-1.5">
+        <DropdownMenuContent align="start" className="w-[17.875rem] p-1">
           <DropdownMenuLabel className="flex items-center justify-between">
             {modelCopy}
           </DropdownMenuLabel>
@@ -46,15 +46,15 @@ export function ComposerModelMenu({ composer }: ComposerModelMenuProps) {
               key={item.id}
               onSelect={() => setModel(item.displayName)}
               className={cn(
-                "items-start gap-2 p-2",
+                "items-start gap-2 px-2 py-1.5",
                 model === item.displayName && "bg-white/[0.08] text-foreground",
               )}
             >
               <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-1.5 text-[0.75rem] font-medium">
+                <span className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] font-medium">
                   {item.displayName}
                 </span>
-                <span className="mt-0.5 block text-[0.6875rem] text-muted-foreground">
+                <span className="mt-0.5 block text-xs lg:text-[0.6875rem] text-muted-foreground">
                   {item.provider} · <span className="tabular-nums font-normal">{formatUSD(item.cost)}</span>
                 </span>
               </span>
@@ -63,7 +63,7 @@ export function ComposerModelMenu({ composer }: ComposerModelMenuProps) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             asChild
-            className="p-2 text-[0.6875rem] text-muted-foreground"
+            className="px-2 py-1.5 text-xs lg:text-[0.6875rem] text-muted-foreground"
           >
             <Link href="/pricing">{composerCopy.compareModels}</Link>
           </DropdownMenuItem>

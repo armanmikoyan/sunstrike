@@ -37,17 +37,17 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
     <section className="flex min-h-0 flex-1 flex-col">
       <div className="flex h-10 shrink-0 items-center justify-between gap-3 border-b border-border px-3 sm:px-4">
         <div className="flex items-center gap-2">
-          <span className="text-[0.6875rem] font-medium">{copy.title}</span>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
+          <span className="text-xs lg:text-[0.6875rem] font-medium">{copy.title}</span>
+          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {aspect}
           </span>
-          <span className="hidden items-center gap-1 text-[0.6875rem] text-muted-foreground sm:flex">
+          <span className="hidden items-center gap-1 text-xs lg:text-[0.6875rem] text-muted-foreground sm:flex">
             <Clock3 className="size-2.5" />
             {active.createdAt}
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="hidden rounded border border-white/[0.08] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground sm:inline">
+          <span className="hidden rounded border border-white/[0.08] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground sm:inline">
             {resolution}
           </span>
           <Button
@@ -101,7 +101,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/25" />
 
             <div className="absolute left-3 top-3 flex items-center gap-1.5">
-              <span className="flex items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-1 text-[0.6875rem] text-white/80 backdrop-blur-md">
+              <span className="flex items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-1 text-xs lg:text-[0.6875rem] text-white/80 backdrop-blur-md">
                 {isVideo ? (
                   <Film className="size-2.5" />
                 ) : (
@@ -112,7 +112,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
             </div>
 
             <div className="absolute right-3 top-3 flex items-center gap-1.5">
-              <span className="rounded-md border border-white/15 bg-black/40 px-1.5 py-1 font-mono text-[0.6875rem] text-white/65 backdrop-blur-md">
+              <span className="rounded-md border border-white/15 bg-black/40 px-1.5 py-1 font-mono text-xs lg:text-[0.6875rem] text-white/65 backdrop-blur-md">
                 {isVideo && duration ? `${duration} · ${resolution}` : resolution}
               </span>
             </div>
@@ -131,14 +131,14 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
 
             <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
               <div className="mb-2.5 flex items-center gap-1.5">
-                <span className="rounded border border-white/15 bg-black/30 px-1.5 py-0.5 font-mono text-[0.6875rem] text-white/70">
+                <span className="rounded border border-white/15 bg-black/30 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-white/70">
                   {isVideo ? copy.times.video : copy.times.image}
                 </span>
                 <div className="relative h-[0.1875rem] flex-1 overflow-hidden rounded-full bg-white/20">
                   <span className="absolute inset-y-0 left-0 w-[38%] rounded-full bg-foreground/80" />
                   <span className="absolute left-[38%] top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow" />
                 </div>
-                <span className="font-mono text-[0.6875rem] text-white/60">
+                <span className="font-mono text-xs lg:text-[0.6875rem] text-white/60">
                   {isVideo && duration ? duration : copy.image}
                 </span>
               </div>
@@ -162,7 +162,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
                       <Volume2 className="size-3" />
                     </button>
                   ) : null}
-                  <span className="ml-1 max-w-[13.75rem] truncate text-[0.6875rem] text-white/55">
+                  <span className="ml-1 max-w-[13.75rem] truncate text-xs lg:text-[0.6875rem] text-white/55">
                     {active.title}
                   </span>
                 </div>
@@ -179,8 +179,8 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
 
           <div className="mx-auto mt-3 flex max-w-[61.25rem] items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-[0.75rem] font-medium">{active.title}</p>
-              <p className="mt-0.5 truncate text-[0.6875rem] text-muted-foreground">
+              <p className="truncate text-xs lg:text-[0.6875rem] font-medium">{active.title}</p>
+              <p className="mt-0.5 truncate text-xs lg:text-[0.6875rem] text-muted-foreground">
                 {selectedModel.displayName} · {aspect} ·{" "}
                 {isVideo && duration ? duration : resolution} ·{" "}
                 <span className="tabular-nums font-normal">{formatUSD(cost)}</span>
@@ -189,7 +189,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
             <div className="flex shrink-0 items-center gap-1">
               <button
                 type="button"
-                className="flex h-7 items-center gap-1.5 rounded-md border border-white/[0.08] px-2 text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
+                className="flex h-7 items-center gap-1.5 rounded-md border border-white/[0.08] px-2 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
               >
                 <Download className="size-3" />
                 {copy.download}

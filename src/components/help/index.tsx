@@ -25,7 +25,7 @@ export function Help() {
             <Button
               asChild
               variant="outline"
-              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
             >
               <Link href={`mailto:${supportEmail}`}>
                 <Mail className="size-3.5" />
@@ -50,10 +50,10 @@ export function Help() {
                   </span>
                   <ArrowUpRight className="size-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                 </div>
-                <p className="mt-5 text-[0.6875rem] font-medium">
+                <p className="mt-5 text-xs lg:text-[0.6875rem] font-medium">
                   {guide.title}
                 </p>
-                <p className="mt-1 text-[0.75rem] leading-relaxed text-muted-foreground">
+                <p className="mt-1 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
                   {guide.description}
                 </p>
               </Link>
@@ -63,7 +63,7 @@ export function Help() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_18.75rem]">
           <div>
-            <h2 className="text-[1.125rem] font-medium tracking-[-0.035em]">
+            <h2 className="text-[1rem] font-medium tracking-[-0.035em]">
               {helpCopy.commonQuestions}
             </h2>
             <div className="mt-3">
@@ -75,22 +75,22 @@ export function Help() {
             <span className="grid size-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
               <MessageCircle className="size-4" />
             </span>
-            <h3 className="mt-4 text-[0.8125rem] font-medium">
+            <h3 className="mt-4 text-sm lg:text-[0.75rem] font-medium">
               {helpCopy.stuckTitle}
             </h3>
-            <p className="mt-1.5 text-[0.75rem] leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
               {helpCopy.stuckDescription}
             </p>
             <Button
               asChild
-              className="mt-4 h-9 w-full rounded-lg bg-brand text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+              className="mt-4 h-9 w-full rounded-lg bg-brand text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
             >
               <Link href={`mailto:${supportEmail}`}>
                 <Mail className="size-3" />
                 {supportEmail}
               </Link>
             </Button>
-            <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-[0.6875rem] text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs lg:text-[0.6875rem] text-muted-foreground">
               <span>{helpCopy.hours}</span>
               <span>{helpCopy.status}</span>
             </div>

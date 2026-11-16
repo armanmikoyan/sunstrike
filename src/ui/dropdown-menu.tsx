@@ -5,10 +5,49 @@ import { cn } from "cn"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 import { ChevronRightIcon } from "lucide-react"
 
+/** Movement past this many pixels is a scroll, not a tap. */
+const TAP_SLOP = 10
+
+type DropdownMenuState = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const DropdownMenuStateContext = React.createContext<DropdownMenuState | null>(
+  null
+)
+
 function DropdownMenu({
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen)
+  const controlled = openProp !== undefined
+  const open = controlled ? openProp : uncontrolledOpen
+
+  const setOpen = React.useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
+    (value) => {
+      const next = typeof value === "function" ? value(open) : value
+      if (!controlled) setUncontrolledOpen(next)
+      onOpenChange?.(next)
+    },
+    [controlled, onOpenChange, open]
+  )
+
+  const state = React.useMemo(() => ({ open, setOpen }), [open, setOpen])
+
+  return (
+    <DropdownMenuStateContext.Provider value={state}>
+      <DropdownMenuPrimitive.Root
+        data-slot="dropdown-menu"
+        {...props}
+        open={open}
+        onOpenChange={setOpen}
+      />
+    </DropdownMenuStateContext.Provider>
+  )
 }
 
 function DropdownMenuPortal({
@@ -20,12 +59,54 @@ function DropdownMenuPortal({
 }
 
 function DropdownMenuTrigger({
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+  const menu = React.useContext(DropdownMenuStateContext)
+  const tap = React.useRef<{ x: number; y: number; scrolled: boolean } | null>(
+    null
+  )
+
   return (
     <DropdownMenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
       {...props}
+      onPointerDown={(event) => {
+        onPointerDown?.(event)
+        if (event.defaultPrevented || event.pointerType === "mouse") return
+
+        // Radix opens on pointerdown, so a finger that lands here on its way
+        // into a scroll pops the menu and blocks the scroll. Touch and pen
+        // wait for the release instead, and only a tap that stayed put opens.
+        event.preventDefault()
+        tap.current = { x: event.clientX, y: event.clientY, scrolled: false }
+      }}
+      onPointerMove={(event) => {
+        onPointerMove?.(event)
+        const gesture = tap.current
+        if (!gesture || gesture.scrolled) return
+
+        const distance = Math.hypot(
+          event.clientX - gesture.x,
+          event.clientY - gesture.y
+        )
+        if (distance > TAP_SLOP) gesture.scrolled = true
+      }}
+      onPointerUp={(event) => {
+        onPointerUp?.(event)
+        const gesture = tap.current
+        tap.current = null
+        if (!gesture || gesture.scrolled) return
+
+        menu?.setOpen((open) => !open)
+      }}
+      onPointerCancel={(event) => {
+        onPointerCancel?.(event)
+        tap.current = null
+      }}
     />
   )
 }
@@ -72,7 +153,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "group/dropdown-menu-item relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
+        "group/dropdown-menu-item relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
         className
       )}
       {...props}
@@ -94,7 +175,7 @@ function DropdownMenuCheckboxItem({
       data-slot="dropdown-menu-checkbox-item"
       data-inset={inset}
       className={cn(
-        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       checked={checked}
@@ -129,7 +210,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       data-inset={inset}
       className={cn(
-        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -151,7 +232,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-1.5 py-1 text-xs font-medium text-muted-foreground data-inset:pl-7",
+        "px-1.5 py-1 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground data-inset:pl-7",
         className
       )}
       {...props}
@@ -180,7 +261,7 @@ function DropdownMenuShortcut({
     <span
       data-slot="dropdown-menu-shortcut"
       className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground",
+        "ml-auto text-xs lg:text-[0.6875rem] tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground",
         className
       )}
       {...props}
@@ -207,7 +288,7 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "my-0.5 flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

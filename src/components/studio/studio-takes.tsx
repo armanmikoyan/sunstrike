@@ -15,16 +15,16 @@ export function StudioTakes({ studio }: StudioTakesProps) {
     <div className="mx-auto mt-7 max-w-[61.25rem]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-[0.6875rem] font-medium text-muted-foreground">
+          <span className="text-xs lg:text-[0.6875rem] font-medium text-muted-foreground">
             {copy.title}
           </span>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
+          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {takes.length}
           </span>
         </div>
         <Link
           href="/library"
-          className="flex items-center gap-1 text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-1 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
         >
           {copy.viewAll}
           <ArrowUpRight className="size-2.5" />
@@ -63,7 +63,7 @@ export function StudioTakes({ studio }: StudioTakesProps) {
                 <Check className="size-2.5" />
               </span>
             ) : null}
-            <span className="absolute inset-x-1.5 bottom-1.5 truncate text-[0.6875rem] text-white/80">
+            <span className="absolute inset-x-1.5 bottom-1.5 truncate text-xs lg:text-[0.6875rem] text-white/80">
               {item.title}
             </span>
           </button>

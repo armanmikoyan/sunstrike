@@ -23,23 +23,23 @@ export function ImageOrderCard() {
     <div className="relative mx-auto h-full w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/[0.1] glass-card">
       <div className="flex h-full flex-col p-5">
         <div className="flex items-center justify-between">
-          <span className="text-[0.75rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
-          <span className="font-mono text-[0.6875rem] text-muted-foreground">
+          <span className="text-xs lg:text-[0.6875rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
+          <span className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {pricingCardCopy.payg}
           </span>
         </div>
 
         <div className="mt-5 flex items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
               {pricingCardCopy.images}
             </p>
             <div className="mt-1 flex items-end gap-2">
               <RollingNumber
                 value={quote.quantity}
-                className="text-[2.125rem] font-medium leading-none tracking-[-0.03em]"
+                className="text-[1.875rem] font-medium leading-none tracking-[-0.03em]"
               />
-              <span className="pb-1 text-[0.75rem] text-muted-foreground">
+              <span className="pb-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
                 {pricingCardCopy.imagesLower}
               </span>
             </div>
@@ -75,7 +75,7 @@ export function ImageOrderCard() {
           ariaLabel={pricingCardCopy.numberOfImages}
           className="mt-5"
         />
-        <div className="mt-2 flex justify-between font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/70">
+        <div className="mt-2 flex justify-between font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/70">
           <span>{pricingCardCopy.imageRangeStart}</span>
           <span>{pricingCardCopy.imageRangeEnd}</span>
         </div>
@@ -98,15 +98,15 @@ export function ImageOrderCard() {
               >
                 <span
                   className={cn(
-                    "font-mono text-[0.6875rem] uppercase tracking-[0.1em]",
+                    "font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em]",
                     active ? "text-brand-secondary" : "text-muted-foreground",
                   )}
                 >
                   {tier.label}
                 </span>
-                <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-[0.8125rem] font-medium tracking-[-0.02em] text-foreground">
+                <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-sm lg:text-[0.75rem] font-medium tracking-[-0.02em] text-foreground">
                   <span className="tabular-nums font-normal">{tier.price}</span>
-                  <span className="text-[0.6875rem] font-normal text-muted-foreground">
+                  <span className="text-xs lg:text-[0.6875rem] font-normal text-muted-foreground">
                     {pricingCardCopy.imageUnit}
                   </span>
                 </span>
@@ -115,7 +115,7 @@ export function ImageOrderCard() {
           })}
         </div>
 
-        <div className="mt-5 space-y-2.5 border-t border-white/[0.07] pt-4 text-[0.75rem]">
+        <div className="mt-5 space-y-2.5 border-t border-white/[0.07] pt-4 text-xs lg:text-[0.6875rem]">
           <div className="flex justify-between">
             <span className="text-muted-foreground">{pricingCardCopy.images}</span>
             <RollingNumber value={quote.quantity} />
@@ -145,7 +145,7 @@ export function ImageOrderCard() {
         </div>
 
         <div className="mt-4 flex items-end justify-between border-t border-white/[0.07] pt-4">
-          <span className="text-[0.8125rem] text-muted-foreground">{pricingCardCopy.total}</span>
+          <span className="text-sm lg:text-[0.75rem] text-muted-foreground">{pricingCardCopy.total}</span>
           <RollingNumber
             value={quote.total}
             decimalPlaces={2}
@@ -156,16 +156,16 @@ export function ImageOrderCard() {
 
         <Button
           asChild
-          className="mt-5 h-10 w-full rounded-lg bg-brand text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+          className="mt-5 h-10 w-full rounded-lg bg-brand text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
         >
-          <Link href="/billing">
+          <Link href="/settings/billing">
             {pricingCardCopy.get}{" "}
             <RollingNumber value={quote.quantity} />{" "}
             {pricingCardCopy.imagesLower}
             <ArrowRight className="size-3.5" />
           </Link>
         </Button>
-        <p className="mt-3 text-center font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/65">
+        <p className="mt-3 text-center font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/65">
           {pricingCardCopy.paymentNote}
         </p>
       </div>

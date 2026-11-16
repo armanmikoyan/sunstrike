@@ -15,7 +15,7 @@ export function ExploreResults({ gallery }: ExploreResultsProps) {
   return (
     <div className="pt-6">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-[0.6875rem] text-muted-foreground">
+        <p className="text-xs text-muted-foreground lg:text-[0.6875rem]">
           {filtered.length}{" "}
           {filtered.length === 1
             ? exploreResultsCopy.frame
@@ -45,16 +45,16 @@ export function ExploreResults({ gallery }: ExploreResultsProps) {
       ) : (
         <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.015] text-center">
           <Search className="size-5 text-muted-foreground" />
-          <p className="mt-3 text-[0.8125rem] font-medium">
+          <p className="mt-3 text-sm font-medium lg:text-[0.75rem]">
             {exploreResultsCopy.emptyTitle}
           </p>
-          <p className="mt-1 text-[0.8125rem] text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground lg:text-[0.75rem]">
             {exploreResultsCopy.emptyDescription}
           </p>
           <Button
             variant="outline"
             size="sm"
-            className="mt-4 h-8 rounded-lg border-white/10 text-[0.6875rem]"
+            className="mt-4 h-9 rounded-lg border-white/10 text-sm lg:h-8 lg:text-[0.6875rem]"
             onClick={() => {
               setKind("all");
               setQuery("");
@@ -69,7 +69,7 @@ export function ExploreResults({ gallery }: ExploreResultsProps) {
         <div className="mt-6 flex justify-center">
           <Button
             variant="outline"
-            className="h-9 rounded-lg border-white/[0.08] bg-white/[0.015] px-5 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+            className="h-10 rounded-lg border-white/[0.08] bg-white/[0.015] px-5 text-sm text-muted-foreground hover:bg-white/[0.05] hover:text-foreground lg:h-9 lg:text-[0.6875rem]"
           >
             {exploreResultsCopy.loadMore}
           </Button>

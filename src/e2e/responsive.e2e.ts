@@ -34,7 +34,7 @@ test("every page fits the viewport on a phone", async ({ page }) => {
     "/library",
     "/explore",
     "/pricing",
-    "/billing",
+    "/settings/billing",
   ]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     await expectNoHorizontalOverflow(page);
@@ -49,7 +49,7 @@ test("every page fits the viewport on a tablet", async ({ page }) => {
     "/library",
     "/explore",
     "/pricing",
-    "/billing",
+    "/settings/billing",
   ]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     await expectNoHorizontalOverflow(page);

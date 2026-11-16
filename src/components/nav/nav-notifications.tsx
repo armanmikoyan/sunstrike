@@ -23,22 +23,22 @@ export function NavNotifications() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-9 rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+          className="relative size-8 rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
           aria-label={notificationsCopy.label}
         >
           <Bell className="size-[1.0625rem]" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72 p-1.5">
-        <DropdownMenuLabel className="flex items-center justify-between px-2 py-1.5">
+      <DropdownMenuContent align="end" className="w-72 p-1">
+        <DropdownMenuLabel className="flex items-center justify-between px-2 py-1">
           {notificationsCopy.label}
-          <span className="text-[0.6875rem] font-normal text-foreground">
+          <span className="text-xs lg:text-[0.6875rem] font-normal text-foreground">
             {unreadNotifications.length} new
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.map((item) => (
-          <DropdownMenuItem key={item.id} asChild className="p-2">
+          <DropdownMenuItem key={item.id} asChild className="px-2 py-1.5">
             <Link href="/library" className="items-start gap-2.5">
               <span
                 className={cn(
@@ -53,10 +53,10 @@ export function NavNotifications() {
                 )}
               </span>
               <span>
-                <span className="block text-[0.75rem] font-medium">
+                <span className="block text-xs lg:text-[0.6875rem] font-medium">
                   {notificationTypeLabels[item.type] ?? item.type}
                 </span>
-                <span className="mt-0.5 block font-mono text-[0.6875rem] text-muted-foreground">
+                <span className="mt-0.5 block font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
                   {item.generationId}
                 </span>
               </span>

@@ -64,21 +64,19 @@ export const pricingCopy = {
     description:
       "Add any amount from $5. One-time payment, no recurring charge.",
     secure: "Secure checkout · instant delivery",
+    select: "Select",
     popular: "Most popular",
-    oneTime: "one time",
     currency: "$",
     balance: "Added to your balance",
     neverExpires: "Never expires",
     topUp: "Top up $",
-    upTo: "Up to",
-    seconds: "seconds",
     videos: "videos",
     images: "images",
     capacityNote:
       "Capacity uses the Motion 2 and Image 2 rates and rounds down to whole units.",
     custom: {
       name: "Custom top-up",
-      description: "Use the buttons, slider, or a preset.",
+      description: "Drag the bar, use a preset, or step the amount.",
       calculatorTitle: "Top-up calculator",
       calculatorDescription:
         "Approximately how many videos or images your balance covers.",
@@ -88,7 +86,7 @@ export const pricingCopy = {
       videoSeconds: 6,
       min: 5,
       max: 10000,
-      step: 5,
+      step: 1,
       minMax: "From $5 to $10,000",
       video: "Video",
       image: "Image",
@@ -96,7 +94,6 @@ export const pricingCopy = {
       amountLabel: "Custom top-up amount",
       decreaseAmount: "Decrease amount",
       increaseAmount: "Increase amount",
-      presets: [20, 50, 100, 250],
     },
   },
   rates: {

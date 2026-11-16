@@ -57,8 +57,8 @@ export const secondaryLinks: NavLink[] = [
 ];
 
 // One set of account entries, shared by the desktop menu and the drawer panel.
-// Balance already opens the account page, so Billing is not repeated here.
+// Balance already opens the account page, so Billing is not repeated here, and
+// Help stays in the main nav so it is not listed twice.
 export const accountLinks: NavLink[] = [
-  { label: "Account settings", href: "/settings", icon: Settings },
-  { label: "Help", href: "/help", icon: CircleHelp },
+  { label: "Settings", href: "/settings/account", icon: Settings },
 ];

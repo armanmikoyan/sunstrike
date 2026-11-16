@@ -15,7 +15,7 @@ export function Library() {
         action={
           <Button
             asChild
-            className="h-10 rounded-lg bg-brand px-4 text-[0.75rem] font-medium text-brand-foreground hover:bg-brand-hover"
+            className="h-10 rounded-lg bg-brand px-4 text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
           >
             <Link href="/create/video">
               <Plus className="size-3.5" />
@@ -28,10 +28,10 @@ export function Library() {
       <div className="mt-5 grid grid-cols-1 divide-y divide-border rounded-xl border border-border bg-white/[0.015] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {libraryStats.map((stat) => (
           <div key={stat.label} className="px-4 py-3.5">
-            <p className="text-[0.6875rem] text-muted-foreground">
+            <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
               {stat.label}
             </p>
-            <p className="mt-1.5 text-[1.125rem] font-medium tracking-[-0.02em] tabular-nums">
+            <p className="mt-1.5 text-[1rem] font-medium tracking-[-0.02em] tabular-nums">
               {stat.label === "Spent" ? (
                 <span className="tabular-nums font-normal">{stat.value}</span>
               ) : (

@@ -54,6 +54,7 @@ export function Chronosphere({
 
 export function LogoLockup({
   className,
+  imageClassName,
   href = "/",
   compact = false,
   inactive = false,
@@ -76,6 +77,7 @@ export function LogoLockup({
         className={cn(
           "h-auto w-auto max-w-full",
           compact ? "max-h-11" : "max-h-16",
+          imageClassName,
         )}
       />
     </Link>

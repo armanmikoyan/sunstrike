@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAtom } from "jotai";
 import {
   aspectRatiosFor,
   durationsFor,
@@ -18,6 +17,7 @@ import {
   promptAtom,
   selectedModelAtom,
 } from "@/components/studio/state";
+import { useSharedState } from "@/components/studio/use-shared-state";
 import { defaultModel, promptIdeas } from "./constants";
 import type { TypingOptions } from "./types";
 
@@ -72,12 +72,12 @@ export function useTypingCycle(
 export function usePromptComposer() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [mode, setMode] = useAtom(modeAtom);
-  const [prompt, setPrompt] = useAtom(promptAtom);
-  const [model, setModel] = useAtom(selectedModelAtom);
-  const [aspect, setAspect] = useAtom(aspectRatioAtom);
-  const [duration, setDuration] = useAtom(durationAtom);
-  const [attachment, setAttachment] = useAtom(attachmentAtom);
+  const [mode, setMode] = useSharedState(modeAtom);
+  const [prompt, setPrompt] = useSharedState(promptAtom);
+  const [model, setModel] = useSharedState(selectedModelAtom);
+  const [aspect, setAspect] = useSharedState(aspectRatioAtom);
+  const [duration, setDuration] = useSharedState(durationAtom);
+  const [attachment, setAttachment] = useSharedState(attachmentAtom);
 
   const activeModels = modelOptions[mode];
   const selectedModel =

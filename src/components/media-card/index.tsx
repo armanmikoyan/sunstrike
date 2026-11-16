@@ -46,7 +46,7 @@ export function MediaCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/0 to-black/15 opacity-80" />
 
         <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
-          <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 text-[0.6875rem] text-white/85 backdrop-blur-md">
+          <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 text-xs text-white/85 lg:text-[0.6875rem] backdrop-blur-md">
             {item.kind === "video" ? (
               <Film className="size-3" />
             ) : (
@@ -61,20 +61,20 @@ export function MediaCard({
 
         <div className="absolute inset-x-0 bottom-0">
           <div className="pointer-events-none p-3 opacity-0 transition-opacity duration-200 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100">
-            <p className="line-clamp-2 text-[0.75rem] leading-relaxed text-white/75">
+            <p className="line-clamp-2 text-xs leading-relaxed text-white/75 lg:text-[0.6875rem]">
               {item.prompt}
             </p>
             <div className="mt-2.5 flex items-center gap-1.5">
               <Link
                 href={`/create/${item.kind}`}
-                className="flex h-8 items-center gap-1.5 rounded-md bg-foreground px-2.5 text-[0.6875rem] font-medium text-background transition-colors hover:bg-foreground/90"
+                className="flex h-8 items-center gap-1.5 rounded-md bg-foreground px-2.5 text-xs font-medium text-background lg:text-[0.6875rem] transition-colors hover:bg-foreground/90"
               >
                 <Play className="size-3 fill-current" />
                 {mediaCardCopy.remix}
               </Link>
               <Link
                 href="/explore"
-                className="flex h-8 items-center gap-1.5 rounded-md border border-white/15 bg-black/35 px-2.5 text-[0.6875rem] font-medium text-white/85 backdrop-blur transition-colors hover:bg-black/55 hover:text-white"
+                className="flex h-8 items-center gap-1.5 rounded-md border border-white/15 bg-black/35 px-2.5 text-xs font-medium text-white/85 lg:text-[0.6875rem] backdrop-blur transition-colors hover:bg-black/55 hover:text-white"
               >
                 {mediaCardCopy.details}
                 <ArrowUpRight className="size-3" />
@@ -86,10 +86,10 @@ export function MediaCard({
             <div className="p-3 pt-0">
               <div className="flex items-end justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-[0.8125rem] font-medium text-white">
+                  <p className="truncate text-sm font-medium text-white lg:text-[0.75rem]">
                     {item.title}
                   </p>
-                  <p className="mt-0.5 truncate text-[0.6875rem] text-white/65">
+                  <p className="mt-0.5 truncate text-xs text-white/65 lg:text-[0.6875rem]">
                     {item.model}
                   </p>
                 </div>

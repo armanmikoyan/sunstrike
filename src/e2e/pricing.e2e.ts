@@ -70,10 +70,17 @@ test.describe("pricing", () => {
     expect(await footerTop()).toBe(before);
   });
 
-  test("shows what each top-up buys", async ({ page }) => {
-    await expect(page.getByText("Up to 117 seconds")).toBeVisible();
-    await expect(page.getByText("Up to 142 images")).toBeVisible();
-    await expect(page.getByText("Up to 294 seconds")).toBeVisible();
-    await expect(page.getByText("Up to 588 seconds")).toBeVisible();
+  test("top-up presets drive the custom amount", async ({ page }) => {
+    const presets = page.getByRole("button", { name: /^Select \$/ });
+    await expect(presets).toHaveCount(6);
+
+    const slider = page.getByRole("slider", { name: "Custom top-up amount" });
+    await expect(slider).toHaveAttribute("aria-valuenow", "50");
+
+    await page.getByRole("button", { name: "Select $5000", exact: true }).click();
+    await expect(slider).toHaveAttribute("aria-valuenow", "5000");
+    await expect(
+      page.getByRole("button", { name: "Select $5000", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 });

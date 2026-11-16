@@ -51,7 +51,7 @@ describe("top nav", () => {
   it("keeps the balance in the bar and opens billing", () => {
     renderTopNav();
     const pill = screen.getByRole("link", { name: /balance/i });
-    expect(pill).toHaveAttribute("href", "/billing");
+    expect(pill).toHaveAttribute("href", "/settings/billing");
     expect(pill).toHaveTextContent("$10.54");
   });
 });

@@ -46,7 +46,7 @@ export function Assets() {
           <Button
             variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
           >
             <UploadCloud className="size-3.5" />
             {assetsCopy.upload}
@@ -66,10 +66,10 @@ export function Assets() {
         <span className="grid size-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
           <UploadCloud className="size-4" />
         </span>
-        <p className="mt-3 text-[0.6875rem] font-medium">
+        <p className="mt-3 text-xs lg:text-[0.6875rem] font-medium">
           {assetsCopy.dropTitle}
         </p>
-        <p className="mt-1 text-[0.6875rem] text-muted-foreground">
+        <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
           {assetsCopy.dropHint}
         </p>
         <input type="file" multiple className="hidden" />
@@ -77,10 +77,10 @@ export function Assets() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-[0.8125rem] font-medium">
+          <h2 className="text-sm lg:text-[0.75rem] font-medium">
             {assetsCopy.recentTitle}
           </h2>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground">
+          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {visible.length}
           </span>
         </div>
@@ -91,7 +91,7 @@ export function Assets() {
               type="button"
               onClick={() => setFilter(item.value)}
               className={cn(
-                "flex h-7 items-center gap-1.5 rounded-md px-2 text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
+                "flex h-7 items-center gap-1.5 rounded-md px-2 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
                 filter === item.value &&
                   "bg-white/[0.06] text-foreground hover:bg-white/[0.06]",
               )}
@@ -130,7 +130,7 @@ export function Assets() {
                     className="object-cover opacity-90 transition-opacity duration-300 group-hover:opacity-100"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/5" />
-                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded border border-white/15 bg-black/35 px-1.5 py-0.5 text-[0.6875rem] text-white/80 backdrop-blur">
+                  <span className="absolute left-2 top-2 flex items-center gap-1 rounded border border-white/15 bg-black/35 px-1.5 py-0.5 text-xs lg:text-[0.6875rem] text-white/80 backdrop-blur">
                     {asset.kind === "video" ? (
                       <Film className="size-2.5" />
                     ) : (
@@ -139,11 +139,11 @@ export function Assets() {
                     {assetsCopy.kindLabels[asset.kind]}
                   </span>
                   <div className="absolute inset-x-2 bottom-2">
-                    <p className="truncate font-mono text-[0.6875rem] text-white/90">
+                    <p className="truncate font-mono text-xs lg:text-[0.6875rem] text-white/90">
                       {assetsCopy.storagePrefix}
                       {asset.id}.{extension}
                     </p>
-                    <p className="mt-0.5 text-[0.6875rem] text-white/60">
+                    <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-white/60">
                       {asset.createdAt}
                     </p>
                   </div>

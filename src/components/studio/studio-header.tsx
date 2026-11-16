@@ -24,14 +24,14 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           </Link>
         </Button>
         <span className="h-4 w-px bg-border" />
-        <span className="w-[4.75rem] truncate text-[0.75rem] font-medium">
+        <span className="w-[4.75rem] truncate text-xs lg:text-[0.6875rem] font-medium">
           {studioModels[mode].label}
         </span>
         <div className="ml-1 hidden items-center gap-0.5 rounded-lg border border-white/[0.06] bg-white/[0.025] p-0.5 sm:flex">
           <Link
             href="/create/video"
             className={cn(
-              "flex h-6 items-center rounded-md px-2.5 text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:bg-white/[0.06] focus-visible:outline-none",
+              "flex h-6 items-center rounded-[0.625rem] px-2.5 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:bg-white/[0.06] focus-visible:outline-none",
               isVideo && "bg-white/[0.08] text-foreground",
             )}
           >
@@ -40,7 +40,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           <Link
             href="/create/image"
             className={cn(
-              "flex h-6 items-center rounded-md px-2.5 text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:bg-white/[0.06] focus-visible:outline-none",
+              "flex h-6 items-center rounded-[0.625rem] px-2.5 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:bg-white/[0.06] focus-visible:outline-none",
               !isVideo && "bg-white/[0.08] text-foreground",
             )}
           >
@@ -50,14 +50,14 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">
-        <span className="hidden rounded-md border border-white/[0.07] px-2 py-1 text-[0.6875rem] text-muted-foreground md:block">
+        <span className="hidden rounded-md border border-white/[0.07] px-2 py-1 text-xs lg:text-[0.6875rem] text-muted-foreground md:block">
           <span className="tabular-nums font-normal">{formatUSD(credits)}</span>
         </span>
         <Button
           asChild
           variant="outline"
           size="sm"
-          className="h-7 rounded-md border-white/[0.09] bg-white/[0.025] px-2.5 text-[0.6875rem] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+          className="h-7 rounded-md border-white/[0.09] bg-white/[0.025] px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
         >
           <Link href="/library">
             {copy.library}

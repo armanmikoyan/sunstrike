@@ -57,15 +57,14 @@ describe("sidebar rail", () => {
     expect(screen.getByText("Favorites")).toHaveClass("opacity-100");
   });
 
-  it("keeps pricing and help in the rail but not billing or settings", () => {
+  it("keeps pricing and help in the rail but not the settings page", () => {
     renderSidebar({ expanded: true });
     const hrefs = screen
       .getAllByRole("link")
       .map((link) => link.getAttribute("href"));
     expect(hrefs).toContain("/pricing");
     expect(hrefs).toContain("/help");
-    expect(hrefs).not.toContain("/billing");
-    expect(hrefs).not.toContain("/settings");
+    expect(hrefs).not.toContain("/settings/account");
   });
 
   it("marks the current section", () => {
@@ -103,7 +102,7 @@ describe("sidebar rail", () => {
 });
 
 describe("sidebar profile menu", () => {
-  it("keeps the balance, settings and help inside the profile", async () => {
+  it("keeps the balance and settings inside the profile", async () => {
     renderSidebar({ expanded: true });
     await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
@@ -115,12 +114,12 @@ describe("sidebar profile menu", () => {
     expect(within(menu).queryByText("Arman Mikoyan")).not.toBeInTheDocument();
 
     const balance = within(menu).getByRole("menuitem", { name: /Balance/ });
-    expect(balance).toHaveAttribute("href", "/billing");
+    expect(balance).toHaveAttribute("href", "/settings/billing");
     expect(balance).toHaveTextContent("$10.54");
 
     expect(
-      within(menu).getByRole("menuitem", { name: /Account settings/ }),
-    ).toHaveAttribute("href", "/settings");
+      within(menu).getByRole("menuitem", { name: "Settings" }),
+    ).toHaveAttribute("href", "/settings/account");
     expect(
       within(menu).getByRole("menuitem", { name: /Sign out/ }),
     ).toHaveAttribute("href", "/login");
@@ -135,8 +134,7 @@ describe("sidebar profile menu", () => {
       within(menu).getAllByRole("menuitem").map((item) => item.textContent?.trim()),
     ).toEqual([
       expect.stringContaining("Balance"),
-      "Account settings",
-      "Help",
+      "Settings",
       "Sign out",
     ]);
   });
@@ -185,10 +183,10 @@ describe("mobile drawer", () => {
     const panel = await screen.findByRole("dialog");
     expect(within(panel).getByRole("link", { name: /Balance/ })).toHaveAttribute(
       "href",
-      "/billing",
+      "/settings/billing",
     );
     expect(
-      within(panel).getByRole("link", { name: /Account settings/ }),
+      within(panel).getByRole("link", { name: "Settings" }),
     ).toBeInTheDocument();
     expect(within(panel).getByRole("button", { name: /Sign out/ })).toBeVisible();
   });

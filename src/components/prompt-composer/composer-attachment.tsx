@@ -23,7 +23,7 @@ export function ComposerAttachmentChip({
   return (
     <div className="mx-2 mb-1.5 flex w-fit max-w-[calc(100%-1rem)] items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5">
       <Paperclip className="size-3 shrink-0 text-muted-foreground" />
-      <span className="truncate text-[0.6875rem] text-foreground">
+      <span className="truncate text-xs lg:text-[0.6875rem] text-foreground">
         {attachment}
       </span>
       <button
@@ -72,23 +72,23 @@ export function ComposerAttachMenu({
           </TooltipTrigger>
           <TooltipContent>{composerCopy.attach.addReference}</TooltipContent>
         </Tooltip>
-        <DropdownMenuContent align="start" className="w-56 p-1.5">
+        <DropdownMenuContent align="start" className="w-56 p-1">
           <DropdownMenuLabel>{composerCopy.attach.menuLabel}</DropdownMenuLabel>
           <DropdownMenuItem
-            className="p-2"
+            className="px-2 py-1.5"
             onSelect={() => fileInputRef.current?.click()}
           >
             <Upload className="size-4 text-muted-foreground" />
             {composerCopy.attach.upload}
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="p-2"
+            className="px-2 py-1.5"
             onSelect={() => setAttachment(composerCopy.attach.pastedName)}
           >
             <Plus className="size-4 text-muted-foreground" />
             {composerCopy.attach.paste}
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="p-2">
+          <DropdownMenuItem asChild className="px-2 py-1.5">
             <Link href="/library">
               <Layers3 className="size-4 text-muted-foreground" />
               {composerCopy.attach.fromLibrary}

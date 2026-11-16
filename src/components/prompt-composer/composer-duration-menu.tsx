@@ -23,20 +23,20 @@ export function ComposerDurationMenu({ composer }: ComposerDurationMenuProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-[3.5rem] justify-center gap-1 rounded-lg px-2 text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
+          className="h-8 w-[3.5rem] justify-center gap-1 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
         >
           {duration}
           <ChevronDown className="size-3 opacity-60" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-36 p-1.5">
+      <DropdownMenuContent align="start" className="w-36 p-1">
         <DropdownMenuLabel>{composerCopy.duration}</DropdownMenuLabel>
         {durationOptions.map((value) => (
           <DropdownMenuItem
             key={value}
             onSelect={() => setDuration(value)}
             className={cn(
-              "p-2 text-[0.75rem]",
+              "px-2 py-1.5 text-xs lg:text-[0.6875rem]",
               duration === value && "bg-white/[0.08] text-foreground",
             )}
           >

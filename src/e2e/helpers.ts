@@ -6,8 +6,10 @@ export const appRoutes = [
   { path: "/assets", heading: "Assets" },
   { path: "/favorites", heading: "Favorites" },
   { path: "/pricing" },
-  { path: "/billing", heading: "Billing" },
-  { path: "/settings", heading: "Settings" },
+  { path: "/settings/account", heading: "Settings" },
+  { path: "/settings/notifications" },
+  { path: "/settings/billing" },
+  { path: "/settings/usage" },
   { path: "/help", heading: "Help center" },
 ] as const;
 

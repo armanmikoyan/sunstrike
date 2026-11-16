@@ -14,14 +14,14 @@ export function SettingsNotificationsPane() {
   return (
     <div>
       <div className="border-b border-white/[0.06] px-5 py-4">
-        <h2 className="text-[0.8125rem] font-medium">{copy.title}</h2>
-        <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
+        <h2 className="text-sm lg:text-[0.75rem] font-medium">{copy.title}</h2>
+        <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
           {copy.description}
         </p>
       </div>
       <div className="p-5">
         {notifications.length === 0 ? (
-          <p className="text-[0.6875rem] text-muted-foreground">{copy.empty}</p>
+          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{copy.empty}</p>
         ) : (
           <div className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.07]">
             {notifications.map((notification) => (
@@ -40,18 +40,18 @@ export function SettingsNotificationsPane() {
                   <Bell className="size-3.5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[0.6875rem] font-medium">
+                  <p className="text-xs lg:text-[0.6875rem] font-medium">
                     {notificationTypeLabels[notification.type] ??
                       notification.type}
                   </p>
-                  <p className="mt-0.5 font-mono text-[0.6875rem] text-muted-foreground">
+                  <p className="mt-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
                     {notification.generationId}
                   </p>
-                  <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
+                  <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
                     {formatter.format(new Date(notification.createdAt))}
                   </p>
                 </div>
-                <span className="shrink-0 text-[0.6875rem] text-muted-foreground">
+                <span className="shrink-0 text-xs lg:text-[0.6875rem] text-muted-foreground">
                   {notification.readAt ? copy.read : copy.unread}
                 </span>
               </div>

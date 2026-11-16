@@ -20,12 +20,12 @@ export function LibraryView() {
           value={tab}
           onValueChange={(value) => setTab(value as typeof tab)}
         >
-          <TabsList aria-label="Filter library" className="group-data-horizontal/tabs:h-7 gap-0 rounded-lg border border-white/[0.07] bg-white/[0.015] p-0.5">
+          <TabsList aria-label="Filter library" className="group-data-horizontal/tabs:h-9 gap-0 rounded-lg border border-white/[0.07] bg-white/[0.015] p-0.5 lg:group-data-horizontal/tabs:h-7">
             {libraryTabs.map((item) => (
               <TabsTrigger
                 key={item.value}
                 value={item.value}
-                className="h-6 flex-none rounded-md px-2.5 text-[0.6875rem] font-medium text-muted-foreground group-data-[variant=default]/tabs-list:data-active:shadow-none data-active:bg-white/[0.08] data-active:text-foreground dark:data-active:border-transparent dark:data-active:bg-white/[0.08] dark:data-active:text-foreground"
+                className="flex-none rounded-[0.625rem] px-2.5 text-sm font-medium text-muted-foreground group-data-[variant=default]/tabs-list:data-active:shadow-none data-active:bg-white/[0.08] data-active:text-foreground lg:text-[0.6875rem] dark:data-active:border-transparent dark:data-active:bg-white/[0.08] dark:data-active:text-foreground"
               >
                 {item.label}
               </TabsTrigger>
@@ -39,7 +39,7 @@ export function LibraryView() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={libraryViewCopy.searchPlaceholder}
-            className="h-9 rounded-lg border-white/[0.08] bg-white/[0.035] pl-8 text-[0.75rem] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:border-white/[0.08] focus-visible:bg-white/[0.05] focus-visible:ring-0 dark:bg-white/[0.035] dark:focus-visible:bg-white/[0.05] md:text-[0.75rem]"
+            className="h-9 rounded-lg border-white/[0.08] bg-white/[0.035] pl-8 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:border-white/[0.08] focus-visible:bg-white/[0.05] focus-visible:ring-0 md:text-sm lg:text-[0.6875rem] dark:bg-white/[0.035] dark:focus-visible:bg-white/[0.05]"
           />
         </div>
       </div>
@@ -64,16 +64,16 @@ export function LibraryView() {
       {!filtered.length ? (
         <div className="mt-6 flex min-h-[18.75rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.015]">
           <Search className="size-5 text-muted-foreground" />
-          <p className="mt-3 text-[0.8125rem] font-medium">
+          <p className="mt-3 text-sm lg:text-[0.75rem] font-medium">
             {libraryViewCopy.emptyTitle}
           </p>
-          <p className="mt-1 text-[0.6875rem] text-muted-foreground">
+          <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
             {libraryViewCopy.emptyDescription}
           </p>
         </div>
       ) : null}
 
-      <p className="mt-5 text-center text-[0.6875rem] text-muted-foreground">
+      <p className="mt-5 text-center text-xs lg:text-[0.6875rem] text-muted-foreground">
         {libraryViewCopy.showing} {filtered.length} {libraryViewCopy.of}{" "}
         {libraryItems.length} {libraryViewCopy.frames}
       </p>

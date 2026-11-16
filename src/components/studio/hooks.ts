@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useAtom } from "jotai";
 import {
   aspectRatios,
   aspectRatiosFor,
@@ -25,19 +24,20 @@ import {
   templateIdAtom,
 } from "./state";
 import { imageTakes, studioModels, videoTakes } from "./constants";
+import { useSharedState } from "./use-shared-state";
 
 /** All generative state for one studio page, kept out of the view tree. */
 export function useStudio(initialMode: GenerationMode) {
-  const [, setMode] = useAtom(modeAtom);
-  const [prompt, setPrompt] = useAtom(promptAtom);
-  const [model, setModel] = useAtom(selectedModelAtom);
-  const [aspect, setAspect] = useAtom(aspectRatioAtom);
-  const [duration, setDuration] = useAtom(durationAtom);
-  const [resolution, setResolution] = useAtom(resolutionAtom);
-  const [audio, setAudio] = useAtom(audioAtom);
-  const [templateId, setTemplateId] = useAtom(templateIdAtom);
-  const [attachment, setAttachment] = useAtom(attachmentAtom);
-  const [credits] = useAtom(balanceAtom);
+  const [, setMode] = useSharedState(modeAtom);
+  const [prompt, setPrompt] = useSharedState(promptAtom);
+  const [model, setModel] = useSharedState(selectedModelAtom);
+  const [aspect, setAspect] = useSharedState(aspectRatioAtom);
+  const [duration, setDuration] = useSharedState(durationAtom);
+  const [resolution, setResolution] = useSharedState(resolutionAtom);
+  const [audio, setAudio] = useSharedState(audioAtom);
+  const [templateId, setTemplateId] = useSharedState(templateIdAtom);
+  const [attachment, setAttachment] = useSharedState(attachmentAtom);
+  const [credits] = useSharedState(balanceAtom);
   const [queued, setQueued] = useState(false);
   const [activeId, setActiveId] = useState(
     initialMode === "video" ? videoTakes[0].id : imageTakes[0].id,
