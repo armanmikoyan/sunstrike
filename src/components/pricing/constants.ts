@@ -79,6 +79,10 @@ export const pricingCopy = {
     custom: {
       name: "Custom top-up",
       description: "Use the buttons, slider, or a preset.",
+      calculatorTitle: "Top-up calculator",
+      calculatorDescription:
+        "Approximately how many videos or images your balance covers.",
+      estimateLabel: "You get",
       modeLabel: "Mode",
       modelLabel: "Model",
       videoSeconds: 6,

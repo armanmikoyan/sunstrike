@@ -13,8 +13,8 @@ describe("pricing page", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText(/\/ second/).length).toBeGreaterThan(0);
     expect(
-      screen.getByRole("button", { name: "All models" }),
-    ).toHaveAttribute("aria-pressed", "true");
+      screen.getByRole("tab", { name: "All models" }),
+    ).toHaveAttribute("aria-selected", "true");
   });
 
   it("talks about balance and dollars, never credits", () => {
