@@ -133,16 +133,20 @@ reused props has `types.ts`. Presentational components can be a single
 The backend is a modular monolith scaffolded in `apps/engine` and not wired
 yet. `apps/engine/src/app.ts` builds the Express app, `src/main.ts` starts the
 HTTP server and `src/worker.ts` starts the generation worker. Each module
-exposes one `index.ts` as its public interface and keeps routes, controller,
-service and repository in separate layers; `src/infrastructure` owns the
-Postgres, Redis, queue and object-storage clients.
+exposes one `index.ts` as its public interface and its layers are files named
+after the layer — `routes.ts`, `controller.ts`, `service.ts`, `repository.ts`,
+`worker.ts` — so the module name is never repeated in a filename
+(`generation/service.ts`, not `generation/generation.service.ts`).
+`src/infrastructure` goes the other way on purpose: each client is a folder
+whose `index.ts` is the only import surface (`database`, `redis`, `queue`,
+`s3`), because those folders will hold a client, its config and helpers.
 
 Tests live next to the code they cover. Vitest picks up every `src/**/*.test.ts`
 and `src/**/*.test.tsx`; name the file after the module it covers
 (`index.test.tsx`, `pricing-order-tabs.test.tsx`, `page.test.tsx`). Playwright
 specs sit in `src/e2e` as a sibling of `src/components` and `src/app`, end in
-`.e2e.ts`, and share `src/e2e/helpers.ts`. `vitest.setup.tsx` at the studio root,
-next to `vitest.config.mts`, is the only shared test setup file.
+`.e2e.ts`, and share `src/e2e/helpers.ts`. `vitest.setup.tsx` at the `apps/lab`
+root, next to `vitest.config.mts`, is the only shared test setup file.
 
 ### Route composition
 
