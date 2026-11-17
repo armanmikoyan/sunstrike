@@ -230,11 +230,16 @@ the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 | `/pricing` | Image/video price calculators, top-up packs, FAQ (marketing only) |
 | `/settings/account`, `/settings/notifications`, `/settings/billing`, `/settings/usage` | Account (`email`, id, created), read-only notifications, balance, payment method and auto top-up, and the `balance_transactions` ledger; `/settings` redirects to the account tab |
 | `/help` | Guides and contact |
-| `/login` | Standalone split-screen sign-in |
+| `/privacy`, `/terms` | Shared `LegalDocumentView`: header, revision date, section anchors and a sticky contents rail that marks the section being read (`#cookies` is the consent banner's target) |
+| `/login` | Standalone split-screen sign-in; crawlable but `noindex` |
 
 `src/proxy.ts` (Next 16's middleware replacement) rewrites unknown
 `/create/:mode` segments to a real 404. Keep that validation in sync with the
 two supported studios.
+
+`src/app/sitemap.ts` and `src/app/robots.ts` are metadata routes. Both build
+absolute URLs from `siteUrl` in `src/lib/site/index.ts`; the sitemap stamps
+every entry with `legalUpdated` from `src/components/legal/constants.ts`.
 
 ### Domain data
 
@@ -248,6 +253,8 @@ two supported studios.
 - `media/index.ts` — `MediaItem`, `MediaKind` and `MediaCategory` types.
 - `pricing/index.ts` — image/video quantity clamping, quote maths and
   `formatUSD`.
+- `site/index.ts` — the single public origin used by root metadata, the
+  sitemap and robots.
 - `utils/index.ts` — the `cn` class-name helper.
 
 `src/mocks` is the only place demo rows live. Each module exposes rows plus the
@@ -411,7 +418,13 @@ Type rules:
 - `NavigationProgress` is a 3px brand-secondary bar driven by link clicks,
   popstate, and the `chronolab:navigation-start` custom event.
 - `SiteFooter` is rendered by `(website)/layout.tsx`; `(workspace)` omits it,
-  and `AppShell` renders `/login` with no chrome at all.
+  and `AppShell` renders `/login` with no chrome at all. Its Terms and Privacy
+  links point at `/terms` and `/privacy`.
+- `CookieConsent` is mounted by the root `layout.tsx`, outside `AppShell`, so it
+  covers every route. It stores the choice under `chronolab:cookie-consent`,
+  dispatches `chronolab:cookie-consent`, and stays out of the server markup
+  (`useSyncExternalStore` with a server snapshot) so the banner never causes a
+  hydration mismatch.
 - `Providers` (`src/app/providers.tsx`) wires Jotai and tooltips and sets
   `data-hydrated="true"` on `<html>` after mount. E2E waits on that flag.
 

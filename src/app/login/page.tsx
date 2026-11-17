@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { Login } from "@/components/login";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Sign in",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

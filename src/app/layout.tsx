@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Providers } from "@/app/providers";
 import { AppShell } from "@/app/shell";
 import { SOCIAL_SRC } from "@/components/brand/constants";
+import { CookieConsent } from "@/components/cookie-consent";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,7 +32,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chronolab.ai"),
+  metadataBase: new URL(siteUrl),
   applicationName: "Chronolab.ai",
   title: {
     default: "Chronolab.ai — Generative Studio",
@@ -69,6 +71,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <Providers>
           <AppShell>{children}</AppShell>
+          <CookieConsent />
         </Providers>
       </body>
     </html>

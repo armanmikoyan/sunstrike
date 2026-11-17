@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import LoginPage from "./page";
+import LoginPage, { metadata } from "./page";
 
 describe("login page", () => {
   it("asks for an email and password", () => {
@@ -10,5 +10,9 @@ describe("login page", () => {
     );
     expect(screen.getByPlaceholderText("you@studio.com")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("••••••••")).toBeInTheDocument();
+  });
+
+  it("asks search engines not to index the sign-in screen", () => {
+    expect(metadata.robots).toEqual({ index: false, follow: true });
   });
 });

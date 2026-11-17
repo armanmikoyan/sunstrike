@@ -44,10 +44,10 @@ export function SiteFooter({ className }: { className?: string }) {
         <div className="flex flex-col justify-between gap-3 border-t border-white/[0.06] pt-5 text-xs lg:text-[0.6875rem] text-muted-foreground sm:flex-row">
           <p>{footerCopy.copyright}</p>
           <div className="flex items-center gap-5">
-            <Link href="/help" className="transition-colors hover:text-foreground">
+            <Link href="/terms" className="transition-colors hover:text-foreground">
               {footerCopy.terms}
             </Link>
-            <Link href="/help" className="transition-colors hover:text-foreground">
+            <Link href="/privacy" className="transition-colors hover:text-foreground">
               {footerCopy.privacy}
             </Link>
             <span>{footerCopy.payg}</span>

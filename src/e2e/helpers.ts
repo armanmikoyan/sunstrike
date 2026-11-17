@@ -11,6 +11,8 @@ export const appRoutes = [
   { path: "/settings/billing" },
   { path: "/settings/usage" },
   { path: "/help", heading: "Help center" },
+  { path: "/privacy", heading: "Privacy policy" },
+  { path: "/terms", heading: "Terms of service" },
 ] as const;
 
 export async function expectNoHorizontalOverflow(page: Page) {
@@ -42,4 +44,17 @@ export async function openApp(page: Page, path: string) {
   await page
     .waitForLoadState("networkidle", { timeout: 2_000 })
     .catch(() => {});
+  await dismissConsent(page);
+}
+
+/**
+ * The consent banner is fixed to the bottom of the viewport, so it can sit on
+ * top of controls a spec wants to click. Dismissing it here keeps every other
+ * spec focused on its own screen.
+ */
+export async function dismissConsent(page: Page) {
+  const banner = page.getByRole("region", { name: "Cookie consent" });
+  if (!(await banner.isVisible().catch(() => false))) return;
+  await page.getByRole("button", { name: "Essential only" }).click();
+  await expect(banner).toBeHidden();
 }
