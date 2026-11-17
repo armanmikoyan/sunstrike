@@ -10,7 +10,7 @@ export function ExploreToolbar({ gallery }: ExploreToolbarProps) {
   const { kind, setKind, query, setQuery } = gallery;
 
   return (
-    <div className="relative z-20 -mx-5 border-b border-border bg-background px-5 py-3 lg:sticky lg:top-11">
+    <div className="relative -mx-5 border-b border-border bg-background px-5 py-3">
       <div className="flex items-center justify-between gap-2">
         <Tabs
           value={kind}

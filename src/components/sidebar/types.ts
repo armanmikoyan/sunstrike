@@ -4,6 +4,7 @@ export type SidebarItemProps = {
   label: string;
   href: string;
   icon: React.ElementType;
+  iconClassName?: string;
   active: boolean;
   expanded: boolean;
   /** Desktop rail (fixed 200px). The drawer lays items out full width. */

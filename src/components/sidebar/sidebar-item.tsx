@@ -7,6 +7,7 @@ export function SidebarItem({
   label,
   href,
   icon: Icon,
+  iconClassName,
   active,
   expanded,
   rail,
@@ -37,7 +38,10 @@ export function SidebarItem({
             active && "bg-secondary text-foreground",
           )}
         >
-          <Icon className="size-[1.125rem] shrink-0" strokeWidth={1.8} />
+          <Icon
+            className={cn("size-[1.125rem] shrink-0", iconClassName)}
+            strokeWidth={1.8}
+          />
           <span
             className={cn(
               "truncate text-sm font-medium transition-opacity duration-200 motion-reduce:transition-none lg:text-[0.6875rem]",

@@ -1,6 +1,5 @@
 import {
   CircleHelp,
-  Coins,
   Compass,
   Film,
   FolderOpen,
@@ -8,7 +7,8 @@ import {
   Layers,
   Settings,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import type { ElementType } from "react";
+import { PricingIcon } from "./pricing-icon";
 
 export const EXIT_MS = 260;
 
@@ -40,7 +40,9 @@ export const sidebarCopy = {
 export type NavLink = {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: ElementType;
+  /** Lifts one icon out of the neutral rail without recolouring the label. */
+  iconClassName?: string;
 };
 
 export const primaryLinks: NavLink[] = [
@@ -52,7 +54,13 @@ export const primaryLinks: NavLink[] = [
 ];
 
 export const secondaryLinks: NavLink[] = [
-  { label: "Pricing", href: "/pricing", icon: Coins },
+  {
+    label: "Pricing",
+    href: "/pricing",
+    icon: PricingIcon,
+    iconClassName:
+      "transition-[filter] duration-200 group-hover:brightness-[1.2] motion-reduce:transition-none",
+  },
   { label: "Help", href: "/help", icon: CircleHelp },
 ];
 

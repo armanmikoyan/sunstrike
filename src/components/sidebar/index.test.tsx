@@ -67,6 +67,21 @@ describe("sidebar rail", () => {
     expect(hrefs).not.toContain("/settings/account");
   });
 
+  it("gives the pricing icon a muted duotone and leaves help neutral", () => {
+    renderSidebar({ expanded: true });
+
+    const pricing = screen.getByRole("link", { name: "Pricing" });
+    const gem = pricing.querySelector("svg.lucide-gem");
+    expect(gem).toBeInTheDocument();
+    expect(gem).toHaveClass("text-brand-secondary");
+    expect(gem?.getAttribute("class")).toContain("stroke-brand-tertiary");
+
+    const helpIcon = screen
+      .getByRole("link", { name: "Help" })
+      .querySelector("svg");
+    expect(helpIcon).not.toHaveClass("text-brand-secondary");
+  });
+
   it("marks the current section", () => {
     setPathname("/library");
     renderSidebar({ expanded: true });
