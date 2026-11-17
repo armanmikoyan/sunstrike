@@ -2,8 +2,9 @@
 
 Chronolab.ai is a dark-studio generative media interface: a marketing home, an
 image/video studio, an explore feed, a library, account and billing screens.
-The repo is a single Next.js App Router application with no backend. Every
-catalogue item, price and generation is local demo data.
+The repo is an npm-workspace monorepo. `apps/lab` is the Next.js App Router
+frontend; the modular-monolith backend is scaffolded in `apps/engine` and not
+wired yet. Every catalogue item, price and generation is still local demo data.
 
 The product is modelled on one contract: the high-level design's six entities,
 `/api/v1` surface and user flow. `src/lib/design` is that contract in code, and
@@ -15,17 +16,20 @@ The product name is **Chronolab.ai**, always. Models are named
 `Chronolab <Name>` and account addresses use `@chronolab.ai`. The previous
 brand name is retired and lives only in git history.
 
+Unless stated otherwise, `src/...` paths in this document are relative to
+`apps/lab/`; `apps/engine/src/...` names the backend.
+
 ## Stack
 
-| Layer | Choice |
-| --- | --- |
-| Framework | Next.js `16.4` App Router, React `19.3`, TypeScript strict |
-| Styling | Tailwind CSS v4, CSS variables in `src/app/globals.css` |
-| Components | shadcn primitives (`radix-nova` style) in `src/ui` |
-| State | Jotai atoms for shared generation state, local hooks for the rest |
-| Motion | `motion/react` for number rolls, CSS for shell/video-wall motion |
-| Icons | `lucide-react` |
-| Tests | Vitest + Testing Library (jsdom), Playwright (Chrome) |
+| Layer      | Choice                                                            |
+| ---------- | ----------------------------------------------------------------- |
+| Framework  | Next.js `16.4` App Router, React `19.3`, TypeScript strict        |
+| Styling    | Tailwind CSS v4, CSS variables in `src/app/globals.css`           |
+| Components | shadcn primitives (`radix-nova` style) in `src/ui`                |
+| State      | Jotai atoms for shared generation state, local hooks for the rest |
+| Motion     | `motion/react` for number rolls, CSS for shell/video-wall motion  |
+| Icons      | `lucide-react`                                                    |
+| Tests      | Vitest + Testing Library (jsdom), Playwright (Chrome)             |
 
 `src/lib/utils/index.ts` re-exports `cn` from the `cn` package. Imports use the
 `@/` alias, which maps to `src/`, and the `~` alias, which maps to the repo
@@ -65,6 +69,9 @@ server. The UI derives aspect ratios, durations and resolutions from the
 selected model's capabilities rather than from global lists.
 
 ## Folder structure
+
+Paths in the block below are relative to `apps/lab/`; the backend lives in
+`apps/engine/src/`.
 
 ```text
 src/
@@ -123,11 +130,18 @@ with shared Jotai atoms has `state.ts` (currently `studio`); one with shaped or
 reused props has `types.ts`. Presentational components can be a single
 `index.tsx` with no supporting files.
 
+The backend is a modular monolith scaffolded in `apps/engine` and not wired
+yet. `apps/engine/src/app.ts` builds the Express app, `src/main.ts` starts the
+HTTP server and `src/worker.ts` starts the generation worker. Each module
+exposes one `index.ts` as its public interface and keeps routes, controller,
+service and repository in separate layers; `src/infrastructure` owns the
+Postgres, Redis, queue and object-storage clients.
+
 Tests live next to the code they cover. Vitest picks up every `src/**/*.test.ts`
 and `src/**/*.test.tsx`; name the file after the module it covers
 (`index.test.tsx`, `pricing-order-tabs.test.tsx`, `page.test.tsx`). Playwright
 specs sit in `src/e2e` as a sibling of `src/components` and `src/app`, end in
-`.e2e.ts`, and share `src/e2e/helpers.ts`. `vitest.setup.tsx` at the repo root,
+`.e2e.ts`, and share `src/e2e/helpers.ts`. `vitest.setup.tsx` at the studio root,
 next to `vitest.config.mts`, is the only shared test setup file.
 
 ### Route composition
@@ -220,18 +234,18 @@ the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 
 ### Routes
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Full-bleed video wall, prompt composer, featured gallery, ratio mosaic, pay-as-you-go panel |
-| `/create/video`, `/create/image` | Studio: controls, preview, takes, queue dialog |
-| `/explore` | Gallery filtered by media kind, searchable by title, prompt and model |
-| `/library` | Generated work with kind tabs and search |
-| `/assets`, `/favorites` | Uploaded assets by kind; a saved grid (no favourites entity) |
-| `/pricing` | Image/video price calculators, top-up packs, FAQ (marketing only) |
+| Route                                                                                  | Purpose                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                                                                    | Full-bleed video wall, prompt composer, featured gallery, ratio mosaic, pay-as-you-go panel                                                                                       |
+| `/create/video`, `/create/image`                                                       | Studio: controls, preview, takes, queue dialog                                                                                                                                    |
+| `/explore`                                                                             | Gallery filtered by media kind, searchable by title, prompt and model                                                                                                             |
+| `/library`                                                                             | Generated work with kind tabs and search                                                                                                                                          |
+| `/assets`, `/favorites`                                                                | Uploaded assets by kind; a saved grid (no favourites entity)                                                                                                                      |
+| `/pricing`                                                                             | Image/video price calculators, top-up packs, FAQ (marketing only)                                                                                                                 |
 | `/settings/account`, `/settings/notifications`, `/settings/billing`, `/settings/usage` | Account (`email`, id, created), read-only notifications, balance, payment method and auto top-up, and the `balance_transactions` ledger; `/settings` redirects to the account tab |
-| `/help` | Guides and contact |
-| `/privacy`, `/terms` | Shared `LegalDocumentView`: header, revision date, section anchors and a sticky contents rail that marks the section being read (`#cookies` is the consent banner's target) |
-| `/login` | Standalone split-screen sign-in; crawlable but `noindex` |
+| `/help`                                                                                | Guides and contact                                                                                                                                                                |
+| `/privacy`, `/terms`                                                                   | Shared `LegalDocumentView`: header, revision date, section anchors and a sticky contents rail that marks the section being read (`#cookies` is the consent banner's target)       |
+| `/login`                                                                               | Standalone split-screen sign-in; crawlable but `noindex`                                                                                                                          |
 
 `src/proxy.ts` (Next 16's middleware replacement) rewrites unknown
 `/create/:mode` segments to a real 404. Keep that validation in sync with the
@@ -272,17 +286,17 @@ the `src/mocks` imports with the `/api/v1` data source, not the other way round.
 
 ### Surfaces
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--background` | `#0f1113` | Page (shared by the rail and body) |
-| `--chrome` | `#131517` | Nav bars, sticky toolbars |
-| `--surface` | `#0f1113` | Section band |
-| `--surface-raised` | `#0f1113` | Raised card |
-| `--surface-inset` | `#0f1113` | Inset well |
-| `--sidebar` | `var(--background)` | Rail |
-| `--foreground` | `#f4f5f7` | Primary text |
-| `--muted-foreground` | `#9aa0a6` | Secondary text |
-| `--border` | `rgba(255,255,255,0.1)` | Hairlines |
+| Token                | Value                   | Use                                |
+| -------------------- | ----------------------- | ---------------------------------- |
+| `--background`       | `#0f1113`               | Page (shared by the rail and body) |
+| `--chrome`           | `#131517`               | Nav bars, sticky toolbars          |
+| `--surface`          | `#0f1113`               | Section band                       |
+| `--surface-raised`   | `#0f1113`               | Raised card                        |
+| `--surface-inset`    | `#0f1113`               | Inset well                         |
+| `--sidebar`          | `var(--background)`     | Rail                               |
+| `--foreground`       | `#f4f5f7`               | Primary text                       |
+| `--muted-foreground` | `#9aa0a6`               | Secondary text                     |
+| `--border`           | `rgba(255,255,255,0.1)` | Hairlines                          |
 
 The page stays the cool neutral grey studio, without warm or green tinting.
 Nav bars (top nav, sticky toolbars) are a solid `chrome-bar` lift in `--chrome`
@@ -298,13 +312,13 @@ surface on another. Glass falls back to solid grey surfaces under
 
 ### Brand
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--brand` | `#7c3aed` | CTAs, logo fill, section key words |
-| `--brand-hover` | `#8b5cf6` | Hover for filled brand controls |
-| `--brand-foreground` | `#faf9f6` | Text/icons on brand |
-| `--brand-secondary` | `#a78bfa` | Selected states, sliders, nav progress |
-| `--brand-tertiary` | `#c4b5fd` | Error/destructive states |
+| Token                | Value     | Use                                    |
+| -------------------- | --------- | -------------------------------------- |
+| `--brand`            | `#7c3aed` | CTAs, logo fill, section key words     |
+| `--brand-hover`      | `#8b5cf6` | Hover for filled brand controls        |
+| `--brand-foreground` | `#faf9f6` | Text/icons on brand                    |
+| `--brand-secondary`  | `#a78bfa` | Selected states, sliders, nav progress |
+| `--brand-tertiary`   | `#c4b5fd` | Error/destructive states               |
 
 Rules:
 
@@ -471,16 +485,16 @@ Type rules:
 
 ## Testing
 
-| Layer | Command | Contract |
-| --- | --- | --- |
-| Unit | `npm run test:unit` | `src/lib` maths and `src/mocks` data, plus `src/proxy.test.ts` |
-| Component | `npm run test:components` | `src/components` and `src/app` behaviour |
-| All Vitest | `npm test` | every colocated `*.test.ts(x)` |
-| Coverage | `npm run test:coverage` | floors enforced |
-| E2E | `npm run test:e2e` | production build on `:3100` |
-| Typecheck | `npm run typecheck` | `tsc --noEmit` |
-| Lint | `npm run lint` | ESLint |
-| Everything | `npm run check` | typecheck + lint + coverage |
+| Layer      | Command                   | Contract                                                       |
+| ---------- | ------------------------- | -------------------------------------------------------------- |
+| Unit       | `npm run test:unit`       | `src/lib` maths and `src/mocks` data, plus `src/proxy.test.ts` |
+| Component  | `npm run test:components` | `src/components` and `src/app` behaviour                       |
+| All Vitest | `npm test`                | every colocated `*.test.ts(x)`                                 |
+| Coverage   | `npm run test:coverage`   | floors enforced                                                |
+| E2E        | `npm run test:e2e`        | production build on `:3100`                                    |
+| Typecheck  | `npm run typecheck`       | `tsc --noEmit`                                                 |
+| Lint       | `npm run lint`            | ESLint                                                         |
+| Everything | `npm run check`           | typecheck + lint + coverage                                    |
 
 Conventions:
 

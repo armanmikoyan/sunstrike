@@ -3,24 +3,29 @@
 A dark-studio generative media interface. Generate cinematic video and stills
 from a prompt, pay as you go, and keep every frame.
 
-This is a single Next.js App Router app with local demo data — no backend,
-database or auth. Prices, media and generation results are simulated in
-`src/mocks`; `src/lib` holds the domain contract and pure rules.
+This is an npm-workspace monorepo. `apps/lab` is the Next.js App Router
+frontend with local demo data — no live backend, database or auth yet.
+`apps/engine` is the modular-monolith backend, scaffolded but not wired. Prices,
+media and generation results are still simulated in `apps/lab/src/mocks`;
+`apps/lab/src/lib` holds the domain contract and pure rules.
 
-The UI is modelled on the high-level design contract in `src/lib/design`:
-six entities, the `/api/v1` surface and the generation user flow. What is left
-before real users, real cards and real renders is tracked in
-[`ROADMAP.md`](./ROADMAP.md), mapped to the design's functional and
-non-functional requirements.
+The UI is modelled on the high-level design contract in
+`apps/lab/src/lib/design`: six entities, the `/api/v1` surface and the
+generation user flow. What is left before real users, real cards and real
+renders is tracked in [`ROADMAP.md`](./ROADMAP.md), mapped to the design's
+functional and non-functional requirements.
 
 ## Run
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev        # studio at http://localhost:3000
 npm run build
 npm run start -- -p 3131
 ```
+
+Scripts run from the repo root and delegate to the workspace. `typecheck`
+covers both apps; lint, tests and e2e run in `apps/lab`.
 
 ## Verify
 
@@ -35,6 +40,10 @@ npm run check            # typecheck + lint + coverage
 
 ## Structure
 
+- `apps/lab` — the Next.js frontend; every path below is relative to it.
+- `apps/engine` — the Express backend and generation worker, scaffolded in
+  `src/`; its modules own generation, billing, catalog, media, templates,
+  notifications and auth.
 - `src/app` — metadata, root layout, the client shell (`shell.tsx`: rail and
   top nav) and runtime wiring (`providers.tsx`). The root layout mounts the
   shell once; `(website)` adds `<main>` and the site footer, `(workspace)` adds
@@ -58,8 +67,9 @@ npm run check            # typecheck + lint + coverage
   `templates`, `notifications`, `pricing`) plus their lookups and tests. This
   is the seam to replace with `/api/v1` data.
 - `src/e2e` — Playwright specs and helpers, beside the code they cover.
-- `vitest.setup.tsx` at the repo root — the shared test setup (framework mocks,
-  router state, `renderWithProviders`); unit and component tests are colocated.
+- `vitest.setup.tsx` at the studio root — the shared test setup (framework
+  mocks, router state, `renderWithProviders`); unit and component tests are
+  colocated.
 - `public` — every static asset: brand art, favicons and local media.
 
 Read [`ARCHITECTURE.md`](./ARCHITECTURE.md) before changing structure, routes,
@@ -68,9 +78,11 @@ state, the design system or the brand. Project-specific design rules live in
 
 ## Brand
 
-The product is **Chronolab.ai**. Brand assets are in `public/brand`; app icons
-and the manifest live in `public/favicons` and are declared through
-`metadata.icons` in `src/app/layout.tsx`. The nav orb is a self-contained
-WebGL element (`public/brand/violet-orb.js`) with a static poster fallback.
+The product is **Chronolab.ai**. Brand assets are in `apps/lab/public/brand`;
+app icons and the manifest live in `apps/lab/public/favicons` and are
+declared through `metadata.icons` in `apps/lab/src/app/layout.tsx`. The nav
+orb is a self-contained WebGL element
+(`apps/lab/public/brand/violet-orb.js`) with a static poster fallback.
 
-Local media in `public/media` and `movs/` is gitignored. Do not commit it.
+Local media in `apps/lab/public/media` and `movs/` is gitignored. Do not
+commit it.

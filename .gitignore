@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,15 +11,15 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage/
 
 # next.js
-/.next/
-/.next-e2e/
-/out/
+.next/
+.next-e2e/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
@@ -45,10 +45,10 @@ next-env.d.ts
 /movs
 
 # generated media (served locally, not committed)
-/public/media
+public/media
 
 # test artifacts
-/test-results
-/playwright-report
-/blob-report
-/playwright/.cache
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
