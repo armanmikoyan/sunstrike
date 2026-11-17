@@ -4,11 +4,7 @@ import { cn } from "@/lib/utils";
 import { composerCopy } from "./constants";
 import type { ComposerModeSwitchProps } from "./types";
 
-export function ComposerModeSwitch({
-  mode,
-  cost,
-  onSwitch,
-}: ComposerModeSwitchProps) {
+export function ComposerModeSwitch({ mode, cost, onSwitch }: ComposerModeSwitchProps) {
   const options = [
     { value: "video" as const, label: composerCopy.modeLabels.video },
     { value: "image" as const, label: composerCopy.modeLabels.image },
@@ -21,13 +17,13 @@ export function ComposerModeSwitch({
         onValueChange={(value) => onSwitch(value as typeof mode)}
         className="w-fit data-horizontal:flex-row"
       >
-        <TabsList className="gap-0 rounded-lg border border-white/[0.06] bg-white/[0.025] p-0.5 group-data-horizontal/tabs:h-9 lg:group-data-horizontal/tabs:h-7">
+        <TabsList className="gap-0 rounded-lg border border-white/6 bg-white/2.5 p-0.5 group-data-horizontal/tabs:h-9 lg:group-data-horizontal/tabs:h-7">
           {options.map((option) => (
             <TabsTrigger
               key={option.value}
               value={option.value}
               className={cn(
-                "flex-none rounded-[0.625rem] px-2.5 text-sm font-medium text-muted-foreground data-active:bg-white/[0.08] data-active:text-foreground data-active:shadow-none lg:text-[0.6875rem] dark:data-active:border-transparent dark:data-active:bg-white/[0.08]",
+                "flex-none rounded-[0.625rem] px-2.5 text-sm font-medium text-muted-foreground data-active:bg-white/8 data-active:text-foreground data-active:shadow-none lg:text-[0.6875rem] dark:data-active:border-transparent dark:data-active:bg-white/8",
                 mode === option.value && "text-foreground",
               )}
             >

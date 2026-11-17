@@ -26,7 +26,7 @@ code comments.
 
 | ID     | Requirement                                                                       | Contract                                                                                                                                                                                                                                                            |
 | ------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **F1** | Generate video and images from a prompt, an input image/reference, or a template. | `POST /api/v1/generations` accepts `kind`, `prompt`, `inputs[{assetId, role}]`, `templateId`, `model`, `settings`; the model is enabled and `modelSupportsSettings` passes; a succeeded generation has `output_asset_id`.                                           |
+| **F1** | Generate video and images from a prompt, an input image/reference, or a template. | `POST /api/v1/generations` accepts `kind`, `prompt`, `inputs[{assetId, role}]`, `templateId`, `model_id`, `settings`; the model is enabled and `modelSupportsSettings` passes; a succeeded generation has `output_asset_id`.                                        |
 | **F2** | Edit and personalise existing media.                                              | `kind = "edit"` takes one or more `media_assets` as inputs; `templateId` applies `templates.customization_options`; the same worker, status and billing path as F1.                                                                                                 |
 | **F3** | Manage asynchronous generations, notifications and history.                       | `GET /api/v1/generations` is a cursor list; `GET /api/v1/generations/{id}` returns `queued \| running \| succeeded \| failed`; terminal transitions create a `notifications` row; `GET /api/v1/notifications` and `PATCH /api/v1/notifications/{id}` set `read_at`. |
 | **F4** | Manage spending and top-ups.                                                      | `GET /api/v1/balance` returns available USD; `POST /api/v1/balance/top-ups` returns a Lemon Squeezy checkout URL; a generation reserves its quote, settles on success and releases on failure; the balance never goes negative.                                     |
@@ -45,18 +45,18 @@ code comments.
 
 These are the only tables. Field names are as drawn; SQL uses `snake_case`.
 
-| Entity              | Fields                                                                                                                                           | Notes                                                                                                                         |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| `users`             | `id`, `email`, `created_at`                                                                                                                      | No display name, username, avatar, bio or preferences.                                                                        |
-| `media_assets`      | `id`, `owner_user_id`, `kind`, `storage_key`, `created_at`                                                                                       | `owner_user_id` is nullable for shared assets. `kind` is an asset type (`image`, `video`, `audio`); the allowed set is a gap. |
-| `templates`         | `id`, `source_asset_id`, `name`, `customization_options`, `created_at`                                                                           | `customization_options` is jsonb: roles and the settings a user may change.                                                   |
-| `generations`       | `id`, `user_id`, `template_id`, `output_asset_id`, `kind`, `prompt`, `model`, `settings`, `status`, `failure_code`, `created_at`, `completed_at` | `settings` is jsonb. `kind` values are a gap; `create \| edit` is the working choice.                                         |
-| `generation_models` | `id`, `slug`, `display_name`, `provider`, `provider_model_id`, `capabilities`, `is_enabled`                                                      | `capabilities` is jsonb: modes, accepted input kinds, resolutions, durations, aspect ratios, audio, completion target.        |
-| `notifications`     | `id`, `generation_id`, `type`, `read_at`, `created_at`                                                                                           | `type` values are a gap; `generation_succeeded \| generation_failed` is the working choice.                                   |
+| Entity              | Fields                                                                                                                                                           | Notes                                                                                                                                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`             | `id`, `email`, `created_at`                                                                                                                                      | No display name, username, avatar, bio or preferences.                                                                                                                                       |
+| `media_assets`      | `id`, `owner_user_id`, `kind`, `storage_key`, `created_at`                                                                                                       | `owner_user_id` is nullable for shared assets. `kind` is `image \| video \| audio`.                                                                                                          |
+| `templates`         | `id`, `source_asset_id`, `name`, `customization_options`, `created_at`                                                                                           | `customization_options` is jsonb: roles and the settings a user may change.                                                                                                                  |
+| `generations`       | `id`, `user_id`, `template_id`, `output_asset_id`, `kind`, `prompt`, `model_id`, `settings`, `status`, `failure_code`, `created_at`, `completed_at`, `inputs`    | `settings` and `inputs` are jsonb; `inputs` is ordered asset ids and roles. `kind` is `create \| edit`, `status` is `queued \| running \| succeeded \| failed`, `output_asset_id` is unique. |
+| `generation_models` | `id`, `name`, `provider`, `provider_model_key`, `supported_modes`, `resolutions`, `durations_seconds`, `aspect_ratios`, `supports_audio`, `active`, `updated_at` | `provider` is Gemini or Seedance; capability columns are arrays; `provider_model_key` is unique per provider; `active` gates `/models`.                                                      |
+| `notifications`     | `id`, `generation_id`, `type`, `read_at`, `created_at`                                                                                                           | `type` values are a gap; `generation_succeeded \| generation_failed` is the working choice.                                                                                                  |
+| `transactions`      | `id`, `user_id`, `generation_id`, `type`, `amount`, `idempotency_key`, `created_at`                                                                              | `type` is `top-up \| charge \| credit`; `amount` is a signed bigint in balance units; `idempotency_key` is unique; `generation_id` is nullable.                                              |
 
-`balance_transactions` is **named** in the design (“a top-up, generation charge
-or credit”) but its table is not drawn. It is required by F4/N3; see
-[gaps](#5-gaps-and-decisions).
+`transactions` is the design's “Balance transaction”: `BalanceTransaction` in
+`src/lib/design/index.ts` is its code form.
 
 ### 1.4 API
 
@@ -101,22 +101,22 @@ server both import.
 ### 1.6 Architecture
 
 ```text
-web (Next.js)
-  → API gateway (auth, rate limits, request ids)
-    → modular monolith
-       identity + media
-       catalog + templates
-       generation + worker
-       billing
-    → PostgreSQL          entities, ledger, idempotency keys
-    → job queue           durable, retryable, restart-safe
-    → object storage      uploads and outputs, signed URLs
-    → Lemon Squeezy       top-up checkout and webhooks
-    → model providers     provider_model_id adapters
+web app (Next.js) — apps/lab
+  → HTTPS (Supabase Auth session or bearer API token)
+    → modular monolith — apps/engine, one deployment, /api/v1
+       identity · generation · billing · media · catalog · notifications
+       worker: claims jobs, calls provider adapters, retries, publishes outcome
+    → Supabase Postgres    records, ledger (transactions) and the durable job queue
+    → Redis                catalog cache-aside reads, TTL, invalidate on edits
+    → Supabase Storage     private uploads and outputs, signed URLs
+    → Lemon Squeezy        top-up checkout and verified webhooks
+    → model providers      Gemini · Seedance adapters
 ```
 
-No microservices, no per-feature databases. The worker runs from the same
-server image as the API (`api` and `worker` entry points).
+No microservices, no per-feature databases and no API gateway: one deployment
+exposes `/api/v1`, modules own their routes and interact through public
+interfaces. The worker runs from the same server image as the API (`api` and
+`worker` entry points).
 
 ---
 
@@ -160,16 +160,17 @@ Create `apps/ui` and `apps/server` with one Dockerfile each. `server` builds
 **Done:** both images build and the worker starts against the same database.
 
 **C-3 · Schema and migrations** — _all_ · Depends: C-1
-PostgreSQL migrations for the six entities, the balance ledger, idempotency keys
-and the job queue. `settings`, `capabilities` and `customization_options` are
-jsonb with checked shapes.
+PostgreSQL migrations for the seven drawn tables — `users`, `media_assets`,
+`templates`, `generations`, `generation_models`, `notifications`,
+`transactions` — plus the durable job queue. `settings`, `inputs`,
+`customization_options` and the capability columns have checked shapes.
 **Done:** `db:migrate` builds from empty; a fixture inserts one row per entity.
 
 ### M1 — Identity, media and templates
 
 **ID-1 · Sign-in and `/me`** — _F1, F5, N4_ · Depends: C-3
-Sign-in creates a `users` row and a session; `GET /me` returns it. The UI shows
-the email, id and created date only.
+Supabase Auth owns sign-in and session verification; `GET /me` returns the
+`users` row. The UI shows the email, id and created date only.
 **Done:** an unauthenticated generation request redirects to `/login` and
 resumes; `GET /me` is covered by a test.
 
@@ -191,8 +192,9 @@ template's `source_asset_id` resolves to an asset.
 
 **MOD-1 · Model catalogue** — _F1, F2, N1_ · Depends: C-3
 Seed `generation_models` with the eight models used by the UI; `GET /models`
-returns enabled rows with capabilities. `is_enabled = false` hides a model.
-**Done:** disabling a model removes it from `/models` and rejects its slug.
+returns rows where `active` is true, with their capability columns.
+`active = false` hides a model.
+**Done:** disabling a model removes it from `/models` and rejects its id.
 
 **QUOTE-1 · Quotes** — _F1, F2, F4_ · Depends: MOD-1
 `POST /generation-quotes` prices a request from the model, settings and
@@ -222,8 +224,8 @@ runs through the same queue and billing path.
 untouched.
 
 **TARGET-1 · Completion targets** — _N1_ · Depends: MOD-1, GEN-1
-Record a target duration per model and clip length in `capabilities`, and emit
-ack and completion timings.
+Record a target duration per model and clip length beside the model row, and
+emit ack and completion timings.
 **Done:** a dashboard reports p95 ack and the share of jobs inside target.
 
 ### M3 — Worker, notifications and durability
@@ -274,10 +276,10 @@ Accept `Idempotency-Key` on generation creation and top-ups; store the key,
 request hash and response. Retries return the original result.
 **Done:** duplicate requests create one generation and one charge.
 
-**BIL-5 · Transaction history** — _F4_ · Depends: BIL-3 · **Gap**
-Add the `balance_transactions` table the design names but does not draw, and
-back the billing list with it. See [gap G2](#5-gaps-and-decisions).
-**Done:** top-ups, charges and credits are listed in reverse chronological order.
+**BIL-5 · Transaction history** — _F4_ · Depends: BIL-3
+Back the billing list with the drawn `transactions` table: top-ups, charges and
+credits in reverse chronological order.
+**Done:** every balance change appears in the list, newest first.
 
 **BIL-6 · Payment method, auto top-up and receipts** — _F4_ · Depends: BIL-2
 The billing page keeps its payment method, auto top-up, usage chart, receipts
@@ -367,20 +369,25 @@ the design grows:
 These are places where a requirement needs data the drawing does not define.
 Each is a design change first; the ticket above is blocked until it is answered.
 
-| ID      | Gap                                                                                    | Working decision                                                                                                         | Needs                                                                        |
-| ------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| **G1**  | F5 needs API credentials; no `api_keys` entity is drawn.                               | Authenticate `/api/v1` with hashed API keys owned by a `users` row; add the table before API-1.                          | Table name, fields, rotation, scopes.                                        |
-| **G2**  | F4/N3 needs a ledger; the design names “Balance transaction” but draws no table.       | `balance_transactions(id, user_id, kind, amount, generation_id, created_at)` with `kind` = `top_up \| charge \| credit`. | Confirm shape and whether balance is stored or derived.                      |
-| **G3**  | The design shows “sign in if needed” but no auth mechanism, session table or provider. | Email magic link or OAuth; sessions in PostgreSQL; no password table until drawn.                                        | Provider and session lifetime.                                               |
-| **G4**  | `generations.kind` values are not enumerated.                                          | `create \| edit` to represent F1 and F2.                                                                                 | Confirm values (`video \| image` is the alternative).                        |
-| **G5**  | `media_assets.kind` values are not enumerated.                                         | `image \| video \| audio`, matching inputs and outputs.                                                                  | Confirm the set.                                                             |
-| **G6**  | `notifications.type` values are not enumerated.                                        | `generation_succeeded \| generation_failed`.                                                                             | Confirm the set and whether top-ups notify.                                  |
-| **G7**  | `generation_models.capabilities` is jsonb with no shape.                               | Modes, input kinds, resolutions, durations, aspect ratios, audio, completion target.                                     | Confirm target units and whether pricing lives here.                         |
-| **G8**  | `generation_quotes` is an endpoint but has no table.                                   | Derive the quote from the model, settings and template; do not persist it.                                               | Confirm if quotes must be stored for audit.                                  |
-| **G9**  | Lemon Squeezy is named, but no webhook/event table is drawn.                           | Store webhook idempotency keys in the ledger/idempotency table; no separate events table.                                | Confirm webhook event retention.                                             |
-| **G10** | The job queue is drawn as a component, not an entity.                                  | Postgres queue with leases and retries; no Redis until load requires it.                                                 | Confirm scale target.                                                        |
-| **G11** | “Completion targets per model and clip length” has no table.                           | Put the target in `generation_models.capabilities`; measure against it.                                                  | Confirm target values.                                                       |
-| **G12** | F4's payment method, auto top-up, usage and receipts have no entity in the drawing.    | Keep the billing surfaces; read the card and invoices from Lemon Squeezy and derive usage from the ledger.               | Confirm whether card metadata is stored or always fetched from the provider. |
+| ID      | Gap                                                                                 | Working decision                                                                                           | Needs                                                                        |
+| ------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **G1**  | F5 needs API credentials; the drawing names a bearer token but no `api_keys` table. | Hashed API keys owned by a `users` row; add the table before API-1.                                        | Table name, fields, rotation, scopes.                                        |
+| **G6**  | `notifications.type` values are not enumerated.                                     | `generation_succeeded \| generation_failed`.                                                               | Confirm the set and whether top-ups notify.                                  |
+| **G8**  | `generation_quotes` is an endpoint but has no table.                                | Derive the quote from the model, settings and template; do not persist it.                                 | Confirm if quotes must be stored for audit.                                  |
+| **G9**  | Lemon Squeezy is named, but no webhook/event table is drawn.                        | Store webhook idempotency keys in `transactions.idempotency_key`; no separate events table.                | Confirm webhook event retention.                                             |
+| **G10** | The job queue is drawn as a component, not an entity.                               | Postgres queue with leases and retries; no Redis until load requires it.                                   | Confirm scale target.                                                        |
+| **G11** | “Completion targets per model and clip length” has no column.                       | Record the target beside the model row; measure against it.                                                | Confirm target values and whether they live in `generation_models`.          |
+| **G12** | F4's payment method, auto top-up, usage and receipts have no entity in the drawing. | Keep the billing surfaces; read the card and invoices from Lemon Squeezy and derive usage from the ledger. | Confirm whether card metadata is stored or always fetched from the provider. |
+
+Closed by the current drawing, so no ticket waits on them:
+
+| ID     | Was                                                       | Now                                                                                                                     |
+| ------ | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **G2** | A ledger was named but not drawn.                         | `transactions` is drawn with `type`, signed `amount` and a unique `idempotency_key`.                                    |
+| **G3** | No auth mechanism or provider.                            | Supabase Auth sessions for web requests, bearer API tokens for programmatic ones.                                       |
+| **G4** | `generations.kind` was not enumerated.                    | `create \| edit`.                                                                                                       |
+| **G5** | `media_assets.kind` was not enumerated.                   | `image \| video \| audio`.                                                                                              |
+| **G7** | `generation_models.capabilities` was jsonb with no shape. | Capability columns per model: `supported_modes`, `resolutions`, `durations_seconds`, `aspect_ratios`, `supports_audio`. |
 
 ---
 

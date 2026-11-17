@@ -21,11 +21,7 @@ const minGap = 90;
  * backwards until every item has at least `minGap` of scroll. The first item
  * always owns the top of the page.
  */
-export function activationTargets(
-  tops: number[],
-  maxScroll: number,
-  offset = activationOffset,
-) {
+export function activationTargets(tops: number[], maxScroll: number, offset = activationOffset) {
   const targets = tops.map((top) => Math.max(0, top - offset));
   if (targets.length === 0) return targets;
 
@@ -35,24 +31,13 @@ export function activationTargets(
   targets[last] = Math.min(targets[last], maxScroll);
 
   for (let index = last - 1; index >= 1; index -= 1) {
-    targets[index] = Math.max(
-      0,
-      Math.min(targets[index], targets[index + 1] - minGap),
-    );
+    targets[index] = Math.max(0, Math.min(targets[index], targets[index + 1] - minGap));
   }
 
   return targets;
 }
 
-const scrollKeys = new Set([
-  "ArrowDown",
-  "ArrowUp",
-  "PageDown",
-  "PageUp",
-  "Home",
-  "End",
-  " ",
-]);
+const scrollKeys = new Set(["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "]);
 
 export function LegalContents({
   sections,
@@ -79,13 +64,8 @@ export function LegalContents({
       frame = 0;
       if (lockRef.current) return;
 
-      const maxScroll = Math.max(
-        0,
-        document.documentElement.scrollHeight - window.innerHeight,
-      );
-      const tops = elements.map(
-        (element) => element.getBoundingClientRect().top + window.scrollY,
-      );
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const tops = elements.map((element) => element.getBoundingClientRect().top + window.scrollY);
       const targets = activationTargets(tops, maxScroll);
       const y = window.scrollY;
 
@@ -135,14 +115,9 @@ export function LegalContents({
   }, [sections]);
 
   return (
-    <aside className="hidden h-fit rounded-xl border border-white/[0.08] glass-card p-4 lg:sticky lg:top-16 lg:block">
-      <p className="text-xs font-medium lg:text-[0.6875rem]">
-        {legalCopy.contentsLabel}
-      </p>
-      <nav
-        aria-label={legalCopy.contentsLabel}
-        className="mt-3 flex flex-col gap-2"
-      >
+    <aside className="hidden h-fit rounded-xl border border-white/8 glass-card p-4 lg:sticky lg:top-16 lg:block">
+      <p className="text-xs font-medium lg:text-[0.6875rem]">{legalCopy.contentsLabel}</p>
+      <nav aria-label={legalCopy.contentsLabel} className="mt-3 flex flex-col gap-2">
         {sections.map((section) => {
           const active = section.id === activeId;
 
@@ -167,7 +142,7 @@ export function LegalContents({
           );
         })}
       </nav>
-      <div className="mt-4 border-t border-white/[0.06] pt-3 text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
+      <div className="mt-4 border-t border-white/6 pt-3 text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
         <p>{legalCopy.contactNote}</p>
         <a
           href={`mailto:${contactEmail}`}

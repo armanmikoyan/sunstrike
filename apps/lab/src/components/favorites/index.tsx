@@ -5,9 +5,7 @@ import { Button } from "@/ui/button";
 import { mediaById } from "@/mocks/media";
 import { favoriteIds, favoritesCopy } from "./constants";
 
-const favorites = favoriteIds
-  .map((id) => mediaById(id))
-  .filter((item) => item !== undefined);
+const favorites = favoriteIds.map((id) => mediaById(id)).filter((item) => item !== undefined);
 
 export function Favorites() {
   return (
@@ -20,7 +18,7 @@ export function Favorites() {
           <Button
             asChild
             variant="outline"
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            className="h-9 rounded-lg border-white/9 bg-white/1.5 px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4.5 hover:text-foreground"
           >
             <Link href="/create/video">{favoritesCopy.openInStudio}</Link>
           </Button>

@@ -8,16 +8,9 @@ import { SectionHeader } from "@/components/section-header";
 import { Button } from "@/ui/button";
 import { mediaById } from "@/mocks/media";
 import { MosaicTile } from "@/components/ratio-mosaic/mosaic-tile";
-import {
-  featuredIds,
-  homeCopy,
-  pricingMosaicTiles,
-  pricingPoints,
-} from "./constants";
+import { featuredIds, homeCopy, pricingMosaicTiles, pricingPoints } from "./constants";
 
-const featured = featuredIds
-  .map((id) => mediaById(id))
-  .filter((item) => item !== undefined);
+const featured = featuredIds.map((id) => mediaById(id)).filter((item) => item !== undefined);
 
 export function Home() {
   return (
@@ -35,9 +28,7 @@ export function Home() {
             title={
               <>
                 {homeCopy.gallery.titleBefore}
-                <span className="font-serif italic text-brand">
-                  {homeCopy.gallery.titleAccent}
-                </span>
+                <span className="font-serif italic text-brand">{homeCopy.gallery.titleAccent}</span>
               </>
             }
             description={homeCopy.gallery.description}
@@ -45,7 +36,7 @@ export function Home() {
               <Button
                 asChild
                 variant="ghost"
-                className="hidden h-8 rounded-lg px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
+                className="hidden h-8 rounded-lg px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4 hover:text-foreground sm:flex"
               >
                 <Link href="/explore">
                   {homeCopy.gallery.action}
@@ -67,15 +58,13 @@ export function Home() {
       <RatioMosaic />
 
       <section className="w-full px-5 py-16">
-        <div className="glass-panel overflow-hidden rounded-2xl border border-white/[0.1]">
+        <div className="glass-panel overflow-hidden rounded-2xl border border-white/10">
           <div className="p-7 sm:p-10 lg:p-12">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
               <div>
                 <h2 className="max-w-[35rem] font-grotesk text-[clamp(1.75rem,3.6vw,2.5rem)] font-medium leading-[1.05] tracking-[-0.045em]">
                   {homeCopy.pricing.titleBefore}
-                  <span className="font-serif italic text-brand">
-                    {homeCopy.pricing.titleAccent}
-                  </span>
+                  <span className="font-serif italic text-brand">{homeCopy.pricing.titleAccent}</span>
                   {homeCopy.pricing.titleAfter}
                 </h2>
                 <p className="mt-3 max-w-[30rem] text-sm lg:text-[0.75rem] leading-relaxed text-muted-foreground">
@@ -106,21 +95,17 @@ export function Home() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/[0.04]"
+                  className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/4"
                 >
-                  <Link href="/settings/billing">
-                    {homeCopy.pricing.secondaryAction}
-                  </Link>
+                  <Link href="/settings/billing">{homeCopy.pricing.secondaryAction}</Link>
                 </Button>
               </div>
             </div>
 
-            <div className="mt-10 border-t border-white/[0.07] pt-6">
+            <div className="mt-10 border-t border-white/7 pt-6">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <h3 className="text-sm lg:text-[0.75rem] font-medium">
-                    {homeCopy.pricing.resultsTitle}
-                  </h3>
+                  <h3 className="text-sm lg:text-[0.75rem] font-medium">{homeCopy.pricing.resultsTitle}</h3>
                   <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
                     {homeCopy.pricing.resultsDescription}
                   </p>

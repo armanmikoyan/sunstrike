@@ -5,7 +5,7 @@ import { composerCopy } from "./constants";
 export function ComposerSubmit() {
   return (
     <div className="ml-auto flex items-center gap-1.5">
-      <span className="hidden rounded border border-white/[0.07] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground sm:inline">
+      <span className="hidden rounded border border-white/7 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground sm:inline">
         {composerCopy.shortcut}
       </span>
       <Button

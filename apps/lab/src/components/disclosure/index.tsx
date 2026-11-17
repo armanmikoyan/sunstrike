@@ -24,7 +24,7 @@ export function Disclosure({
   };
 
   return (
-    <div className={cn("border-b border-white/[0.07]", className)}>
+    <div className={cn("border-b border-white/7", className)}>
       <button
         type="button"
         aria-expanded={open}

@@ -2,15 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  ChevronDown,
-  Coins,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Plus,
-  UserRound,
-} from "lucide-react";
+import { ChevronDown, Coins, LogOut, PanelLeftClose, PanelLeftOpen, Plus, UserRound } from "lucide-react";
 import { LogoLockup } from "@/components/brand";
 import { DropdownMenu, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
@@ -65,23 +57,16 @@ export function SidebarBody({
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col items-center">
-      <div
-        className={cn(
-          "mb-4 flex h-11 w-full shrink-0 items-center gap-2",
-          showToggle ? undefined : "pl-2.5",
-        )}
-      >
+      <div className={cn("mb-4 flex h-11 w-full shrink-0 items-center gap-2", showToggle ? undefined : "pl-2.5")}>
         {showToggle ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 type="button"
                 onClick={onToggle}
-                aria-label={
-                  expanded ? sidebarCopy.collapse : sidebarCopy.expand
-                }
+                aria-label={expanded ? sidebarCopy.collapse : sidebarCopy.expand}
                 aria-expanded={expanded}
-                className="grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:bg-white/[0.055]"
+                className="grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:bg-white/5.5"
               >
                 {expanded ? (
                   <PanelLeftClose className="size-4" strokeWidth={1.8} />
@@ -99,10 +84,7 @@ export function SidebarBody({
           compact
           imageClassName={showToggle ? undefined : "max-h-7"}
           inactive={!expanded}
-          className={cn(
-            "min-w-0 overflow-hidden",
-            expanded ? "flex opacity-100" : "hidden",
-          )}
+          className={cn("min-w-0 overflow-hidden", expanded ? "flex opacity-100" : "hidden")}
         />
       </div>
 
@@ -113,11 +95,7 @@ export function SidebarBody({
           aria-label={sidebarCopy.newGeneration}
           className={cn(
             "group relative mb-4 flex h-9 w-full shrink-0 items-center gap-2 overflow-hidden rounded-lg bg-brand text-sm font-semibold lg:text-[0.75rem] text-brand-foreground transition-[max-width,padding,opacity,transform,background-color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-hover active:scale-[0.97] motion-reduce:transition-none",
-            expanded
-              ? showToggle
-                ? "max-w-[11.25rem] px-2.5"
-                : "max-w-full px-2.5"
-              : "max-w-9 px-[0.5625rem]",
+            expanded ? (showToggle ? "max-w-[11.25rem] px-2.5" : "max-w-full px-2.5") : "max-w-9 px-[0.5625rem]",
           )}
           style={{ boxShadow: CTA_BEVEL }}
         >
@@ -133,10 +111,7 @@ export function SidebarBody({
         </Link>
       </RailTooltip>
 
-      <nav
-        aria-label={sidebarCopy.studio}
-        className="flex w-full shrink-0 flex-col gap-1.5"
-      >
+      <nav aria-label={sidebarCopy.studio} className="flex w-full shrink-0 flex-col gap-1.5">
         {primaryLinks.map((item) => (
           <SidebarItem
             key={item.href}
@@ -164,11 +139,7 @@ export function SidebarBody({
         <div
           className={cn(
             "my-2 h-px w-full max-w-7 self-center bg-border transition-[max-width] duration-[260ms] motion-reduce:transition-none",
-            expanded
-              ? showToggle
-                ? "max-w-[11.25rem]"
-                : "max-w-full"
-              : "max-w-7",
+            expanded ? (showToggle ? "max-w-[11.25rem]" : "max-w-full") : "max-w-7",
           )}
         />
 
@@ -177,11 +148,11 @@ export function SidebarBody({
             {accountOpen ? (
               // Floats over Pricing and Help instead of pushing them up, so
               // the drawer body never reflows when the account pane opens.
-              <div className="absolute inset-x-0 bottom-full z-20 mb-1.5 flex flex-col gap-0.5 rounded-lg border border-white/[0.08] bg-[#17191c] p-1.5 shadow-[0_1.25rem_3rem_-0.75rem_rgba(0,0,0,0.85)]">
+              <div className="absolute inset-x-0 bottom-full z-20 mb-1.5 flex flex-col gap-0.5 rounded-lg border border-white/8 bg-[#17191c] p-1.5 shadow-[0_1.25rem_3rem_-0.75rem_rgba(0,0,0,0.85)]">
                 <Link
                   href="/settings/billing"
                   onClick={onNavigate}
-                  className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:text-[0.6875rem]"
+                  className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:text-[0.6875rem]"
                 >
                   <Coins className="size-3.5" />
                   {accountMenuCopy.balance}
@@ -195,7 +166,7 @@ export function SidebarBody({
                     key={item.label}
                     href={item.href}
                     onClick={onNavigate}
-                    className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:text-[0.6875rem]"
+                    className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:text-[0.6875rem]"
                   >
                     <item.icon className="size-3.5" />
                     {item.label}
@@ -203,7 +174,7 @@ export function SidebarBody({
                 ))}
                 <button
                   type="button"
-                  className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:text-[0.6875rem]"
+                  className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:text-[0.6875rem]"
                 >
                   <LogOut className="size-3.5" />
                   {accountMenuCopy.signOut}
@@ -241,7 +212,7 @@ export function SidebarBody({
                 type="button"
                 aria-label={sidebarCopy.accountMenu}
                 className={cn(
-                  "flex w-full shrink-0 items-center self-center overflow-hidden rounded-lg text-left text-muted-foreground outline-none transition-[max-width,height,padding,background-color,color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:bg-white/[0.055] motion-reduce:transition-none",
+                  "flex w-full shrink-0 items-center self-center overflow-hidden rounded-lg text-left text-muted-foreground outline-none transition-[max-width,height,padding,background-color,color] duration-[260ms] ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:bg-white/5.5 motion-reduce:transition-none",
                   expanded
                     ? showToggle
                       ? "h-9 max-w-[11.25rem] gap-2.5 px-2"
@@ -264,10 +235,7 @@ export function SidebarBody({
                 </span>
               </button>
             </DropdownMenuTrigger>
-            <AccountMenu
-              side={expanded ? "top" : "right"}
-              align={expanded ? "start" : "end"}
-            />
+            <AccountMenu side={expanded ? "top" : "right"} align={expanded ? "start" : "end"} />
           </DropdownMenu>
         )}
       </div>

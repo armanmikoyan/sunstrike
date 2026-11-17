@@ -19,11 +19,9 @@ export function CookieConsent() {
     <div
       role="region"
       aria-label={cookieConsentCopy.regionLabel}
-      className="fixed inset-x-4 bottom-4 z-[60] rounded-xl border border-white/[0.09] glass-menu p-4 sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[22rem]"
+      className="fixed inset-x-4 bottom-4 z-[60] rounded-xl border border-white/9 glass-menu p-4 sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[22rem]"
     >
-      <p className="text-sm font-medium tracking-[-0.02em]">
-        {cookieConsentCopy.title}
-      </p>
+      <p className="text-sm font-medium tracking-[-0.02em]">{cookieConsentCopy.title}</p>
       <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
         {cookieConsentCopy.description}{" "}
         <Link
@@ -37,14 +35,11 @@ export function CookieConsent() {
         <Button
           variant="outline"
           onClick={() => decide("essential")}
-          className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+          className="h-9 rounded-lg border-white/9 bg-white/1.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4.5 hover:text-foreground"
         >
           {cookieConsentCopy.essential}
         </Button>
-        <Button
-          onClick={() => decide("all")}
-          className="h-9 rounded-lg px-3 text-xs lg:text-[0.6875rem]"
-        >
+        <Button onClick={() => decide("all")} className="h-9 rounded-lg px-3 text-xs lg:text-[0.6875rem]">
           {cookieConsentCopy.accept}
         </Button>
       </div>

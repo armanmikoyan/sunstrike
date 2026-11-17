@@ -14,14 +14,10 @@ export function Pricing() {
     <div className="w-full px-5 py-8 sm:py-10">
       <section className="flex flex-col justify-between gap-8 border-b border-border pb-8 lg:flex-row lg:items-end">
         <div className="max-w-[48rem]">
-          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
-            {hero.eyebrow}
-          </p>
+          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{hero.eyebrow}</p>
           <h1 className="mt-3 text-balance font-grotesk text-[2rem] font-medium leading-[1.02] tracking-[-0.045em] sm:text-[2.375rem]">
             {hero.titleBefore}
-            <span className="font-serif font-normal italic text-brand">
-              {hero.titleAccent}
-            </span>
+            <span className="font-serif font-normal italic text-brand">{hero.titleAccent}</span>
             {hero.titleAfter}
           </h1>
           <p className="mt-4 max-w-[36rem] text-[0.9375rem] leading-relaxed text-muted-foreground">
@@ -29,10 +25,7 @@ export function Pricing() {
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-4">
             {pricingPoints.map((item) => (
-              <span
-                key={item}
-                className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-muted-foreground"
-              >
+              <span key={item} className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
                 <Check className="size-3.5 text-muted-foreground" />
                 {item}
               </span>
@@ -53,7 +46,7 @@ export function Pricing() {
           <Button
             asChild
             variant="outline"
-            className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/[0.04]"
+            className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/4"
           >
             <a href="#model-rates">{hero.secondaryAction}</a>
           </Button>

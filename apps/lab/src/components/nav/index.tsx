@@ -14,24 +14,12 @@ import { NavSearch } from "./nav-search";
 import type { TopNavProps } from "./types";
 
 export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
-  const {
-    openMenu,
-    panelLeft,
-    panelWidth,
-    open,
-    close,
-    scheduleClose,
-    cancelClose,
-    registerTrigger,
-  } = useMegaMenu();
+  const { openMenu, panelLeft, panelWidth, open, close, scheduleClose, cancelClose, registerTrigger } = useMegaMenu();
 
   const activeMenu = megaMenus.find((menu) => menu.key === openMenu) ?? null;
 
   return (
-    <header
-      className="chrome-bar sticky top-0 z-40 h-11 border-b border-border"
-      onMouseLeave={scheduleClose}
-    >
+    <header className="chrome-bar sticky top-0 z-40 h-11 border-b border-border" onMouseLeave={scheduleClose}>
       <Script src="/brand/violet-orb.js" strategy="afterInteractive" />
       <div className="flex h-full w-full items-center gap-2 pl-3 pr-2 sm:pl-5">
         <button
@@ -39,22 +27,19 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
           ref={menuButtonRef}
           onClick={onOpenMenu}
           aria-label={navCopy.openNavigation}
-          className="-ml-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground lg:hidden"
+          className="-ml-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:hidden"
         >
           <PanelLeft className="size-[1.125rem]" strokeWidth={1.8} />
         </button>
         <Link
           href="/"
           aria-label={navCopy.home}
-          className="-ml-1 my-1 shrink-0 rounded-lg p-0.5 outline-none transition-colors hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-white/30"
+          className="-ml-1 my-1 shrink-0 rounded-lg p-0.5 outline-none transition-colors hover:bg-white/6 focus-visible:ring-2 focus-visible:ring-white/30"
         >
           <Chronosphere className="size-7 sm:size-8" />
         </Link>
 
-        <nav
-          aria-label={navCopy.tools}
-          className="hidden min-w-0 flex-1 items-center gap-0.5 lg:flex"
-        >
+        <nav aria-label={navCopy.tools} className="hidden min-w-0 flex-1 items-center gap-0.5 lg:flex">
           {megaMenus.map((menu) => {
             const active = openMenu === menu.key;
             return (
@@ -71,16 +56,13 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
                   onClick={close}
                   aria-expanded={active}
                   className={cn(
-                    "flex h-8 items-center gap-1 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
-                    active && "bg-white/[0.055] text-foreground",
+                    "flex h-8 items-center gap-1 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:bg-white/4 hover:text-foreground",
+                    active && "bg-white/5.5 text-foreground",
                   )}
                 >
                   {menu.label}
                   <ChevronDown
-                    className={cn(
-                      "size-3 opacity-45 transition-transform",
-                      active && "rotate-180 opacity-70",
-                    )}
+                    className={cn("size-3 opacity-45 transition-transform", active && "rotate-180 opacity-70")}
                   />
                 </Link>
               </div>
@@ -96,17 +78,8 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
       </div>
 
       {activeMenu ? (
-        <div
-          onMouseEnter={cancelClose}
-          onMouseLeave={scheduleClose}
-          className="hidden lg:block"
-        >
-          <MegaMenuPanel
-            menu={activeMenu}
-            onClose={close}
-            left={panelLeft}
-            width={panelWidth}
-          />
+        <div onMouseEnter={cancelClose} onMouseLeave={scheduleClose} className="hidden lg:block">
+          <MegaMenuPanel menu={activeMenu} onClose={close} left={panelLeft} width={panelWidth} />
         </div>
       ) : null}
     </header>

@@ -13,9 +13,7 @@ type DropdownMenuState = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const DropdownMenuStateContext = React.createContext<DropdownMenuState | null>(
-  null,
-);
+const DropdownMenuStateContext = React.createContext<DropdownMenuState | null>(null);
 
 function DropdownMenu({
   open: openProp,
@@ -27,9 +25,7 @@ function DropdownMenu({
   const controlled = openProp !== undefined;
   const open = controlled ? openProp : uncontrolledOpen;
 
-  const setOpen = React.useCallback<
-    React.Dispatch<React.SetStateAction<boolean>>
-  >(
+  const setOpen = React.useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
     (value) => {
       const next = typeof value === "function" ? value(open) : value;
       if (!controlled) setUncontrolledOpen(next);
@@ -42,22 +38,13 @@ function DropdownMenu({
 
   return (
     <DropdownMenuStateContext.Provider value={state}>
-      <DropdownMenuPrimitive.Root
-        data-slot="dropdown-menu"
-        {...props}
-        open={open}
-        onOpenChange={setOpen}
-      />
+      <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} open={open} onOpenChange={setOpen} />
     </DropdownMenuStateContext.Provider>
   );
 }
 
-function DropdownMenuPortal({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
-  return (
-    <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
-  );
+function DropdownMenuPortal({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
+  return <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
 
 function DropdownMenuTrigger({
@@ -68,9 +55,7 @@ function DropdownMenuTrigger({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
   const menu = React.useContext(DropdownMenuStateContext);
-  const tap = React.useRef<{ x: number; y: number; scrolled: boolean } | null>(
-    null,
-  );
+  const tap = React.useRef<{ x: number; y: number; scrolled: boolean } | null>(null);
 
   return (
     <DropdownMenuPrimitive.Trigger
@@ -91,10 +76,7 @@ function DropdownMenuTrigger({
         const gesture = tap.current;
         if (!gesture || gesture.scrolled) return;
 
-        const distance = Math.hypot(
-          event.clientX - gesture.x,
-          event.clientY - gesture.y,
-        );
+        const distance = Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y);
         if (distance > TAP_SLOP) gesture.scrolled = true;
       }}
       onPointerUp={(event) => {
@@ -135,12 +117,8 @@ function DropdownMenuContent({
   );
 }
 
-function DropdownMenuGroup({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Group>) {
-  return (
-    <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
-  );
+function DropdownMenuGroup({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Group>) {
+  return <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />;
 }
 
 function DropdownMenuItem({
@@ -180,7 +158,7 @@ function DropdownMenuCheckboxItem({
       data-slot="dropdown-menu-checkbox-item"
       data-inset={inset}
       className={cn(
-        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/8 data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       checked={checked}
@@ -191,15 +169,8 @@ function DropdownMenuCheckboxItem({
   );
 }
 
-function DropdownMenuRadioGroup({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) {
-  return (
-    <DropdownMenuPrimitive.RadioGroup
-      data-slot="dropdown-menu-radio-group"
-      {...props}
-    />
-  );
+function DropdownMenuRadioGroup({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) {
+  return <DropdownMenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />;
 }
 
 function DropdownMenuRadioItem({
@@ -215,7 +186,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       data-inset={inset}
       className={cn(
-        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/[0.08] data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative my-0.5 flex cursor-pointer items-center gap-1.5 rounded-[0.5rem] px-1.5 py-0.5 text-sm lg:text-[0.75rem] outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-[state=checked]:bg-white/8 data-[state=checked]:text-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -245,10 +216,7 @@ function DropdownMenuLabel({
   );
 }
 
-function DropdownMenuSeparator({
-  className,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
+function DropdownMenuSeparator({ className, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
@@ -258,10 +226,7 @@ function DropdownMenuSeparator({
   );
 }
 
-function DropdownMenuShortcut({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
+function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       data-slot="dropdown-menu-shortcut"
@@ -274,9 +239,7 @@ function DropdownMenuShortcut({
   );
 }
 
-function DropdownMenuSub({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) {
+function DropdownMenuSub({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) {
   return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
 }
 

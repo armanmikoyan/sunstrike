@@ -15,10 +15,8 @@ export function StudioTakes({ studio }: StudioTakesProps) {
     <div className="mx-auto mt-7 max-w-[61.25rem]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xs lg:text-[0.6875rem] font-medium text-muted-foreground">
-            {copy.title}
-          </span>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
+          <span className="text-xs lg:text-[0.6875rem] font-medium text-muted-foreground">{copy.title}</span>
+          <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {takes.length}
           </span>
         </div>
@@ -38,9 +36,7 @@ export function StudioTakes({ studio }: StudioTakesProps) {
             onClick={() => setActiveId(item.id)}
             className={cn(
               "group relative aspect-[3/4] overflow-hidden rounded-lg border bg-secondary text-left transition-colors",
-              activeId === item.id
-                ? "border-white/30 ring-1 ring-white/15"
-                : "border-white/[0.07] hover:border-white/20",
+              activeId === item.id ? "border-white/30 ring-1 ring-white/15" : "border-white/7 hover:border-white/20",
             )}
           >
             <Image
@@ -52,11 +48,7 @@ export function StudioTakes({ studio }: StudioTakesProps) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
             <span className="absolute left-1.5 top-1.5 grid size-4 place-items-center rounded bg-black/35 text-white/80 backdrop-blur">
-              {isVideo ? (
-                <Play className="size-2 fill-current" />
-              ) : (
-                <ImageIcon className="size-2" />
-              )}
+              {isVideo ? <Play className="size-2 fill-current" /> : <ImageIcon className="size-2" />}
             </span>
             {active.id === item.id ? (
               <span className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-foreground text-background">

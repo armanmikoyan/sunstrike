@@ -17,7 +17,7 @@ export function Help() {
             <Button
               asChild
               variant="outline"
-              className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+              className="h-9 rounded-lg border-white/9 bg-white/1.5 px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4.5 hover:text-foreground"
             >
               <Link href={`mailto:${supportEmail}`}>
                 <Mail className="size-3.5" />
@@ -34,17 +34,15 @@ export function Help() {
               <Link
                 key={guide.title}
                 href={guide.href}
-                className="group rounded-xl border border-white/[0.07] bg-white/[0.015] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.03]"
+                className="group rounded-xl border border-white/7 bg-white/1.5 p-4 transition-colors hover:border-white/20 hover:bg-white/3"
               >
                 <div className="flex items-start justify-between">
-                  <span className="grid size-8 place-items-center rounded-lg border border-white/[0.07] bg-white/[0.025] text-muted-foreground">
+                  <span className="grid size-8 place-items-center rounded-lg border border-white/7 bg-white/2.5 text-muted-foreground">
                     <Icon className="size-3.5" strokeWidth={1.8} />
                   </span>
                   <ArrowUpRight className="size-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                 </div>
-                <p className="mt-5 text-xs lg:text-[0.6875rem] font-medium">
-                  {guide.title}
-                </p>
+                <p className="mt-5 text-xs lg:text-[0.6875rem] font-medium">{guide.title}</p>
                 <p className="mt-1 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
                   {guide.description}
                 </p>
@@ -55,21 +53,17 @@ export function Help() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_18.75rem]">
           <div>
-            <h2 className="text-[1rem] font-medium tracking-[-0.035em]">
-              {helpCopy.commonQuestions}
-            </h2>
+            <h2 className="text-[1rem] font-medium tracking-[-0.035em]">{helpCopy.commonQuestions}</h2>
             <div className="mt-3">
               <HelpQuestions />
             </div>
           </div>
 
-          <div className="h-fit rounded-xl border border-white/[0.08] glass-card p-5">
-            <span className="grid size-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
+          <div className="h-fit rounded-xl border border-white/8 glass-card p-5">
+            <span className="grid size-9 place-items-center rounded-lg border border-white/8 bg-white/3 text-muted-foreground">
               <MessageCircle className="size-4" />
             </span>
-            <h3 className="mt-4 text-sm lg:text-[0.75rem] font-medium">
-              {helpCopy.stuckTitle}
-            </h3>
+            <h3 className="mt-4 text-sm lg:text-[0.75rem] font-medium">{helpCopy.stuckTitle}</h3>
             <p className="mt-1.5 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
               {helpCopy.stuckDescription}
             </p>
@@ -82,7 +76,7 @@ export function Help() {
                 {supportEmail}
               </Link>
             </Button>
-            <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs lg:text-[0.6875rem] text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between border-t border-white/6 pt-3 text-xs lg:text-[0.6875rem] text-muted-foreground">
               <span>{helpCopy.hours}</span>
               <span>{helpCopy.status}</span>
             </div>

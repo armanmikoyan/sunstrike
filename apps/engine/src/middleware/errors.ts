@@ -7,8 +7,7 @@ export const notFound: RequestHandler = (_request, response) => {
 function statusOf(error: unknown): number {
   if (typeof error === "object" && error !== null && "status" in error) {
     const status = Number((error as { status: unknown }).status);
-    if (Number.isInteger(status) && status >= 400 && status < 600)
-      return status;
+    if (Number.isInteger(status) && status >= 400 && status < 600) return status;
   }
   return 500;
 }
@@ -19,12 +18,7 @@ function messageOf(error: unknown, status: number): string {
   return "Request failed";
 }
 
-export const errorHandler: ErrorRequestHandler = (
-  error,
-  _request,
-  response,
-  next,
-) => {
+export const errorHandler: ErrorRequestHandler = (error, _request, response, next) => {
   if (response.headersSent) {
     next(error);
     return;
@@ -34,7 +28,5 @@ export const errorHandler: ErrorRequestHandler = (
 
   console.error(error);
 
-  response
-    .status(status)
-    .json({ error: { message: messageOf(error, status), status } });
+  response.status(status).json({ error: { message: messageOf(error, status), status } });
 };

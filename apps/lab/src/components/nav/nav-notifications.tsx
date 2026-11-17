@@ -23,7 +23,7 @@ export function NavNotifications() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-8 rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+          className="relative size-8 rounded-lg text-muted-foreground hover:bg-white/5 hover:text-foreground"
           aria-label={notificationsCopy.label}
         >
           <Bell className="size-[1.0625rem]" />
@@ -42,15 +42,11 @@ export function NavNotifications() {
             <Link href="/library" className="items-start gap-2.5">
               <span
                 className={cn(
-                  "mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-white/[0.05]",
+                  "mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-white/5",
                   item.readAt ? "text-muted-foreground" : "text-foreground",
                 )}
               >
-                {item.readAt ? (
-                  <Check className="size-3.5" />
-                ) : (
-                  <Bell className="size-3.5" />
-                )}
+                {item.readAt ? <Check className="size-3.5" /> : <Bell className="size-3.5" />}
               </span>
               <span>
                 <span className="block text-xs lg:text-[0.6875rem] font-medium">

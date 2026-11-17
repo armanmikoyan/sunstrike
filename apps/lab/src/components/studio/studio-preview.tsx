@@ -20,16 +20,7 @@ import type { StudioPreviewProps } from "./types";
 
 export function StudioPreview({ studio, children }: StudioPreviewProps) {
   const copy = studioCopy.preview;
-  const {
-    active,
-    aspect,
-    duration,
-    resolution,
-    audio,
-    cost,
-    isVideo,
-    selectedModel,
-  } = studio;
+  const { active, aspect, duration, resolution, audio, cost, isVideo, selectedModel } = studio;
 
   const frameClass = studioFrameClasses[aspect] ?? studioFrameClasses["16:9"];
 
@@ -37,10 +28,8 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
     <section className="flex min-h-0 flex-1 flex-col">
       <div className="flex h-10 shrink-0 items-center justify-between gap-3 border-b border-border px-3 sm:px-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs lg:text-[0.6875rem] font-medium">
-            {copy.title}
-          </span>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
+          <span className="text-xs lg:text-[0.6875rem] font-medium">{copy.title}</span>
+          <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {aspect}
           </span>
           <span className="hidden items-center gap-1 text-xs lg:text-[0.6875rem] text-muted-foreground sm:flex">
@@ -49,13 +38,13 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="hidden rounded border border-white/[0.08] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground sm:inline">
+          <span className="hidden rounded border border-white/8 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground sm:inline">
             {resolution}
           </span>
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 rounded-md text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+            className="size-7 rounded-md text-muted-foreground hover:bg-white/5 hover:text-foreground"
             aria-label={copy.downloadPreview}
           >
             <Download className="size-3" />
@@ -63,7 +52,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 rounded-md text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
+            className="size-7 rounded-md text-muted-foreground hover:bg-white/5 hover:text-foreground"
             aria-label={copy.moreOptions}
           >
             <MoreHorizontal className="size-3.5" />
@@ -75,7 +64,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
         <div className="mx-auto max-w-[61.25rem]">
           <div
             className={cn(
-              "relative mx-auto w-full overflow-hidden rounded-xl border border-white/[0.1] bg-secondary shadow-[0_1.875rem_6.25rem_-2.5rem_rgba(0,0,0,0.9)] transition-[max-width,aspect-ratio] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+              "relative mx-auto w-full overflow-hidden rounded-xl border border-white/10 bg-secondary shadow-[0_1.875rem_6.25rem_-2.5rem_rgba(0,0,0,0.9)] transition-[max-width,aspect-ratio] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
               frameClass,
             )}
           >
@@ -104,20 +93,14 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
 
             <div className="absolute left-3 top-3 flex items-center gap-1.5">
               <span className="flex items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-1 text-xs lg:text-[0.6875rem] text-white/80 backdrop-blur-md">
-                {isVideo ? (
-                  <Film className="size-2.5" />
-                ) : (
-                  <ImageIcon className="size-2.5" />
-                )}
+                {isVideo ? <Film className="size-2.5" /> : <ImageIcon className="size-2.5" />}
                 {selectedModel.displayName}
               </span>
             </div>
 
             <div className="absolute right-3 top-3 flex items-center gap-1.5">
               <span className="rounded-md border border-white/15 bg-black/40 px-1.5 py-1 font-mono text-xs lg:text-[0.6875rem] text-white/65 backdrop-blur-md">
-                {isVideo && duration
-                  ? `${duration} · ${resolution}`
-                  : resolution}
+                {isVideo && duration ? `${duration} · ${resolution}` : resolution}
               </span>
             </div>
 
@@ -126,11 +109,7 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
               aria-label={copy.play}
               className="absolute left-1/2 top-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/35 text-white/90 backdrop-blur-md transition-colors hover:bg-black/55"
             >
-              {isVideo ? (
-                <Play className="ml-0.5 size-4 fill-current" />
-              ) : (
-                <Maximize className="size-4" />
-              )}
+              {isVideo ? <Play className="ml-0.5 size-4 fill-current" /> : <Maximize className="size-4" />}
             </button>
 
             <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
@@ -183,21 +162,16 @@ export function StudioPreview({ studio, children }: StudioPreviewProps) {
 
           <div className="mx-auto mt-3 flex max-w-[61.25rem] items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-xs lg:text-[0.6875rem] font-medium">
-                {active.title}
-              </p>
+              <p className="truncate text-xs lg:text-[0.6875rem] font-medium">{active.title}</p>
               <p className="mt-0.5 truncate text-xs lg:text-[0.6875rem] text-muted-foreground">
-                {selectedModel.displayName} · {aspect} ·{" "}
-                {isVideo && duration ? duration : resolution} ·{" "}
-                <span className="tabular-nums font-normal">
-                  {formatUSD(cost)}
-                </span>
+                {selectedModel.displayName} · {aspect} · {isVideo && duration ? duration : resolution} ·{" "}
+                <span className="tabular-nums font-normal">{formatUSD(cost)}</span>
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-1">
               <button
                 type="button"
-                className="flex h-7 items-center gap-1.5 rounded-md border border-white/[0.08] px-2 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
+                className="flex h-7 items-center gap-1.5 rounded-md border border-white/8 px-2 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/4 hover:text-foreground"
               >
                 <Download className="size-3" />
                 {copy.download}

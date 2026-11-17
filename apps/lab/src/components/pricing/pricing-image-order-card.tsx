@@ -16,15 +16,11 @@ export function ImageOrderCard() {
   const quote = getImageQuote(quantity);
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/[0.1] glass-card">
+    <div className="relative mx-auto h-full w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/10 glass-card">
       <div className="flex h-full flex-col p-5">
         <div className="flex items-center justify-between">
-          <span className="text-xs lg:text-[0.6875rem] text-muted-foreground">
-            {pricingCardCopy.yourOrder}
-          </span>
-          <span className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
-            {pricingCardCopy.payg}
-          </span>
+          <span className="text-xs lg:text-[0.6875rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
+          <span className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">{pricingCardCopy.payg}</span>
         </div>
 
         <div className="mt-5 flex items-end justify-between gap-4">
@@ -45,18 +41,14 @@ export function ImageOrderCard() {
 
           <div className="flex items-center gap-2">
             <QuantityButton
-              onClick={() =>
-                setQuantity((value) => Math.max(MIN_IMAGES, value - 1))
-              }
+              onClick={() => setQuantity((value) => Math.max(MIN_IMAGES, value - 1))}
               disabled={quantity <= MIN_IMAGES}
               aria-label={pricingCardCopy.decreaseImages}
             >
               −
             </QuantityButton>
             <QuantityButton
-              onClick={() =>
-                setQuantity((value) => Math.min(MAX_IMAGES, value + 1))
-              }
+              onClick={() => setQuantity((value) => Math.min(MAX_IMAGES, value + 1))}
               disabled={quantity >= MAX_IMAGES}
               aria-label={pricingCardCopy.increaseImages}
             >
@@ -91,7 +83,7 @@ export function ImageOrderCard() {
                   "rounded-xl border p-2.5 text-left transition-colors",
                   active
                     ? "border-brand-secondary/40 bg-brand-secondary/10 hover:border-brand-secondary/55 hover:bg-brand-secondary/15"
-                    : "border-white/[0.1] hover:border-white/25 hover:bg-white/[0.04]",
+                    : "border-white/10 hover:border-white/25 hover:bg-white/4",
                 )}
               >
                 <span
@@ -113,43 +105,26 @@ export function ImageOrderCard() {
           })}
         </div>
 
-        <div className="mt-5 space-y-2.5 border-t border-white/[0.07] pt-4 text-xs lg:text-[0.6875rem]">
+        <div className="mt-5 space-y-2.5 border-t border-white/7 pt-4 text-xs lg:text-[0.6875rem]">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">
-              {pricingCardCopy.images}
-            </span>
+            <span className="text-muted-foreground">{pricingCardCopy.images}</span>
             <RollingNumber value={quote.quantity} />
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">
-              {pricingCardCopy.perImage}
-            </span>
-            <RollingNumber
-              value={quote.unit}
-              decimalPlaces={2}
-              prefix={pricingCardCopy.currency}
-            />
+            <span className="text-muted-foreground">{pricingCardCopy.perImage}</span>
+            <RollingNumber value={quote.unit} decimalPlaces={2} prefix={pricingCardCopy.currency} />
           </div>
           <div
             aria-hidden={quote.savings <= 0}
-            className={cn(
-              "flex justify-between text-brand-secondary",
-              quote.savings <= 0 && "invisible",
-            )}
+            className={cn("flex justify-between text-brand-secondary", quote.savings <= 0 && "invisible")}
           >
             <span>{pricingCardCopy.volumeSaving}</span>
-            <RollingNumber
-              value={quote.savings}
-              decimalPlaces={2}
-              prefix={pricingCardCopy.negativeCurrency}
-            />
+            <RollingNumber value={quote.savings} decimalPlaces={2} prefix={pricingCardCopy.negativeCurrency} />
           </div>
         </div>
 
-        <div className="mt-4 flex items-end justify-between border-t border-white/[0.07] pt-4">
-          <span className="text-sm lg:text-[0.75rem] text-muted-foreground">
-            {pricingCardCopy.total}
-          </span>
+        <div className="mt-4 flex items-end justify-between border-t border-white/7 pt-4">
+          <span className="text-sm lg:text-[0.75rem] text-muted-foreground">{pricingCardCopy.total}</span>
           <RollingNumber
             value={quote.total}
             decimalPlaces={2}
@@ -163,8 +138,7 @@ export function ImageOrderCard() {
           className="mt-5 h-10 w-full rounded-lg bg-brand text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
         >
           <Link href="/settings/billing">
-            {pricingCardCopy.get} <RollingNumber value={quote.quantity} />{" "}
-            {pricingCardCopy.imagesLower}
+            {pricingCardCopy.get} <RollingNumber value={quote.quantity} /> {pricingCardCopy.imagesLower}
             <ArrowRight className="size-3.5" />
           </Link>
         </Button>

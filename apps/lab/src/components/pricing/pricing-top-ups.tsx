@@ -24,20 +24,14 @@ type PricingTopUpsProps = {
  * The preset tiles and the custom amount are one control: picking a tile sets
  * the amount in the bar below, and the bar keeps the matching tile selected.
  */
-export function PricingTopUps({
-  videoModels,
-  imageModels,
-}: PricingTopUpsProps) {
+export function PricingTopUps({ videoModels, imageModels }: PricingTopUpsProps) {
   const { topUps } = pricingCopy;
   const popular = topUpPacks.find((pack) => pack.popular) ?? topUpPacks[0];
   const [amount, setAmount] = useState(popular.price);
   // The closest preset stays lit, so $40 lights $50 while $20 falls back to $5.
   const activeIndex = topUpPacks.reduce(
     (closest, pack, index) =>
-      Math.abs(amount - pack.price) <
-      Math.abs(amount - topUpPacks[closest].price)
-        ? index
-        : closest,
+      Math.abs(amount - pack.price) < Math.abs(amount - topUpPacks[closest].price) ? index : closest,
     0,
   );
 
@@ -69,11 +63,7 @@ export function PricingTopUps({
                 "group relative flex min-w-0 flex-col overflow-hidden rounded-lg border p-3 text-left transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:outline-none lg:min-w-[6.25rem] lg:flex-1 lg:basis-0",
               )}
               style={{
-                borderColor: selected
-                  ? `${pack.accent}b3`
-                  : pack.popular
-                    ? `${pack.accent}80`
-                    : `${pack.accent}3d`,
+                borderColor: selected ? `${pack.accent}b3` : pack.popular ? `${pack.accent}80` : `${pack.accent}3d`,
                 backgroundImage: selected
                   ? `linear-gradient(150deg, ${pack.accent} 0%, ${pack.accent}99 42%, #14121c 100%)`
                   : `linear-gradient(160deg, ${pack.accent}33 0%, rgba(255, 255, 255, 0.01) 62%, rgba(255, 255, 255, 0.02) 100%)`,
@@ -111,9 +101,7 @@ export function PricingTopUps({
                   <span
                     className={cn(
                       "shrink-0 whitespace-nowrap rounded-full px-1.5 py-0.5 text-xs lg:text-[0.6875rem] leading-none",
-                      selected
-                        ? "bg-white/25 text-white"
-                        : "bg-white/[0.08] text-foreground/75",
+                      selected ? "bg-white/25 text-white" : "bg-white/8 text-foreground/75",
                     )}
                   >
                     {topUps.popular}
@@ -122,19 +110,13 @@ export function PricingTopUps({
               </div>
               <div className="relative mt-auto flex items-end justify-between gap-1.5 pt-3">
                 <span
-                  className={cn(
-                    "text-xs lg:text-[0.6875rem]",
-                    selected ? "text-white/80" : "text-muted-foreground",
-                  )}
+                  className={cn("text-xs lg:text-[0.6875rem]", selected ? "text-white/80" : "text-muted-foreground")}
                 >
                   {pack.note}
                 </span>
                 {selected ? (
                   <Check
-                    className={cn(
-                      "size-3.5 shrink-0",
-                      selected ? "text-white" : "text-foreground",
-                    )}
+                    className={cn("size-3.5 shrink-0", selected ? "text-white" : "text-foreground")}
                     strokeWidth={2.2}
                   />
                 ) : (
@@ -161,9 +143,7 @@ export function PricingTopUps({
         onAmountChange={setAmount}
       />
 
-      <p className="mt-3 text-xs lg:text-[0.6875rem] text-muted-foreground">
-        {topUps.capacityNote}
-      </p>
+      <p className="mt-3 text-xs lg:text-[0.6875rem] text-muted-foreground">{topUps.capacityNote}</p>
     </>
   );
 }

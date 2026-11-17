@@ -25,18 +25,12 @@ export function Library() {
         }
       />
 
-      <div className="mt-5 grid grid-cols-1 divide-y divide-border rounded-xl border border-border bg-white/[0.015] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <div className="mt-5 grid grid-cols-1 divide-y divide-border rounded-xl border border-border bg-white/1.5 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {libraryStats.map((stat) => (
           <div key={stat.label} className="px-4 py-3.5">
-            <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">
-              {stat.label}
-            </p>
+            <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{stat.label}</p>
             <p className="mt-1.5 text-[1rem] font-medium tracking-[-0.02em] tabular-nums">
-              {stat.label === "Spent" ? (
-                <span className="tabular-nums font-normal">{stat.value}</span>
-              ) : (
-                stat.value
-              )}
+              {stat.label === "Spent" ? <span className="tabular-nums font-normal">{stat.value}</span> : stat.value}
             </p>
           </div>
         ))}

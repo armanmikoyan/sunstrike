@@ -3,10 +3,7 @@
 import { Textarea } from "@/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ComposerAspectMenu } from "./composer-aspect-menu";
-import {
-  ComposerAttachMenu,
-  ComposerAttachmentChip,
-} from "./composer-attachment";
+import { ComposerAttachMenu, ComposerAttachmentChip } from "./composer-attachment";
 import { ComposerDurationMenu } from "./composer-duration-menu";
 import { ComposerModeSwitch } from "./composer-mode-switch";
 import { ComposerModelMenu } from "./composer-model-menu";
@@ -36,11 +33,7 @@ export function PromptComposer({ className }: { className?: string }) {
         className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.015)_42%,rgba(255,255,255,0)_72%)]"
       />
 
-      <ComposerModeSwitch
-        mode={composer.mode}
-        cost={composer.cost}
-        onSwitch={composer.switchMode}
-      />
+      <ComposerModeSwitch mode={composer.mode} cost={composer.cost} onSwitch={composer.switchMode} />
 
       <div className="relative">
         <Textarea
@@ -78,7 +71,7 @@ export function PromptComposer({ className }: { className?: string }) {
         </div>
 
         <div className="flex w-full items-center gap-1 sm:contents">
-          <span className="mx-0.5 hidden h-3.5 w-px bg-white/[0.08] sm:block" />
+          <span className="mx-0.5 hidden h-3.5 w-px bg-white/8 sm:block" />
           <ComposerAspectMenu composer={composer} />
           {composer.durationOptions.length > 0 ? (
             <ComposerDurationMenu composer={composer} />

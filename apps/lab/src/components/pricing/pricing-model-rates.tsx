@@ -57,9 +57,7 @@ export function PricingModelRates() {
         title={
           <>
             {rates.titleBefore}
-            <span className="font-serif italic text-brand">
-              {rates.titleAccent}
-            </span>
+            <span className="font-serif italic text-brand">{rates.titleAccent}</span>
           </>
         }
         description={rates.description}
@@ -67,7 +65,7 @@ export function PricingModelRates() {
           <Button
             asChild
             variant="ghost"
-            className="hidden h-8 rounded-lg px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.04] hover:text-foreground sm:flex"
+            className="hidden h-8 rounded-lg px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4 hover:text-foreground sm:flex"
           >
             <Link href="/create/video">
               {rates.action}
@@ -77,24 +75,20 @@ export function PricingModelRates() {
         }
       />
 
-      <Tabs
-        value={filter}
-        onValueChange={(value) => setFilter(value as ModelFilter)}
-        className="mt-5 w-full"
-      >
+      <Tabs value={filter} onValueChange={(value) => setFilter(value as ModelFilter)} className="mt-5 w-full">
         {/* Narrow phones cannot fit three labels side by side, so the row
             scrolls in its own frame. The list stays a plain chip bar, the same
             one Explore and the library use. */}
         <div className="no-scrollbar -mx-1 overflow-x-auto overflow-y-hidden px-1">
           <TabsList
             aria-label={rates.filterLabel}
-            className="w-fit group-data-horizontal/tabs:h-9 gap-0 rounded-lg border border-white/[0.07] bg-white/[0.015] p-0.5 lg:group-data-horizontal/tabs:h-7"
+            className="w-fit group-data-horizontal/tabs:h-9 gap-0 rounded-lg border border-white/7 bg-white/1.5 p-0.5 lg:group-data-horizontal/tabs:h-7"
           >
             {filters.map((item) => (
               <TabsTrigger
                 key={item.value}
                 value={item.value}
-                className="flex-none rounded-[0.625rem] px-2.5 text-sm font-medium text-muted-foreground group-data-[variant=default]/tabs-list:data-active:shadow-none data-active:bg-white/[0.08] data-active:text-foreground lg:text-[0.6875rem] dark:data-active:border-transparent dark:data-active:bg-white/[0.08] dark:data-active:text-foreground"
+                className="flex-none rounded-[0.625rem] px-2.5 text-sm font-medium text-muted-foreground group-data-[variant=default]/tabs-list:data-active:shadow-none data-active:bg-white/8 data-active:text-foreground lg:text-[0.6875rem] dark:data-active:border-transparent dark:data-active:bg-white/8 dark:data-active:text-foreground"
               >
                 {item.label}
               </TabsTrigger>
@@ -103,14 +97,14 @@ export function PricingModelRates() {
         </div>
       </Tabs>
 
-      <div className="mt-4 overflow-hidden rounded-2xl border border-white/[0.08]">
-        <div className="hidden grid-cols-[1fr_14rem] border-b border-white/[0.06] bg-white/[0.015] px-5 py-3 font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground md:grid">
+      <div className="mt-4 overflow-hidden rounded-2xl border border-white/8">
+        <div className="hidden grid-cols-[1fr_14rem] border-b border-white/6 bg-white/1.5 px-5 py-3 font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground md:grid">
           <span>Model</span>
           <span className="text-right">Rate</span>
         </div>
 
         <AnimatedHeight>
-          <div className="relative divide-y divide-white/[0.055]">
+          <div className="relative divide-y divide-white/5.5">
             <AnimatePresence initial={false} mode="popLayout">
               {visible.map((row) => {
                 const model = row.model;
@@ -124,32 +118,24 @@ export function PricingModelRates() {
                     animate={{ opacity: 1 }}
                     exit={{
                       opacity: 0,
-                      transition: reduceMotion
-                        ? instantTransition
-                        : { duration: 0.1 },
+                      transition: reduceMotion ? instantTransition : { duration: 0.1 },
                     }}
                     transition={reduceMotion ? instantTransition : layoutSpring}
                     className="grid gap-3 bg-card px-5 py-4 md:grid-cols-[1fr_14rem] md:items-start md:gap-6"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-[0.9375rem] font-medium tracking-[-0.015em]">
-                          {model.displayName}
-                        </h3>
-                        <span className="rounded-md border border-white/[0.1] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground">
+                        <h3 className="text-[0.9375rem] font-medium tracking-[-0.015em]">{model.displayName}</h3>
+                        <span className="rounded-md border border-white/10 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground">
                           {isVideo ? rates.videoLabel : rates.imageLabel}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
-                        {model.summary}
-                      </p>
+                      <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">{model.summary}</p>
                       <p className="mt-2 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground/80">
                         {model.capabilities.resolutions.join(" / ")}
                         {isVideo
                           ? ` · ${durationRange(model.capabilities.durations)} · ${
-                              model.capabilities.audio
-                                ? rates.audio
-                                : rates.silent
+                              model.capabilities.audio ? rates.audio : rates.silent
                             }`
                           : " · image"}
                       </p>
@@ -158,9 +144,7 @@ export function PricingModelRates() {
                     <div className="md:text-right">
                       <p className="flex items-baseline gap-1.5 text-[0.9375rem] font-medium tracking-[-0.02em] tabular-nums md:justify-end">
                         <span className="tabular-nums font-normal">
-                          {row.kind === "video"
-                            ? formatUSDRate(row.model.perSecond)
-                            : formatUSD(row.model.perImage)}
+                          {row.kind === "video" ? formatUSDRate(row.model.perSecond) : formatUSD(row.model.perImage)}
                         </span>
                         <span className="text-xs lg:text-[0.6875rem] font-normal tracking-normal text-muted-foreground">
                           {isVideo ? rates.perSecond : rates.perImage}
@@ -168,9 +152,7 @@ export function PricingModelRates() {
                       </p>
                       {row.kind === "video" ? (
                         <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
-                          <span className="tabular-nums font-normal">
-                            {formatUSD(row.model.perSecond * 6)}
-                          </span>{" "}
+                          <span className="tabular-nums font-normal">{formatUSD(row.model.perSecond * 6)}</span>{" "}
                           {rates.sixSecond}
                         </p>
                       ) : null}

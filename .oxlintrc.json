@@ -1,16 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "oxc",
-    "typescript",
-    "unicorn",
-    "react",
-    "nextjs",
-    "jsx-a11y",
-    "import",
-    "node",
-    "promise"
-  ],
+  "plugins": ["oxc", "typescript", "unicorn", "react", "nextjs", "jsx-a11y", "import", "node", "promise"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn"
@@ -60,12 +50,7 @@
       }
     },
     {
-      "files": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.e2e.ts",
-        "apps/lab/vitest.setup.tsx"
-      ],
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/*.e2e.ts", "apps/lab/vitest.setup.tsx"],
       "rules": {
         "no-constant-binary-expression": "off",
         "unicorn/consistent-function-scoping": "off",

@@ -165,16 +165,9 @@ vi.mock("next/link", async () => {
     }: MockLinkProps,
     ref: React.Ref<HTMLAnchorElement>,
   ) {
-    const url =
-      typeof href === "string"
-        ? href
-        : ((href as { pathname?: string } | undefined)?.pathname ?? "#");
+    const url = typeof href === "string" ? href : ((href as { pathname?: string } | undefined)?.pathname ?? "#");
 
-    return ReactModule.createElement(
-      "a",
-      { ...(rest as object), ref, href: url },
-      children,
-    );
+    return ReactModule.createElement("a", { ...(rest as object), ref, href: url }, children);
   });
 
   return { __esModule: true, default: Link };
@@ -197,10 +190,7 @@ vi.mock("next/image", async () => {
     }: Record<string, unknown> & { src?: unknown; alt?: string },
     ref: React.Ref<HTMLImageElement>,
   ) {
-    const resolved =
-      typeof src === "string"
-        ? src
-        : ((src as { src?: string } | undefined)?.src ?? "");
+    const resolved = typeof src === "string" ? src : ((src as { src?: string } | undefined)?.src ?? "");
 
     return ReactModule.createElement("img", {
       ...(rest as object),
@@ -217,10 +207,7 @@ vi.mock("motion/react", async () => {
   const ReactModule = await import("react");
 
   const passthrough = (tag: string) =>
-    ReactModule.forwardRef(function MotionMock(
-      props: Record<string, unknown>,
-      ref: React.Ref<HTMLElement>,
-    ) {
+    ReactModule.forwardRef(function MotionMock(props: Record<string, unknown>, ref: React.Ref<HTMLElement>) {
       const {
         initial: _initial,
         animate: _animate,
@@ -253,8 +240,7 @@ vi.mock("motion/react", async () => {
   return {
     motion,
     AnimatePresence,
-    LayoutGroup: ({ children }: WithChildrenProps) =>
-      ReactModule.createElement(ReactModule.Fragment, null, children),
+    LayoutGroup: ({ children }: WithChildrenProps) => ReactModule.createElement(ReactModule.Fragment, null, children),
     useReducedMotion: () => false,
   };
 });

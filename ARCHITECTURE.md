@@ -3,14 +3,14 @@
 Chronolab.ai is a dark-studio generative media interface: a marketing home, an
 image/video studio, an explore feed, a library, account and billing screens.
 The repo is an npm-workspace monorepo. `apps/lab` is the Next.js App Router
-frontend; the modular-monolith backend is scaffolded in `apps/engine` and not
-wired yet. Every catalogue item, price and generation is still local demo data.
+frontend; `apps/engine` is the Express modular monolith behind `/api/v1`. The UI
+still renders demo data from `src/mocks` until `UI-1`.
 
-The product is modelled on one contract: the high-level design's six entities,
-`/api/v1` surface and user flow. `src/lib/design` is that contract in code, and
-the UI shows only its fields. A screen that needs data the contract does not
-have is a design change first, not a new local field. `ROADMAP.md` maps every
-remaining ticket to `F1`–`F5` and `N1`–`N4`.
+The product is modelled on one contract: the high-level design's seven
+entities, `/api/v1` surface and user flow. `src/lib/design` is that contract in
+code, and the UI shows only its fields. A screen that needs data the contract
+does not have is a design change first, not a new local field. `ROADMAP.md` maps
+every remaining ticket to `F1`–`F5` and `N1`–`N4`.
 
 The product name is **Chronolab.ai**, always. Models are named
 `Chronolab <Name>` and account addresses use `@chronolab.ai`. The previous
@@ -21,15 +21,18 @@ Unless stated otherwise, `src/...` paths in this document are relative to
 
 ## Stack
 
-| Layer      | Choice                                                            |
-| ---------- | ----------------------------------------------------------------- |
-| Framework  | Next.js `16.4` App Router, React `19.3`, TypeScript strict        |
-| Styling    | Tailwind CSS v4, CSS variables in `src/app/globals.css`           |
-| Components | shadcn primitives (`radix-nova` style) in `src/ui`                |
-| State      | Jotai atoms for shared generation state, local hooks for the rest |
-| Motion     | `motion/react` for number rolls, CSS for shell/video-wall motion  |
-| Icons      | `lucide-react`                                                    |
-| Tests      | Vitest + Testing Library (jsdom), Playwright (Chrome)             |
+| Layer       | Choice                                                                |
+| ----------- | --------------------------------------------------------------------- |
+| Framework   | Next.js `16.4` App Router, React `19.3`, TypeScript strict            |
+| Styling     | Tailwind CSS v4, CSS variables in `src/app/globals.css`               |
+| Components  | shadcn primitives (`radix-nova` style) in `src/ui`                    |
+| State       | Jotai atoms for shared generation state, local hooks for the rest     |
+| Motion      | `motion/react` for number rolls, CSS for shell/video-wall motion      |
+| Icons       | `lucide-react`                                                        |
+| Backend     | Express `5.3`, `tsx`, helmet/cors/compression/morgan in `apps/engine` |
+| Workspaces  | npm workspaces (`apps/*`), one `tsconfig.base.json`                   |
+| Lint/format | oxlint and oxfmt, shared config at the repo root                      |
+| Tests       | Vitest + Testing Library (jsdom), Playwright (Chrome)                 |
 
 `src/lib/utils/index.ts` re-exports `cn` from the `cn` package. Imports use the
 `@/` alias, which maps to `src/`, and the `~` alias, which maps to the app
@@ -43,17 +46,18 @@ API shapes are declared:
 
 - **Entities** — `User`, `MediaAsset`, `Template`, `Generation`,
   `GenerationModel` (with `GenerationModelCapabilities`), `Notification`, and
-  the inferred `BalanceTransaction`.
+  `BalanceTransaction` (the `transactions` table).
 - **DTOs** — `GenerationRequest`, `GenerationAccepted`, `GenerationResult`,
   `MediaAssetUpload`, `TopUp`, `GenerationQuote`, list responses and `Balance`.
 - **API** — `API_PATHS` for the `/api/v1` surface.
 - **Rule** — `modelSupportsSettings(model, settings)`, shared by the studio and
-  the future server so a control can never offer a value the model rejects.
+  the server so a control can never offer a value the model rejects.
 
 `GenerationSettings` is the shape stored in `generations.settings`:
 `{ resolution, duration, aspectRatio, audio }`. `GenerationKind` is
-`create | edit` (a recorded decision in the roadmap). The working notification
-types are `generation_succeeded` and `generation_failed`.
+`create | edit` and `GenerationStatus` is `queued | running | succeeded |
+failed`; both are values the data model draws. The working notification types
+are `generation_succeeded` and `generation_failed`.
 
 `src/mocks` holds every demo row the UI renders until the API is wired:
 `generation` (the `generation_models` catalogue and model costs), `media`,
@@ -68,6 +72,180 @@ lives in `src/lib`; it is the seam that `UI-1` replaces with `/api/v1` calls.
 `isEnabled`; `cost` is kept beside the mock row until pricing moves to the
 server. The UI derives aspect ratios, durations and resolutions from the
 selected model's capabilities rather than from global lists.
+
+## System design
+
+The drawing this section follows is `docs/arch-1.excalidraw`: requirements,
+core entities, API design, data flow, high-level architecture and deep dives,
+in that order.
+
+One deployment exposes `/api/v1`. Modules own their routes and interact through
+public interfaces; there is no API gateway and no per-module database. The
+worker runs from the same image as the API.
+
+### High-level architecture
+
+```text
+web app — apps/lab (Next.js)
+  │  HTTPS · Supabase Auth session, or a bearer API token
+  ▼
+engine — apps/engine (Express), one deployment
+  identity · generation · billing · media · catalog · notifications
+  │            │                  │               │
+  ▼            ▼                  ▼               ▼
+Postgres     job queue           Redis         private storage
+(Supabase)   (generation)        (catalog)     (signed URLs)
+               │
+               ▼
+         model providers — Gemini · Seedance
+
+Supabase Auth  ·  Lemon Squeezy — checkout and verified top-up webhooks
+```
+
+| Module          | Owns                                                                                                                                                             |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth`          | Validating Supabase Auth sessions and bearer API tokens; resolving the authenticated user.                                                                       |
+| `generation`    | Validating model settings, inserting queued jobs, exposing job status, the worker that claims jobs and calls provider adapters, retries, publishing the outcome. |
+| `billing`       | Quoting, reserving funds before work, settling on success, releasing on failure, crediting verified top-ups.                                                     |
+| `media`         | Validating uploads, registering generated media, issuing short-lived signed URLs.                                                                                |
+| `catalog`       | Templates and model options; reads Redis first, Postgres on a miss, TTL expiry and invalidation on edits.                                                        |
+| `notifications` | Recording terminal job updates, listing unread and past updates, marking notifications read.                                                                     |
+
+`templates` keeps its own router under `modules/templates` because
+`/api/v1/templates` is its own surface; it belongs to the catalog domain.
+`generation/providers` holds one adapter per provider, keyed by
+`provider_model_key`.
+
+| Service           | Used for                                                        |
+| ----------------- | --------------------------------------------------------------- |
+| Supabase Auth     | Sign-in and session validation for web requests                 |
+| Supabase Postgres | Application records, the ledger and the durable job queue       |
+| Supabase Storage  | Private uploads and generated media, served through signed URLs |
+| Redis             | Catalog cache-aside reads, TTL expiry and invalidation on edits |
+| Lemon Squeezy     | Top-up checkout and verified webhook credit                     |
+| Gemini, Seedance  | Model providers called by the generation worker                 |
+
+### Data model
+
+The drawing's tables. Foreign keys point at the row they reference; timestamps
+are `timestamptz`; `jsonb` columns carry a checked shape.
+
+```text
+users
+  id          uuid         PK
+  email       text         UNIQUE
+  created_at  timestamptz
+```
+
+```text
+media_assets
+  id             uuid         PK
+  owner_user_id  uuid         FK users.id · nullable for shared assets
+  kind           text         image / video / audio
+  storage_key    text         UNIQUE
+  created_at     timestamptz
+```
+
+```text
+templates
+  id                     uuid         PK
+  source_asset_id        uuid         FK media_assets.id
+  name                   text
+  customization_options  jsonb        roles and the settings a user may change
+  created_at             timestamptz
+```
+
+```text
+generations
+  id               uuid         PK
+  user_id          uuid         FK users.id
+  template_id      uuid         FK templates.id · nullable
+  output_asset_id  uuid         FK media_assets.id · nullable · UNIQUE
+  kind             text         create / edit
+  prompt           text         nullable
+  model_id         uuid         FK generation_models.id
+  settings         jsonb
+  status           text         queued / running / succeeded / failed
+  failure_code     text         nullable
+  created_at       timestamptz
+  completed_at     timestamptz  nullable
+  inputs           jsonb        ordered asset ids and roles
+```
+
+```text
+generation_models
+  id                  uuid         PK
+  name                text         model display name
+  provider            text         Gemini / Seedance
+  provider_model_key  text         UNIQUE per provider
+  supported_modes     text[]
+  resolutions         text[]
+  durations_seconds   int[]
+  aspect_ratios       text[]
+  supports_audio      boolean
+  active              boolean      enabled for generation
+  updated_at          timestamptz
+```
+
+```text
+notifications
+  id             uuid         PK
+  generation_id  uuid         FK generations.id
+  type           text
+  read_at        timestamptz  nullable
+  created_at     timestamptz
+```
+
+```text
+transactions
+  id               uuid         PK
+  user_id          uuid         FK users.id
+  generation_id    uuid         FK generations.id · nullable
+  type             text         top-up / charge / credit
+  amount           bigint       signed, in balance units
+  idempotency_key  text         UNIQUE
+  created_at       timestamptz
+```
+
+### API
+
+`/api/v1` is the only surface: JSON in, JSON out, every route authenticated
+except the top-up checkout redirect. The endpoint table lives in `ROADMAP.md`
+§1.4 and `API_PATHS` in `src/lib/design/index.ts` is its code form. The groups
+are identity (`/me`), catalog (`/models`, `/templates`), media (`/assets`),
+billing (`/balance`, `/balance/top-ups`), generations (`/generation-quotes`,
+`/generations`) and notifications.
+
+### Data flow
+
+1. **Compose.** A prompt, source clip, reference media or curated template.
+2. **Sign in with Supabase Auth.** The draft survives the trip; on cancel the
+   user returns to it.
+3. **Review the quote.** Model settings and the cost of the generation.
+4. **Check the balance.** Below the quote, top up through Lemon Squeezy; the
+   balance is credited after a verified confirmation, then checked again. A
+   pending payment can be waited on or retried.
+5. **Submit the generation.** Reserve the funds, queue the job and return the
+   generation id.
+6. **Generate in the background.** The user can leave or keep checking status.
+   Success saves the video, settles the charge, notifies and puts the result in
+   history. Failure releases the reservation, records the failure code, notifies
+   and shows the failed job in history.
+
+### Deep dives
+
+- **Reliable job dispatch and recovery** — durable queue, stale leases
+  reclaimed, every accepted job reaches a terminal status.
+- **Pay-as-you-go billing** — reserve before work, settle on success, release on
+  failure; retrying the same request never charges twice.
+- **Provider retries** — bounded backoff for transient errors, final failures
+  recorded on the generation.
+- **Redis caching** — cache-aside catalog reads with a TTL, invalidated on
+  catalog edits.
+- **Private storage** — private bucket, ownership checks and short-lived signed
+  URLs; another user's id returns 404.
+- **Latency and recovery metrics** — API p95, queue age, provider duration,
+  failures and lease recovery.
 
 ## Folder structure
 
@@ -131,14 +309,19 @@ with shared Jotai atoms has `state.ts` (currently `studio`); one with shaped or
 reused props has `types.ts`. Presentational components can be a single
 `index.tsx` with no supporting files.
 
-The backend is a modular monolith scaffolded in `apps/engine` and not wired
-yet. `apps/engine/src/app.ts` builds the Express app, `src/main.ts` starts the
-HTTP server and `src/worker.ts` starts the generation worker. Each module's
-`index.ts` is its public interface: it creates the module router and registers
-the routes, so `app.ts` only mounts it. The layers sit beside it as files named
-after the layer — `controller.ts`, `service.ts`, `repository.ts`, `worker.ts` —
-so the module name is never repeated in a filename (`generation/service.ts`,
-not `generation/generation.service.ts`).
+The backend is a modular monolith in `apps/engine`. `apps/engine/src/app.ts`
+builds the Express app, `src/main.ts` starts the HTTP server and `src/worker.ts`
+starts the generation worker from the same image. Each module's `index.ts` is
+its public interface: it creates the router and registers the module's routes,
+so `app.ts` only mounts it under `/api/v1/<module>`. The layers sit beside it as
+files named after the layer — `controller.ts`, `service.ts`, `repository.ts`,
+`worker.ts` — so the module name is never repeated in a filename
+(`generation/service.ts`, not `generation/generation.service.ts`). The modules
+are `auth`, `billing`, `catalog`, `generation`, `media` and `notifications`;
+`templates` is a catalog subdomain with its own router because `/templates` is
+its own API surface, and `generation/providers` holds one adapter per provider.
+Modules reach each other through those public interfaces, never through another
+module's repository or tables.
 `src/infrastructure` goes the other way on purpose: each client is a folder
 whose `index.ts` is the only import surface (`database`, `redis`, `queue`,
 `s3`), because those folders will hold a client, its config and helpers.
@@ -245,18 +428,18 @@ the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 
 ### Routes
 
-| Route                                                                                  | Purpose                                                                                                                                                                           |
-| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                                                                                    | Full-bleed video wall, prompt composer, featured gallery, ratio mosaic, pay-as-you-go panel                                                                                       |
-| `/create/video`, `/create/image`                                                       | Studio: controls, preview, takes, queue dialog                                                                                                                                    |
-| `/explore`                                                                             | Gallery filtered by media kind, searchable by title, prompt and model                                                                                                             |
-| `/library`                                                                             | Generated work with kind tabs and search                                                                                                                                          |
-| `/assets`, `/favorites`                                                                | Uploaded assets by kind; a saved grid (no favourites entity)                                                                                                                      |
-| `/pricing`                                                                             | Image/video price calculators, top-up packs, FAQ (marketing only)                                                                                                                 |
-| `/settings/account`, `/settings/notifications`, `/settings/billing`, `/settings/usage` | Account (`email`, id, created), read-only notifications, balance, payment method and auto top-up, and the `balance_transactions` ledger; `/settings` redirects to the account tab |
-| `/help`                                                                                | Guides and contact                                                                                                                                                                |
-| `/privacy`, `/terms`                                                                   | Shared `LegalDocumentView`: header, revision date, section anchors and a sticky contents rail that marks the section being read (`#cookies` is the consent banner's target)       |
-| `/login`                                                                               | Standalone split-screen sign-in; crawlable but `noindex`                                                                                                                          |
+| Route                                                                                  | Purpose                                                                                                                                                                     |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                                                                    | Full-bleed video wall, prompt composer, featured gallery, ratio mosaic, pay-as-you-go panel                                                                                 |
+| `/create/video`, `/create/image`                                                       | Studio: controls, preview, takes, queue dialog                                                                                                                              |
+| `/explore`                                                                             | Gallery filtered by media kind, searchable by title, prompt and model                                                                                                       |
+| `/library`                                                                             | Generated work with kind tabs and search                                                                                                                                    |
+| `/assets`, `/favorites`                                                                | Uploaded assets by kind; a saved grid (no favourites entity)                                                                                                                |
+| `/pricing`                                                                             | Image/video price calculators, top-up packs, FAQ (marketing only)                                                                                                           |
+| `/settings/account`, `/settings/notifications`, `/settings/billing`, `/settings/usage` | Account (`email`, id, created), read-only notifications, balance, payment method and auto top-up, and the `transactions` ledger; `/settings` redirects to the account tab   |
+| `/help`                                                                                | Guides and contact                                                                                                                                                          |
+| `/privacy`, `/terms`                                                                   | Shared `LegalDocumentView`: header, revision date, section anchors and a sticky contents rail that marks the section being read (`#cookies` is the consent banner's target) |
+| `/login`                                                                               | Standalone split-screen sign-in; crawlable but `noindex`                                                                                                                    |
 
 `src/proxy.ts` (Next 16's middleware replacement) rewrites unknown
 `/create/:mode` segments to a real 404. Keep that validation in sync with the
@@ -485,7 +668,7 @@ Type rules:
 - Billing is a settings tab, not its own route: available balance, payment
   method, auto top-up and tax. The card and invoices come from Lemon Squeezy.
 - Usage is its own settings tab so the ledger is not mixed into billing: the
-  `balance_transactions` rows (top-up, charge, credit) come from the API. The
+  `transactions` rows (top-up, charge, credit) come from the API. The
   demo values in `src/components/billing/constants.ts` are presentation data
   until BIL-6 wires the provider.
 - Use the `chronolab:` prefix for custom events.
@@ -500,12 +683,19 @@ Type rules:
 | ---------- | ------------------------- | -------------------------------------------------------------- |
 | Unit       | `npm run test:unit`       | `src/lib` maths and `src/mocks` data, plus `src/proxy.test.ts` |
 | Component  | `npm run test:components` | `src/components` and `src/app` behaviour                       |
-| All Vitest | `npm test`                | every colocated `*.test.ts(x)`                                 |
+| All Vitest | `npm test`                | every colocated `*.test.ts(x)` in both apps                    |
 | Coverage   | `npm run test:coverage`   | floors enforced                                                |
 | E2E        | `npm run test:e2e`        | production build on `:3100`                                    |
-| Typecheck  | `npm run typecheck`       | `tsc --noEmit`                                                 |
-| Lint       | `npm run lint`            | ESLint                                                         |
+| Typecheck  | `npm run typecheck`       | `tsc --noEmit` in every workspace                              |
+| Lint       | `npm run lint`            | oxlint                                                         |
+| Format     | `npm run format:check`    | oxfmt, shared config at the repo root                          |
 | Everything | `npm run check`           | typecheck + lint + coverage                                    |
+
+The root `vitest.config.mts` runs `projects: ["apps/*"]`, so `npm test` covers
+`apps/lab` and `apps/engine` from one command. Each app keeps only its deltas:
+`apps/lab/vitest.config.mts` holds the jsdom environment and setup file,
+`apps/engine/vitest.config.mts` the `@/` alias. A pre-commit hook runs
+`lint-staged` (oxfmt, then `oxlint --fix`) on staged files only.
 
 Conventions:
 
@@ -537,7 +727,7 @@ Conventions:
 
 Before calling a change done:
 
-1. `npm run typecheck` and `npm run lint`.
+1. `npm run typecheck`, `npm run lint` and `npm run format:check`.
 2. Relevant Vitest files, then `npm test` when the change is broad.
 3. `npm run build`; run Playwright if the change touches routing, shell or
    responsive behaviour.
@@ -569,6 +759,13 @@ Mark the interactive root `"use client"`. Put every visible string in
 `src/mocks/generation.ts` and its price in `modelCosts`; update
 `src/lib/pricing/index.ts` if quantity maths changes. A model name, provider or
 capability must exist in the contract first. Add a unit test.
+
+**Add an endpoint:** the module that owns the data owns the route. Register it
+in `apps/engine/src/modules/<module>/index.ts` on that module's router, keep the
+logic in its `controller.ts`, `service.ts` and `repository.ts`, and mount a new
+module in `app.ts` with one `app.use("/api/v1/<module>", router)`. The path goes
+into `API_PATHS` in `src/lib/design/index.ts` and into `ROADMAP.md` §1.4; the
+contract change comes first. Nothing imports another module's internals.
 
 **Add a design token:** add the variable in `:root`, mirror it in `@theme
 inline` as `--color-*`, use the generated Tailwind class, and update this doc.

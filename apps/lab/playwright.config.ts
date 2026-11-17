@@ -12,9 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 2 : undefined,
   timeout: 45_000,
   expect: { timeout: 7_000 },
-  reporter: process.env.CI
-    ? [["list"], ["html", { open: "never" }]]
-    : [["list"], ["html", { open: "never" }]],
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
     channel: "chrome",

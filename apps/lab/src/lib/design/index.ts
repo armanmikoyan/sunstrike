@@ -93,11 +93,7 @@ export type Notification = {
   createdAt: string;
 };
 
-/**
- * 02 names "Balance transaction" but draws no table. This is the smallest shape
- * the entity description ("a top-up, generation charge, or credit") needs.
- * It is recorded as an open decision in ROADMAP.md.
- */
+/** 02 Core entities — `transactions`. */
 export type BalanceTransaction = {
   id: string;
   userId: string;
@@ -209,16 +205,12 @@ export const API_PATHS = {
 } as const;
 
 /** `settings` are valid only when the selected model advertises each value. */
-export function modelSupportsSettings(
-  model: GenerationModel,
-  settings: GenerationSettings,
-) {
+export function modelSupportsSettings(model: GenerationModel, settings: GenerationSettings) {
   const { capabilities } = model;
   return (
     capabilities.aspectRatios.includes(settings.aspectRatio) &&
     capabilities.resolutions.includes(settings.resolution) &&
-    (settings.duration === null ||
-      capabilities.durations.includes(settings.duration)) &&
+    (settings.duration === null || capabilities.durations.includes(settings.duration)) &&
     (!settings.audio || capabilities.audio)
   );
 }

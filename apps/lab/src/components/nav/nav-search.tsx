@@ -35,9 +35,7 @@ export function NavSearch() {
       onSubmit={(event) => {
         event.preventDefault();
         const term = query.trim();
-        router.push(
-          term ? `/explore?q=${encodeURIComponent(term)}` : "/explore",
-        );
+        router.push(term ? `/explore?q=${encodeURIComponent(term)}` : "/explore");
       }}
       role="search"
       className="group relative flex h-9 min-w-0 max-w-[10.5rem] flex-1 items-center md:w-[10rem] md:flex-none lg:h-8 lg:max-w-none lg:w-[13rem] xl:w-[16rem]"
@@ -57,7 +55,7 @@ export function NavSearch() {
         placeholder={compact ? navCopy.compactSearch : navCopy.search}
         aria-label={navCopy.search}
         className={cn(
-          "h-9 w-full appearance-none rounded-lg border border-white/[0.08] bg-white/[0.035] pl-8 text-sm text-foreground lg:h-8 lg:text-[0.6875rem] outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:bg-white/[0.05] [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
+          "h-9 w-full appearance-none rounded-lg border border-white/8 bg-white/3.5 pl-8 text-sm text-foreground lg:h-8 lg:text-[0.6875rem] outline-none transition-colors placeholder:text-muted-foreground hover:border-white/15 focus-visible:bg-white/5 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
           query.length === 0 ? "pr-2.5 lg:pr-11" : "pr-9 lg:pr-11",
         )}
       />
@@ -68,7 +66,7 @@ export function NavSearch() {
         {query.length === 0 ? (
           <kbd
             aria-hidden
-            className="pointer-events-none hidden items-center rounded border border-white/[0.08] bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] leading-none text-muted-foreground lg:flex"
+            className="pointer-events-none hidden items-center rounded border border-white/8 bg-white/5 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] leading-none text-muted-foreground lg:flex"
           >
             {shortcut}
           </kbd>

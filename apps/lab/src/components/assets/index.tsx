@@ -11,9 +11,7 @@ import { instantTransition, layoutSpring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { assetIds, assetsCopy } from "./constants";
 
-const assets = assetIds
-  .map((id) => mediaById(id))
-  .filter((item) => item !== undefined);
+const assets = assetIds.map((id) => mediaById(id)).filter((item) => item !== undefined);
 
 type Filter = "all" | "video" | "image";
 
@@ -40,9 +38,7 @@ export function Assets() {
   const reduceMotion = useReducedMotion();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const visible = assets.filter(
-    (asset) => filter === "all" || asset.kind === filter,
-  );
+  const visible = assets.filter((asset) => filter === "all" || asset.kind === filter);
 
   return (
     <div className="w-full px-5 py-7">
@@ -54,7 +50,7 @@ export function Assets() {
           <Button
             variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="h-9 rounded-lg border-white/[0.09] bg-white/[0.015] px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/[0.045] hover:text-foreground"
+            className="h-9 rounded-lg border-white/9 bg-white/1.5 px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4.5 hover:text-foreground"
           >
             <UploadCloud className="size-3.5" />
             {assetsCopy.upload}
@@ -62,33 +58,21 @@ export function Assets() {
         }
       />
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        accept="image/*,video/*,audio/*"
-        className="hidden"
-      />
+      <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,audio/*" className="hidden" />
 
-      <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.11] bg-white/[0.015] px-5 py-8 text-center transition-colors hover:border-white/20 hover:bg-white/[0.03]">
-        <span className="grid size-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-muted-foreground">
+      <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/11 bg-white/1.5 px-5 py-8 text-center transition-colors hover:border-white/20 hover:bg-white/3">
+        <span className="grid size-10 place-items-center rounded-xl border border-white/8 bg-white/3 text-muted-foreground">
           <UploadCloud className="size-4" />
         </span>
-        <p className="mt-3 text-xs lg:text-[0.6875rem] font-medium">
-          {assetsCopy.dropTitle}
-        </p>
-        <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
-          {assetsCopy.dropHint}
-        </p>
+        <p className="mt-3 text-xs lg:text-[0.6875rem] font-medium">{assetsCopy.dropTitle}</p>
+        <p className="mt-1 text-xs lg:text-[0.6875rem] text-muted-foreground">{assetsCopy.dropHint}</p>
         <input type="file" multiple className="hidden" />
       </label>
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm lg:text-[0.75rem] font-medium">
-            {assetsCopy.recentTitle}
-          </h2>
-          <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
+          <h2 className="text-sm lg:text-[0.75rem] font-medium">{assetsCopy.recentTitle}</h2>
+          <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
             {visible.length}
           </span>
         </div>
@@ -99,9 +83,8 @@ export function Assets() {
               type="button"
               onClick={() => setFilter(item.value)}
               className={cn(
-                "flex h-7 items-center gap-1.5 rounded-md px-2 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground",
-                filter === item.value &&
-                  "bg-white/[0.06] text-foreground hover:bg-white/[0.06]",
+                "flex h-7 items-center gap-1.5 rounded-md px-2 text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:bg-white/4 hover:text-foreground",
+                filter === item.value && "bg-white/6 text-foreground hover:bg-white/6",
               )}
             >
               {item.value === "image" ? (
@@ -136,7 +119,7 @@ export function Assets() {
                   scale: 0.98,
                 }}
                 transition={reduceMotion ? instantTransition : layoutSpring}
-                className="group relative overflow-hidden rounded-lg border border-white/[0.07] bg-secondary"
+                className="group relative overflow-hidden rounded-lg border border-white/7 bg-secondary"
               >
                 <div className="relative aspect-square">
                   <Image
@@ -148,11 +131,7 @@ export function Assets() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/5" />
                   <span className="absolute left-2 top-2 flex items-center gap-1 rounded border border-white/15 bg-black/35 px-1.5 py-0.5 text-xs lg:text-[0.6875rem] text-white/80 backdrop-blur">
-                    {asset.kind === "video" ? (
-                      <Film className="size-2.5" />
-                    ) : (
-                      <ImageIcon className="size-2.5" />
-                    )}
+                    {asset.kind === "video" ? <Film className="size-2.5" /> : <ImageIcon className="size-2.5" />}
                     {assetsCopy.kindLabels[asset.kind]}
                   </span>
                   <div className="absolute inset-x-2 bottom-2">
@@ -160,9 +139,7 @@ export function Assets() {
                       {assetsCopy.storagePrefix}
                       {asset.id}.{extension}
                     </p>
-                    <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-white/60">
-                      {asset.createdAt}
-                    </p>
+                    <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-white/60">{asset.createdAt}</p>
                   </div>
                 </div>
               </motion.div>

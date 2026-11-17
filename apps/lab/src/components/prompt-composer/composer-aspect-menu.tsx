@@ -15,8 +15,7 @@ import type { ComposerAspectMenuProps } from "./types";
 
 export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
   const { aspect, setAspect, aspectOptions } = composer;
-  const shape =
-    aspectOptions.find((ratio) => ratio.value === aspect)?.shape ?? "h-3 w-4";
+  const shape = aspectOptions.find((ratio) => ratio.value === aspect)?.shape ?? "h-3 w-4";
 
   return (
     <DropdownMenu>
@@ -25,14 +24,9 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 gap-1.5 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/[0.055] hover:text-foreground"
+          className="h-8 gap-1.5 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/5.5 hover:text-foreground"
         >
-          <span
-            className={cn(
-              "rounded-[0.125rem] border border-current opacity-80",
-              shape,
-            )}
-          />
+          <span className={cn("rounded-[0.125rem] border border-current opacity-80", shape)} />
           {aspect}
           <ChevronDown className="size-3 opacity-60" />
         </Button>
@@ -43,21 +37,11 @@ export function ComposerAspectMenu({ composer }: ComposerAspectMenuProps) {
           <DropdownMenuItem
             key={ratio.value}
             onSelect={() => setAspect(ratio.value)}
-            className={cn(
-              "gap-2 px-2 py-1.5",
-              aspect === ratio.value && "bg-white/[0.08] text-foreground",
-            )}
+            className={cn("gap-2 px-2 py-1.5", aspect === ratio.value && "bg-white/8 text-foreground")}
           >
-            <span
-              className={cn(
-                "rounded-[0.125rem] border border-current opacity-80",
-                ratio.shape,
-              )}
-            />
+            <span className={cn("rounded-[0.125rem] border border-current opacity-80", ratio.shape)} />
             <span className="text-xs lg:text-[0.6875rem]">{ratio.value}</span>
-            <span className="ml-auto text-xs lg:text-[0.6875rem] text-muted-foreground">
-              {ratio.label}
-            </span>
+            <span className="ml-auto text-xs lg:text-[0.6875rem] text-muted-foreground">{ratio.label}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
