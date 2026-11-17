@@ -1,1 +1,5 @@
-// Public interface for the billing module.
+import { Router } from "express";
+
+const router = Router();
+
+export default router;

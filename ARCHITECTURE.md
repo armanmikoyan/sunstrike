@@ -32,8 +32,9 @@ Unless stated otherwise, `src/...` paths in this document are relative to
 | Tests      | Vitest + Testing Library (jsdom), Playwright (Chrome)             |
 
 `src/lib/utils/index.ts` re-exports `cn` from the `cn` package. Imports use the
-`@/` alias, which maps to `src/`, and the `~` alias, which maps to the repo
-root.
+`@/` alias, which maps to `src/`, and the `~` alias, which maps to the app
+root. The engine uses the same `@/` alias for `apps/engine/src`, so backend
+imports read `@/modules/billing` rather than a chain of `../`.
 
 ## Product contract
 
@@ -132,14 +133,20 @@ reused props has `types.ts`. Presentational components can be a single
 
 The backend is a modular monolith scaffolded in `apps/engine` and not wired
 yet. `apps/engine/src/app.ts` builds the Express app, `src/main.ts` starts the
-HTTP server and `src/worker.ts` starts the generation worker. Each module
-exposes one `index.ts` as its public interface and its layers are files named
-after the layer — `routes.ts`, `controller.ts`, `service.ts`, `repository.ts`,
-`worker.ts` — so the module name is never repeated in a filename
-(`generation/service.ts`, not `generation/generation.service.ts`).
+HTTP server and `src/worker.ts` starts the generation worker. Each module's
+`index.ts` is its public interface: it creates the module router and registers
+the routes, so `app.ts` only mounts it. The layers sit beside it as files named
+after the layer — `controller.ts`, `service.ts`, `repository.ts`, `worker.ts` —
+so the module name is never repeated in a filename (`generation/service.ts`,
+not `generation/generation.service.ts`).
 `src/infrastructure` goes the other way on purpose: each client is a folder
 whose `index.ts` is the only import surface (`database`, `redis`, `queue`,
 `s3`), because those folders will hold a client, its config and helpers.
+`src/middleware` exports one `middleware` array — helmet, CORS, compression,
+JSON parsing, morgan — that `app.ts` mounts with a single `app.use`, plus the
+404 and error handlers it mounts last. `app.ts` also declares the single health
+route inline — `app.get("/health")` answering `{ status: "ok" }` — so there is
+one probe at the app level and no per-module health route.
 
 Tests live next to the code they cover. Vitest picks up every `src/**/*.test.ts`
 and `src/**/*.test.tsx`; name the file after the module it covers

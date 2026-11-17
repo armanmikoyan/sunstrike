@@ -1,1 +1,5 @@
-// Public interface for the generation module.
+import { Router } from "express";
+
+const router = Router();
+
+export default router;

@@ -19,10 +19,14 @@ functional and non-functional requirements.
 
 ```bash
 npm install
-npm run dev        # studio at http://localhost:3000
+npm run dev          # studio at http://localhost:3000
+npm run dev:engine   # engine API at http://localhost:4000
 npm run build
 npm run start -- -p 3131
 ```
+
+The engine reads `PORT` (default `4000`), `CORS_ORIGIN` (comma-separated,
+defaults to `http://localhost:3000`) and `NODE_ENV` (`development` unless set).
 
 Scripts run from the repo root and delegate to the workspace. `typecheck`
 covers both apps; lint, tests and e2e run in `apps/lab`.
