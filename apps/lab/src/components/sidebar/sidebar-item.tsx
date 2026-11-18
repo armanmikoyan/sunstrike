@@ -29,8 +29,8 @@ export function SidebarItem({
             // 180px content column (200px rail minus its 10px insets). Capping a
             // full-width box keeps its edge travelling in one direction — a
             // `w-10 → w-full` transition re-reads 100% every frame and bulges.
-            "group relative flex h-9 w-full shrink-0 items-center gap-2.5 self-center overflow-hidden rounded-lg text-muted-foreground transition-[max-width,height,padding,background-color,color] duration-260 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground motion-reduce:transition-none",
-            expanded ? (rail ? "max-w-45 pl-2.5 pr-2" : "max-w-full pl-2.5 pr-2") : "max-w-9 px-2.25",
+            "group relative flex h-9 w-full shrink-0 items-center gap-2.5 self-center overflow-hidden rounded-lg px-2.25 text-muted-foreground transition-[max-width,height,background-color,color] duration-260 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground motion-reduce:transition-none",
+            expanded ? (rail ? "max-w-45" : "max-w-full") : "max-w-9",
             active && "bg-secondary text-foreground",
           )}
         >

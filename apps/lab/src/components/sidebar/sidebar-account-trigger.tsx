@@ -16,12 +16,8 @@ export function SidebarAccountTrigger({ expanded, showToggle }: SidebarAccountTr
           type="button"
           aria-label={SIDEBAR_COPY.accountMenu}
           className={cn(
-            "flex w-full shrink-0 items-center self-center overflow-hidden rounded-lg text-left text-muted-foreground outline-none transition-[max-width,height,padding,background-color,color] duration-260 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:bg-white/5.5 motion-reduce:transition-none",
-            expanded
-              ? showToggle
-                ? "h-9 max-w-45 gap-2.5 px-2"
-                : "h-9 max-w-full gap-2.5 px-2"
-              : "h-9 max-w-9 gap-0 pl-1",
+            "flex w-full shrink-0 items-center self-center overflow-hidden rounded-lg px-1 text-left text-muted-foreground outline-none transition-[max-width,height,background-color,color] duration-260 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground focus-visible:bg-white/5.5 motion-reduce:transition-none",
+            expanded ? (showToggle ? "h-9 max-w-45 gap-2.5" : "h-9 max-w-full gap-2.5") : "h-9 max-w-9 gap-2.5",
           )}
         >
           <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-foreground ring-1 ring-white/10">

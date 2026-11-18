@@ -46,8 +46,8 @@ export function SidebarBody({
 
         <div
           className={cn(
-            "my-2 h-px w-full max-w-7 self-center bg-border transition-[max-width] duration-260 motion-reduce:transition-none",
-            expanded ? (showToggle ? "max-w-45" : "max-w-full") : "max-w-7",
+            "my-2 h-px w-full max-w-9 self-start bg-border transition-[max-width] duration-260 motion-reduce:transition-none",
+            expanded ? (showToggle ? "max-w-45" : "max-w-full") : "max-w-9",
           )}
         />
 

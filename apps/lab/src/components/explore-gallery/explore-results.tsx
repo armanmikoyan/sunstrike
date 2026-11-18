@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { EmptyState } from "@/ui/empty-state";
 import { MediaCard } from "@/components/media-card";
 import { Button } from "@/ui/button";
-import { CONTENT_FADE, INSTANT_TRANSITION } from "@/motion/constants";
+import { INSTANT_TRANSITION, LAYOUT_SPRING } from "@/motion/constants";
 import { EXPLORE_RESULTS_COPY } from "./constants";
 import type { ExploreGalleryProps } from "./types";
 
@@ -27,10 +27,11 @@ export function ExploreResults({ gallery: { filtered, kind, setKind, setQuery } 
             {filtered.map((item) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={reduceMotion ? INSTANT_TRANSITION : CONTENT_FADE}
+                layout
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={reduceMotion ? INSTANT_TRANSITION : LAYOUT_SPRING}
                 className="mb-3 break-inside-avoid"
               >
                 <MediaCard item={item} aspect={item.aspect} />
