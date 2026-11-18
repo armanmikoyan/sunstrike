@@ -14,17 +14,13 @@ function renderTopNav(onOpenMenu = vi.fn()) {
   return { ...utils, onOpenMenu };
 }
 
-const search = () =>
-  screen.getByRole("searchbox", { name: "Search the studio" });
-const clearButton = () =>
-  screen.queryByRole("button", { name: "Clear search" });
+const search = () => screen.getByRole("searchbox", { name: "Search the studio" });
+const clearButton = () => screen.queryByRole("button", { name: "Clear search" });
 
 describe("top nav", () => {
   it("is the brand entry point", () => {
     renderTopNav();
-    expect(
-      screen.getByRole("link", { name: "Chronolab.ai home" }),
-    ).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Chronolab.ai home" })).toHaveAttribute("href", "/");
   });
 
   it("exposes the creative tool menus on desktop", () => {
@@ -39,16 +35,12 @@ describe("top nav", () => {
     const image = screen.getByRole("link", { name: "Image" });
     fireEvent.mouseEnter(image.parentElement as HTMLElement);
 
-    expect(
-      screen.getByRole("link", { name: /Text to image/ }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Text to image/ })).toBeInTheDocument();
   });
 
   it("hands the mobile menu button back to the shell", async () => {
     const { onOpenMenu } = renderTopNav();
-    await userEvent.click(
-      screen.getByRole("button", { name: "Open navigation" }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: "Open navigation" }));
     expect(onOpenMenu).toHaveBeenCalledTimes(1);
   });
 
@@ -126,14 +118,10 @@ describe("nav search", () => {
 describe("notifications", () => {
   it("opens a panel listing generation notifications", async () => {
     renderTopNav();
-    await userEvent.click(
-      screen.getByRole("button", { name: "Notifications" }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: "Notifications" }));
 
     const panel = await screen.findByRole("menu");
-    expect(
-      within(panel).getAllByText("Generation ready").length,
-    ).toBeGreaterThan(0);
+    expect(within(panel).getAllByText("Generation ready").length).toBeGreaterThan(0);
     for (const item of within(panel).getAllByRole("menuitem", {
       name: /Generation (ready|failed)/i,
     })) {

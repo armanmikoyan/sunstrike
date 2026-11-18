@@ -8,8 +8,7 @@ describe("clip strip", () => {
     expect(
       screen.getAllByText(
         (_, node) =>
-          /^\$\d+\.\d{2}$/.test(node?.textContent ?? "") &&
-          Boolean(node?.classList.contains("tabular-nums")),
+          /^\$\d+\.\d{2}$/.test(node?.textContent ?? "") && Boolean(node?.classList.contains("tabular-nums")),
       ),
     ).toHaveLength(2);
   });

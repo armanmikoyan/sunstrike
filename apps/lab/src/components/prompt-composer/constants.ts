@@ -1,7 +1,7 @@
-import type { GenerationMode } from "@/lib/generation";
+import type { GenerationMode } from "@/components/studio/types";
 
 /** Rotating placeholders, one pool per mode. */
-export const promptIdeas: Record<GenerationMode, readonly string[]> = {
+export const PROMPT_IDEAS: Record<GenerationMode, readonly string[]> = {
   video: [
     "A slow dolly through a rain-soaked Tokyo alley, neon reflections, anamorphic lens, shallow depth of field.",
     "Fashion campaign on a salt flat at golden hour, yellow tailoring, slow camera push, 35mm film grain.",
@@ -17,12 +17,12 @@ export const promptIdeas: Record<GenerationMode, readonly string[]> = {
 };
 
 /** The model a mode opens with. */
-export const defaultModel: Record<GenerationMode, string> = {
+export const DEFAULT_MODEL: Record<GenerationMode, string> = {
   video: "Chronolab Motion 2",
   image: "Chronolab Image 2",
 };
 
-export const composerCopy = {
+export const COMPOSER_COPY = {
   promptLabel: "Describe your generation",
   modeLabels: {
     video: "Video",
@@ -48,4 +48,10 @@ export const composerCopy = {
   },
   submit: "Start generation",
   shortcut: "⌘ ↵",
+  modeLabel: "Generation mode",
 };
+
+export const MODE_OPTIONS: { value: GenerationMode; label: string }[] = [
+  { value: "video", label: COMPOSER_COPY.modeLabels.video },
+  { value: "image", label: COMPOSER_COPY.modeLabels.image },
+];

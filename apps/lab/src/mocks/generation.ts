@@ -2,19 +2,18 @@ import type {
   GenerationMode,
   GenerationModel,
   GenerationModelCapabilities,
-} from "@/lib/design";
-import { durations, type ModelOption } from "@/lib/generation";
+  ModelOption,
+} from "@/components/studio/types";
+import { DURATIONS } from "@/components/studio/constants";
 
 const VIDEO_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"];
 const STILL_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"];
 
-const capabilities = (
-  overrides: Partial<GenerationModelCapabilities> = {},
-): GenerationModelCapabilities => ({
+const capabilities = (overrides: Partial<GenerationModelCapabilities> = {}): GenerationModelCapabilities => ({
   modes: ["video"],
   inputs: ["image", "video"],
   resolutions: ["720p", "1080p"],
-  durations,
+  durations: DURATIONS,
   aspectRatios: VIDEO_ASPECTS,
   audio: true,
   ...overrides,
@@ -169,11 +168,7 @@ const withCost = (model: GenerationModel): ModelOption => ({
 });
 
 export function modelsForMode(mode: GenerationMode): ModelOption[] {
-  return generationModels
-    .filter(
-      (model) => model.isEnabled && model.capabilities.modes.includes(mode),
-    )
-    .map(withCost);
+  return generationModels.filter((model) => model.isEnabled && model.capabilities.modes.includes(mode)).map(withCost);
 }
 
 export const modelOptions: Record<GenerationMode, ModelOption[]> = {

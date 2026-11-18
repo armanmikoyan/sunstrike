@@ -2,7 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,35 +10,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { composerCopy } from "./constants";
-import type { ComposerDurationMenuProps } from "./types";
+import { COMPOSER_COPY } from "./constants";
+import type { ComposerProps } from "./types";
 
-export function ComposerDurationMenu({ composer }: ComposerDurationMenuProps) {
-  const { duration, setDuration, durationOptions } = composer;
-
+export function ComposerDurationMenu({ composer: { duration, setDuration, durationOptions } }: ComposerProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
           variant="ghost"
-          size="sm"
-          className="h-8 w-[3.5rem] justify-center gap-1 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground hover:bg-white/5.5 hover:text-foreground"
+          size="lg"
+          className="w-14 justify-center gap-1 font-medium text-muted-foreground hover:bg-white/5.5 hover:text-foreground"
         >
           {duration}
           <ChevronDown className="size-3 opacity-60" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-36 p-1">
-        <DropdownMenuLabel>{composerCopy.duration}</DropdownMenuLabel>
+        <DropdownMenuLabel>{COMPOSER_COPY.duration}</DropdownMenuLabel>
         {durationOptions.map((value) => (
           <DropdownMenuItem
             key={value}
             onSelect={() => setDuration(value)}
-            className={cn(
-              "px-2 py-1.5 text-xs lg:text-[0.6875rem]",
-              duration === value && "bg-white/8 text-foreground",
-            )}
+            className={cn(duration === value && "bg-white/8 text-foreground")}
           >
             {value}
           </DropdownMenuItem>

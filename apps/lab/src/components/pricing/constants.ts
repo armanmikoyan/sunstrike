@@ -1,6 +1,9 @@
-import { MAX_IMAGES } from "@/lib/pricing";
+import { imageRates, videoRates } from "@/mocks/pricing";
+import type { GenerationKind, ModelFilter } from "./types";
+export const MIN_IMAGES = 1;
+export const MAX_IMAGES = 500;
 
-export const pricingCardCopy = {
+export const PRICING_CARD_COPY = {
   yourOrder: "Your order",
   payg: "PAYG",
   images: "Images",
@@ -21,7 +24,7 @@ export const pricingCardCopy = {
 };
 
 /** Image price breaks, shown as the slider legend. */
-export const imageTiers = [
+export const IMAGE_TIERS = [
   {
     label: "1–9",
     price: "$0.07",
@@ -42,13 +45,9 @@ export const imageTiers = [
   },
 ];
 
-export const pricingPoints = [
-  "No monthly fee",
-  "Balance never expires",
-  "Commercial use",
-];
+export const PRICING_POINTS = ["No monthly fee", "Balance never expires", "Commercial use"];
 
-export const pricingCopy = {
+export const PRICING_COPY = {
   hero: {
     eyebrow: "Pay as you go",
     titleBefore: "Every ",
@@ -61,8 +60,7 @@ export const pricingCopy = {
   },
   topUps: {
     title: "Top-ups",
-    description:
-      "Add any amount from $5. One-time payment, no recurring charge.",
+    description: "Add any amount from $5. One-time payment, no recurring charge.",
     secure: "Secure checkout · instant delivery",
     select: "Select",
     popular: "Most popular",
@@ -72,14 +70,12 @@ export const pricingCopy = {
     topUp: "Top up $",
     videos: "videos",
     images: "images",
-    capacityNote:
-      "Capacity uses the Motion 2 and Image 2 rates and rounds down to whole units.",
+    capacityNote: "Capacity uses the Motion 2 and Image 2 rates and rounds down to whole units.",
     custom: {
       name: "Custom top-up",
       description: "Drag the bar, use a preset, or step the amount.",
       calculatorTitle: "Top-up calculator",
-      calculatorDescription:
-        "Approximately how many videos or images your balance covers.",
+      calculatorDescription: "Approximately how many videos or images your balance covers.",
       estimateLabel: "You get",
       modeLabel: "Mode",
       modelLabel: "Model",
@@ -99,8 +95,7 @@ export const pricingCopy = {
   rates: {
     titleBefore: "Model ",
     titleAccent: "rates",
-    description:
-      "Dollar prices from the Chronolab catalogue. Video is priced per second; images are priced per image.",
+    description: "Dollar prices from the Chronolab catalogue. Video is priced per second; images are priced per image.",
     action: "Open video studio",
     filterLabel: "Model type",
     all: "All models",
@@ -120,7 +115,7 @@ export const pricingCopy = {
   },
 };
 
-export const pricingFaqs = [
+export const PRICING_FAQS = [
   {
     question: "How does billing work?",
     answer:
@@ -133,8 +128,7 @@ export const pricingFaqs = [
   },
   {
     question: "Does my balance expire?",
-    answer:
-      "No. Your balance stays in your account until you use it, and it never expires.",
+    answer: "No. Your balance stays in your account until you use it, and it never expires.",
   },
   {
     question: "What happens if a generation fails?",
@@ -146,3 +140,53 @@ export const pricingFaqs = [
     answer: "Yes. Every output you generate comes with a commercial license.",
   },
 ];
+
+/** Scale styles applied to the shadcn slider so only the tick drum shows. */
+export const SCALE_STYLES =
+  "[&_[data-slot=slider-track]]:h-px [&_[data-slot=slider-track]]:bg-transparent [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-thumb]]:opacity-0";
+
+export const MODEL_FILTERS: { value: ModelFilter; label: string }[] = [
+  { value: "all", label: PRICING_COPY.rates.all },
+  { value: "video", label: PRICING_COPY.rates.video },
+  { value: "image", label: PRICING_COPY.rates.image },
+];
+
+export const TOP_UP_MODES: { value: GenerationKind; label: string }[] = [
+  { value: "video", label: PRICING_COPY.topUps.custom.video },
+  { value: "image", label: PRICING_COPY.topUps.custom.image },
+];
+
+export const VIDEO_ROWS = videoRates.map((model) => ({
+  kind: "video" as const,
+  model,
+}));
+
+export const IMAGE_ROWS = imageRates.map((model) => ({
+  kind: "image" as const,
+  model,
+}));
+
+export const ROWS = VIDEO_ROWS.flatMap((row, index) => {
+  const image = IMAGE_ROWS[index];
+  return image ? [row, image] : [row];
+});
+
+export const TICK_COUNT = 64;
+export const TICK_STEP = 360 / TICK_COUNT;
+export const RADIUS = 150;
+export const ROTATION_SPAN = 140;
+export const PERSPECTIVE = 700;
+
+export const TICK_HEIGHT = 16;
+export const TICK_WIDTH = 3;
+export const TICK_RADIUS = 4;
+export const PITCH = 11;
+export const FILL_MS = 150;
+/** Taller than the resting tick so the swell has room to grow both ways. */
+export const BOX_HEIGHT = 24;
+export const POP_MS = 260;
+export const POP_SCALE = 1.45;
+
+export const FILLED = [167, 139, 250] as const;
+export const EMPTY = [255, 255, 255] as const;
+export const EMPTY_ALPHA = 0.2;

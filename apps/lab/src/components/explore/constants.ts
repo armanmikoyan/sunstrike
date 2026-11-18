@@ -1,4 +1,4 @@
-export const exploreCopy = {
+export const EXPLORE_COPY = {
   eyebrow: "Gallery",
   title: "Explore",
   description:

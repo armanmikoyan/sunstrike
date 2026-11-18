@@ -1,3 +1,7 @@
+export type CreateModeParams = {
+  mode: string;
+};
+
 export type CreatePageProps = {
-  params: Promise<{ mode: string }>;
+  params: Promise<CreateModeParams>;
 };

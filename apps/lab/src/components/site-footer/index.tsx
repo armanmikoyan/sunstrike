@@ -1,22 +1,21 @@
 import Link from "next/link";
 import { LogoLockup } from "@/components/brand";
-import { cn } from "@/lib/utils";
-import { footerCopy, footerGroups } from "./constants";
+import { FOOTER_COPY, FOOTER_GROUPS } from "./constants";
 
-export function SiteFooter({ className }: { className?: string }) {
+export function SiteFooter() {
   return (
-    <footer id="site-footer" className={cn("border-t border-border px-5 py-10", className)}>
+    <footer id="site-footer" className="border-t border-border px-5 py-10">
       <div className="flex w-full flex-col gap-10">
         <div className="flex flex-col justify-between gap-8 md:flex-row">
           <div>
             <LogoLockup compact className="w-48" />
-            <p className="mt-3 max-w-[17.5rem] text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
-              {footerCopy.description}
+            <p className="mt-3 max-w-70 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
+              {FOOTER_COPY.description}
             </p>
-            <div className="mt-4 text-xs lg:text-[0.6875rem] text-muted-foreground">{footerCopy.status}</div>
+            <div className="mt-4 text-xs lg:text-[0.6875rem] text-muted-foreground">{FOOTER_COPY.status}</div>
           </div>
           <div className="grid grid-cols-2 gap-12 sm:gap-20">
-            {footerGroups.map((group) => (
+            {FOOTER_GROUPS.map((group) => (
               <div key={group.title}>
                 <p className="text-xs lg:text-[0.6875rem] font-medium text-muted-foreground">{group.title}</p>
                 <div className="mt-3 flex flex-col gap-2.5">
@@ -35,15 +34,15 @@ export function SiteFooter({ className }: { className?: string }) {
           </div>
         </div>
         <div className="flex flex-col justify-between gap-3 border-t border-white/6 pt-5 text-xs lg:text-[0.6875rem] text-muted-foreground sm:flex-row">
-          <p>{footerCopy.copyright}</p>
+          <p>{FOOTER_COPY.copyright}</p>
           <div className="flex items-center gap-5">
             <Link href="/terms" className="transition-colors hover:text-foreground">
-              {footerCopy.terms}
+              {FOOTER_COPY.terms}
             </Link>
             <Link href="/privacy" className="transition-colors hover:text-foreground">
-              {footerCopy.privacy}
+              {FOOTER_COPY.privacy}
             </Link>
-            <span>{footerCopy.payg}</span>
+            <span>{FOOTER_COPY.payg}</span>
           </div>
         </div>
       </div>

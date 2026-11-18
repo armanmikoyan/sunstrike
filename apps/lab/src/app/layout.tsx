@@ -1,62 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import {
-  Inter,
-  Instrument_Serif,
-  Space_Grotesk,
-  Space_Mono,
-} from "next/font/google";
 import type { ReactNode } from "react";
 import { Providers } from "@/app/providers";
 import { AppShell } from "@/app/shell";
 import { SOCIAL_SRC } from "@/components/brand/constants";
 import { CookieConsent } from "@/components/cookie-consent";
-import { siteUrl } from "@/lib/site";
+import { INSTRUMENT_SERIF, INTER, SPACE_GROTESK, SPACE_MONO } from "@/app/fonts";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
-
-const spaceMono = Space_Mono({
-  variable: "--font-space-mono",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-});
+const SITE_URL = process.env.SITE_URL ?? "https://chronolab.ai";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   applicationName: "Chronolab.ai",
   title: {
     default: "Chronolab.ai — Generative Studio",
     template: "%s — Chronolab.ai",
   },
-  description:
-    "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
+  description: "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
   icons: {
     icon: "/brand/favicon.ico",
   },
   openGraph: {
     title: "Chronolab.ai — Generative Studio",
-    description:
-      "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
+    description: "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
     siteName: "Chronolab.ai",
     type: "website",
-    images: [
-      { url: SOCIAL_SRC, width: 1200, height: 630, alt: "Chronolab.ai" },
-    ],
+    images: [{ url: SOCIAL_SRC, width: 1200, height: 630, alt: "Chronolab.ai" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -73,7 +42,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`dark scroll-smooth motion-reduce:scroll-auto ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
+      className={`dark scroll-smooth motion-reduce:scroll-auto ${INTER.variable} ${SPACE_GROTESK.variable} ${SPACE_MONO.variable} ${INSTRUMENT_SERIF.variable}`}
     >
       <body>
         <Providers>

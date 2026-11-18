@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 import { Provider } from "jotai";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { TooltipProvider } from "@/ui/tooltip";
+import type { ReactNode } from "react";
 
 /**
  * App-level client providers. This lives beside the root layout because it is

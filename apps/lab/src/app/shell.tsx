@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { atom, useAtom } from "jotai";
-import { MobileSidebar, Sidebar } from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar";
+import { MobileSidebar } from "@/components/sidebar/mobile-sidebar";
 import { TopNav } from "@/components/nav";
+import type { ReactNode } from "react";
 
 /**
  * Mounted once in the root layout, so the rail has a single owner and its
  * state survives navigation between the `(website)` and `(workspace)` trees.
  */
-const railExpandedAtom = atom(false);
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [sidebarExpanded, setSidebarExpanded] = useAtom(railExpandedAtom);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -28,24 +28,14 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto flex min-h-screen w-full max-w-[120rem]">
-        <Sidebar
-          expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded((value) => !value)}
-        />
+      <div className="mx-auto flex min-h-screen w-full max-w-480">
+        <Sidebar expanded={sidebarExpanded} onToggle={() => setSidebarExpanded((value) => !value)} />
         <div className="flex min-w-0 flex-1 flex-col">
-          <TopNav
-            onOpenMenu={() => setMobileNavOpen(true)}
-            menuButtonRef={menuButtonRef}
-          />
+          <TopNav onOpenMenu={() => setMobileNavOpen(true)} menuButtonRef={menuButtonRef} />
           {children}
         </div>
       </div>
-      <MobileSidebar
-        open={mobileNavOpen}
-        onOpenChange={setMobileNavOpen}
-        returnFocusRef={menuButtonRef}
-      />
+      <MobileSidebar open={mobileNavOpen} onOpenChange={setMobileNavOpen} returnFocusRef={menuButtonRef} />
     </div>
   );
 }

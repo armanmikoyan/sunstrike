@@ -7,10 +7,10 @@ frontend; `apps/engine` is the Express modular monolith behind `/api/v1`. The UI
 still renders demo data from `src/mocks` until `UI-1`.
 
 The product is modelled on one contract: the high-level design's seven
-entities, `/api/v1` surface and user flow. `src/lib/design` is that contract in
-code, and the UI shows only its fields. A screen that needs data the contract
-does not have is a design change first, not a new local field. `ROADMAP.md` maps
-every remaining ticket to `F1`–`F5` and `N1`–`N4`.
+entities, `/api/v1` surface and user flow. The UI keeps the subset it renders,
+declared beside the component that owns it, so a screen cannot invent a field
+that the contract does not have. `ROADMAP.md` maps every remaining ticket to
+`F1`–`F5` and `N1`–`N4`.
 
 The product name is **Chronolab.ai**, always. Models are named
 `Chronolab <Name>` and account addresses use `@chronolab.ai`. The previous
@@ -34,44 +34,41 @@ Unless stated otherwise, `src/...` paths in this document are relative to
 | Lint/format | oxlint and oxfmt, shared config at the repo root                      |
 | Tests       | Vitest + Testing Library (jsdom), Playwright (Chrome)                 |
 
-`src/lib/utils/index.ts` re-exports `cn` from the `cn` package. Imports use the
-`@/` alias, which maps to `src/`, and the `~` alias, which maps to the app
-root. The engine uses the same `@/` alias for `apps/engine/src`, so backend
+`cn` is imported directly from the `cn` package; there is no local wrapper.
+Imports use the `@/` alias, which maps to `src/`, and the `~` alias, which maps
+to the app root. The engine uses the same `@/` alias for `apps/engine/src`, so backend
 imports read `@/modules/billing` rather than a chain of `../`.
 
 ## Product contract
 
-`src/lib/design/index.ts` mirrors the design and is the only place entity and
-API shapes are declared:
+The UI-facing shapes live with the component that owns them:
 
-- **Entities** — `User`, `MediaAsset`, `Template`, `Generation`,
-  `GenerationModel` (with `GenerationModelCapabilities`), `Notification`, and
-  `BalanceTransaction` (the `transactions` table).
-- **DTOs** — `GenerationRequest`, `GenerationAccepted`, `GenerationResult`,
-  `MediaAssetUpload`, `TopUp`, `GenerationQuote`, list responses and `Balance`.
-- **API** — `API_PATHS` for the `/api/v1` surface.
-- **Rule** — `modelSupportsSettings(model, settings)`, shared by the studio and
-  the server so a control can never offer a value the model rejects.
+- `components/studio/types.ts` — `GenerationModel` with
+  `GenerationModelCapabilities`, `ModelOption` and `Template`.
+- `components/media-card/types.ts` — `MediaItem`, `MediaKind` and
+  `MediaCategory`.
+- `components/settings/types.ts` — `User`; `components/nav/types.ts` —
+  `Notification`.
+- `components/pricing/utils.ts` — quantity clamping, quote maths and
+  `formatUSD`; `components/studio/utils.ts` — aspect-ratio descriptors,
+  capability filters, duration presets and the per-model cost rule.
 
-`GenerationSettings` is the shape stored in `generations.settings`:
-`{ resolution, duration, aspectRatio, audio }`. `GenerationKind` is
-`create | edit` and `GenerationStatus` is `queued | running | succeeded |
-failed`; both are values the data model draws. The working notification types
-are `generation_succeeded` and `generation_failed`.
+The settings stored on a generation are `{ resolution, duration, aspectRatio,
+audio }`. `GenerationKind` is `create | edit` and `GenerationStatus` is
+`queued | running | succeeded | failed`; both are values the data model draws.
+The working notification types are `generation_succeeded` and
+`generation_failed`, mapped to labels in `components/nav/utils.ts`.
 
 `src/mocks` holds every demo row the UI renders until the API is wired:
 `generation` (the `generation_models` catalogue and model costs), `media`,
 `templates`, `notifications`, and the marketing `pricing` data. Demo data never
-lives in `src/lib`; it is the seam that `UI-1` replaces with `/api/v1` calls.
+lives in component files; it is the seam that `UI-1` replaces with `/api/v1`
+calls.
 
-`src/lib` keeps the contract and the rules. `src/lib/generation` owns
-`ModelOption`, the aspect-ratio descriptors and the capability filters;
-`src/lib/pricing` owns quantity clamping, quote maths and `formatUSD`;
-`src/lib/notifications` owns the type-to-label map. A model carries `id`,
-`slug`, `displayName`, `provider`, `providerModelId`, `capabilities` and
-`isEnabled`; `cost` is kept beside the mock row until pricing moves to the
-server. The UI derives aspect ratios, durations and resolutions from the
-selected model's capabilities rather than from global lists.
+A model carries `id`, `slug`, `displayName`, `provider`, `providerModelId`,
+`capabilities` and `isEnabled`; `cost` is kept beside the mock row until pricing
+moves to the server. The UI derives aspect ratios, durations and resolutions
+from the selected model's capabilities rather than from global lists.
 
 ## System design
 
@@ -211,7 +208,7 @@ transactions
 
 `/api/v1` is the only surface: JSON in, JSON out, every route authenticated
 except the top-up checkout redirect. The endpoint table lives in `ROADMAP.md`
-§1.4 and `API_PATHS` in `src/lib/design/index.ts` is its code form. The groups
+§1.4. The groups
 are identity (`/me`), catalog (`/models`, `/templates`), media (`/assets`),
 billing (`/balance`, `/balance/top-ups`), generations (`/generation-quotes`,
 `/generations`) and notifications.
@@ -262,32 +259,32 @@ src/
     (website)/
       layout.tsx            <main> + <SiteFooter>
       page.tsx              home: <Home />
-      page.test.tsx         rendered behaviour, colocated
       explore/ pricing/ billing/ settings/ help/
     (workspace)/
       layout.tsx            <main>, no footer
       library/ assets/ favorites/
       create/[mode]/        video and image studio
     login/                  chrome-free: AppShell returns only its children
+    auth/                   server-only auth: service, http, routes, env,
+                            server client and proxy session refresh
   components/
     <feature>/              one folder per product feature
-      index.tsx             public entry
+      index.tsx             the component and its logic, nothing else
       index.test.tsx        rendered behaviour, colocated
-      constants.ts          static data, copy and class strings (as needed)
-      hooks.ts              stateful logic (as needed)
+      constants.ts          static data, copy and class strings, UPPER_SNAKE
+      hooks.ts              custom hooks, useXxx only (as needed)
       state.ts              Jotai atoms owned by the feature (as needed)
-      types.ts              shared prop/state types (as needed)
+      types.ts              types and interfaces (as needed)
+      utils.ts              functions (as needed)
+      utils.test.ts         unit test, colocated
       <feature>-<part>.tsx  private subcomponents
-  ui/                       shadcn primitives (keep their layout)
+  motion/                   reusable animation primitives
+    constants.ts            shared transitions (spring, fade, instant)
+    animated-height/        measured height wrapper, same folder shape
+    rolling-number/         digit roll, same folder shape
+  ui/                       shadcn-style primitives: one file per component,
+                            types and class strings inline, no folder
   e2e/                      Playwright specs and helpers
-  lib/
-    design/                 the product contract: entities, DTOs, API, rules
-    generation/             model types, presets and capability filters
-    notifications/          notification type labels
-    media/ pricing/ utils/  types and pure helpers
-    <name>/                 one folder per library
-      index.ts              public entry
-      index.test.ts         unit test, colocated
   mocks/
     generation.ts           demo generation_models rows and model costs
     media.ts                demo media catalogue and lookups
@@ -303,11 +300,13 @@ vitest.setup.tsx            the shared test setup: framework mocks,
                             jsdom gaps, router state and renderWithProviders
 ```
 
-Feature folders carry the files they need. A feature with static data or
-visible copy has a `constants.ts`; one with stateful logic has `hooks.ts`; one
-with shared Jotai atoms has `state.ts` (currently `studio`); one with shaped or
-reused props has `types.ts`. Presentational components can be a single
-`index.tsx` with no supporting files.
+Every file in a feature folder has one job. `index.tsx` declares the component
+and its logic and nothing else: no named type, no named constant and no named
+function. A feature with static data or visible copy has a `constants.ts`; one
+with stateful logic has `hooks.ts`; one with shared Jotai atoms has `state.ts`
+(currently `studio`); one with shaped or reused props has `types.ts`;
+one with reusable functions has `utils.ts`. Presentational components can be a
+single `index.tsx` with no supporting files.
 
 The backend is a modular monolith in `apps/engine`. `apps/engine/src/app.ts`
 builds the Express app, `src/main.ts` starts the HTTP server and `src/worker.ts`
@@ -324,7 +323,8 @@ Modules reach each other through those public interfaces, never through another
 module's repository or tables.
 `src/infrastructure` goes the other way on purpose: each client is a folder
 whose `index.ts` is the only import surface (`database`, `redis`, `queue`,
-`s3`), because those folders will hold a client, its config and helpers.
+`s3`, `supabase`), because those folders will hold a client, its config and
+helpers.
 `src/middleware` exports one `middleware` array — helmet, CORS, compression,
 JSON parsing, morgan — that `app.ts` mounts with a single `app.use`, plus the
 404 and error handlers it mounts last. `app.ts` also declares the single health
@@ -333,7 +333,7 @@ one probe at the app level and no per-module health route.
 
 Tests live next to the code they cover. Vitest picks up every `src/**/*.test.ts`
 and `src/**/*.test.tsx`; name the file after the module it covers
-(`index.test.tsx`, `pricing-order-tabs.test.tsx`, `page.test.tsx`). Playwright
+(`index.test.tsx`, `pricing-quantity-slider.test.tsx`, `utils.test.ts`). Playwright
 specs sit in `src/e2e` as a sibling of `src/components` and `src/app`, end in
 `.e2e.ts`, and share `src/e2e/helpers.ts`. `vitest.setup.tsx` at the `apps/lab`
 root, next to `vitest.config.mts`, is the only shared test setup file.
@@ -379,13 +379,16 @@ content; `TopNav`, `Sidebar` and `SiteFooter` come from the layouts.
 
 Route copy and data belong to the owning component
 (`src/components/pricing/constants.ts`, `src/components/login/constants.ts`).
-A page test sits beside the route as `page.test.tsx` and renders the default
-export, exercising the composition end to end. Pages are server components;
-interactive behaviour lives inside the client component islands the route
-component imports.
+Page modules are thin glue: they export metadata and render one route
+component. They are excluded from coverage and keep no tests of their own;
+behaviour is tested in the component that owns the markup. Pages are server
+components; interactive behaviour lives inside the client component islands the
+route component imports.
 
-`src/lib` follows the component-folder shape: `src/lib/<name>/index.ts` is the
-public entry and `index.test.ts` sits beside it. Imports use `@/lib/<name>`.
+Shared rules live with their owning feature: `@/components/pricing/utils`,
+`@/components/studio/utils`, `@/components/nav/utils` and so on. Reusable
+animation primitives and transitions live in `@/motion`. Server-only
+auth lives under `src/app/auth`, beside the `/auth/callback` route it serves.
 `src/proxy.ts` is a single file at the `src/` root, because Next recognises the
 proxy entry point there, with `src/proxy.test.ts` beside it.
 
@@ -395,29 +398,65 @@ live in `public/favicon.ico` and `public/favicons/`, and are declared through
 
 ### Feature-folder contract
 
-Each product area owns one folder. `index.tsx` is its public API; other files
-are private unless deliberately imported by tests.
+Each product area owns one folder. `index.tsx` is the feature component itself,
+not a barrel; other files are private and imported by path.
 
-- **`index.tsx`** exports the feature component (and occasionally sibling
-  exports a page needs, like `StudioSkeleton`). Use named exports; pages use
-  the Next default export.
-- **`constants.ts`** holds static arrays, config, reusable class strings and
+- **`index.tsx`** exports the feature component. It holds the markup and the
+  component's own logic, and no module-level declaration of another kind. Use
+  named exports; pages use the Next default export. Never re-export a sibling
+  from it (`export { X } from "./x"`): import the file that defines `X`. The
+  main component is always `index.tsx`, never a sibling named after the feature
+  (`pricing.tsx`); subcomponents are `<feature>-<part>.tsx` and are not entry
+  points.
+- **No barrels.** A folder has one `index.tsx`, the component itself. Do not
+  add an `index.ts`, an `index.tsx` containing only `export { ... } from`
+  lines, or re-export subcomponents from a feature entry.
+- **Imports come first.** Every file opens with its `import` declarations,
+  before any type, constant, function or component. This applies to
+  `types.ts` and `constants.ts` too; no import sits mid-file.
+- **`constants.ts`** holds every module-level constant: static arrays, config,
+  reusable class strings, ids, durations, motion transitions, storage keys and
   **all visible copy** — headings, labels, button text, placeholders,
-  `aria-label`s and tooltip text. React and state stay out of it.
-- **`hooks.ts`** holds stateful logic, typically returning one object.
-- **`state.ts`** holds the feature's Jotai atoms. Shared generation state lives
-  in `src/components/studio/state.ts`; the home prompt composer reads the same
-  atoms because it is a compact front door to that studio.
-- **`types.ts`** holds shaped, non-trivial prop/state types with `import type`.
-  Single flat props are written inline, e.g.
-  `function AppShell({ children }: { children: ReactNode })`.
+  `aria-label`s and tooltip text. Exported constants are `UPPER_SNAKE_CASE`;
+  local constants are too. React and state stay out of it.
+- **`utils.ts`** holds functions only — pure rules, formatting and small
+  builders. No constants, no types, no components. Use `function`
+  declarations for exported helpers.
+- **`hooks.ts`** holds custom hooks only, each named `useXxx` and typically
+  returning one object. Types, constants and plain helpers do not live here;
+  they go to `types.ts`, `constants.ts` and `utils.ts`.
+- **`state.ts`** holds the feature's Jotai atoms, and only when state is shared
+  beyond one component. Shared generation state lives in
+  `src/components/studio/state.ts`; the home prompt composer reads the same
+  atoms because it is a compact front door to that studio. A single owner keeps
+  plain React state instead: the shell's rail expansion is local `useState`.
+- **`types.ts`** holds named types and interfaces with `import type`. Every
+  prop object gets a named type: `function Studio({ initialMode }: StudioProps)`,
+  never an inline `{ initialMode }: { initialMode: GenerationMode }`.
+- **Reuse over repetition.** One type per shape, reused through `Pick`, `Omit`,
+  intersections or a shared prop type. Identical scoped props collapse into one
+  (`ComposerProps` for every composer pane, `StudioScopedProps` for every
+  studio pane). Shared shapes live in the folder that owns them
+  (`ChildrenProps` in `app/types.ts`, `FieldProps` in `settings/types.ts`,
+  `OnCloseProps` in `nav/types.ts`, `HeadingProps` in `page-header/types.ts`);
+  never hoist them into a root `src/types.ts`. The same rule covers markup:
+  repeated UI comes from the shared component rather than a second copy.
+- **Remove the obvious comment.** No JSDoc that restates a type, prop or name;
+  document a decision only when it is not evident from the code.
+- **Props** are destructured in the parameter list, not in the body:
+  `function Row({ composer: { model } }: RowProps)`, never
+  `function Row({ composer }: RowProps) { const { model } = composer; }`.
+- **Copy blocks** are read where they are used: `BILLING_COPY.footer`,
+  `STUDIO_COPY.preview.title`. Do not destructure or alias them into local
+  `const copy`, `const { footer }` bindings.
 - **Copy** lives in `constants.ts`, not in JSX. Vendor primitives in `src/ui`
   are the exception.
 - **Tests** are named after the file they cover and sit beside it:
-  `index.test.tsx`, `page.test.tsx`, `pricing-order-tabs.test.tsx`.
-- **Subcomponents** are named after their role (`studio-preview.tsx`,
+  `index.test.tsx`, `pricing-quantity-slider.test.tsx`, `utils.test.ts`.
+- Subcomponents are named after their role (`studio-preview.tsx`,
   `nav-search.tsx`) and stay in the same folder.
-- Features consume each other through their `index.tsx` entry.
+- Features import each other's components from the file that defines them;
+  there is no barrel entry to import through.
 
 Client boundaries are as small as practical: `"use client"` goes on the
 interactive feature root or hook, not on pages, layouts or pure presentational
@@ -442,34 +481,78 @@ the tooltip provider, and sets `data-hydrated="true"` on `<html>` after mount.
 | `/login`                                                                               | Standalone split-screen sign-in; crawlable but `noindex`                                                                                                                    |
 
 `src/proxy.ts` (Next 16's middleware replacement) rewrites unknown
-`/create/:mode` segments to a real 404. Keep that validation in sync with the
-two supported studios.
+`/create/:mode` segments to a real 404 and then refreshes the Supabase session.
+Keep the studio validation in sync with the two supported studios. Visitors
+can open the studios and library signed out; `/settings` and the generate
+action ask for an account.
+
+`src/app/auth/callback/route.ts` and `src/app/logout/route.ts` are route
+handlers, not pages: the first exchanges the OAuth code for a session cookie,
+the second clears the session.
+
+### Authentication
+
+Supabase Auth owns identity; the app has no passwords. The project is optional
+while it is being set up: without `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` every route stays open and `/login` explains
+what is missing instead of crashing.
+
+- `src/app/auth/session.ts` runs from the proxy: it refreshes the session
+  cookies and sends signed-out visitors of `/settings` to `/login?next=…`.
+  Browsing stays public, including the studios, library and assets;
+  generation asks for an account at the action itself through
+  `useRequireAuth`, which sends the visitor to `/login` with the current page
+  as `next`. `src/app/auth/routes.ts` owns the protected prefixes, the
+  `/create/video` fallback and `safeNextPath`, which rejects absolute and
+  protocol-relative redirects.
+- `src/app/api/auth/*` is the only auth surface the browser sees: the
+  `session`, `otp`, `verify`, `oauth` and `signout` route handlers return JSON
+  and set the session cookie. Supabase stays behind `src/app/auth/service.ts`
+  and `src/app/auth/server.ts`; no Supabase client ships to the browser.
+- `/login` signs in with Google, GitHub, Apple or a six-digit email code. The
+  provider buttons are always offered; a provider that is not enabled in the
+  Supabase project reports the usual sign-in error when it is clicked. The
+  screen reads `next` and `error` from `searchParams` and is server-rendered
+  per request (`instant = false`) so an expired callback link can explain
+  itself.
+- The account surfaces follow the tab's session through `useSessionUser`,
+  which reads `/api/auth/session` once and shares the result.
+
+The engine validates the same tokens: `getSupabaseAuthClient()` creates a
+verify-only client, and `GET /api/v1/me` answers `{ user: { id, email,
+createdAt } }` or 401 when the token is missing or the project is not
+configured. The account screens still render the demo email until `UI-1` wires
+them to the API.
 
 `src/app/sitemap.ts` and `src/app/robots.ts` are metadata routes. Both build
-absolute URLs from `siteUrl` in `src/lib/site/index.ts`; the sitemap stamps
-every entry with `legalUpdated` from `src/components/legal/constants.ts`.
+absolute URLs from `SITE_URL` (`process.env.SITE_URL`, falling back to the
+production origin); the sitemap stamps every entry with `legalUpdated` from
+`src/components/legal/constants.ts`.
 
 ### Domain data
 
-`src/lib` is plain TypeScript with no React and no demo rows:
+Pure TypeScript stays inside the feature that owns it:
 
-- `design/index.ts` — the contract: entities, DTOs, `API_PATHS`,
-  `modelSupportsSettings`.
-- `generation/index.ts` — `ModelOption`, aspect-ratio descriptors, capability
-  filters, duration presets and the per-model cost rule.
-- `notifications/index.ts` — the notification type-to-label map.
-- `media/index.ts` — `MediaItem`, `MediaKind` and `MediaCategory` types.
-- `pricing/index.ts` — image/video quantity clamping, quote maths and
-  `formatUSD`.
-- `site/index.ts` — the single public origin used by root metadata, the
-  sitemap and robots.
-- `utils/index.ts` — the `cn` class-name helper.
+- `components/pricing/utils.ts` — image/video quantity clamping, quote maths,
+  `formatUSD` and `formatUSDRate`.
+- `components/studio/utils.ts` — `ModelOption`, aspect-ratio descriptors,
+  capability filters, duration presets and the per-model cost rule.
+- `components/nav/utils.ts` — the notification type-to-label map.
+- `components/media-card/types.ts` — `MediaItem`, `MediaKind`, `MediaCategory`.
+- `components/media-card/utils.ts` — `mixMediaByKind`.
+- `app/auth/routes.ts` — protected prefixes, the studio fallback, safe `next`
+  paths and the sign-in URL. `app/auth/service.ts` and `app/auth/server.ts`
+  hold the server-only Supabase facade and client.
+- `app/auth/session.ts` — the proxy session refresh and gating.
+
+The public origin is deployment configuration, not a checked-in constant:
+`SITE_URL` feeds root metadata, `robots.txt` and `sitemap.xml`.
 
 `src/mocks` is the only place demo rows live. Each module exposes rows plus the
 lookup the UI needs (`mediaById`, `templateById`, `unreadNotifications`) and the
 model options (`modelOptions`). Components import types and pure helpers from
-`src/lib` and rows from `src/mocks`. `media.category` remains only to pick a
-gradient fallback; it is never shown as a product field.
+their owning feature folder and rows from `src/mocks`. `media.category` remains
+only to pick a gradient fallback; it is never shown as a product field.
 
 All money is rounded to cents at the calculation boundary and formatted with
 `formatUSD` or `tabular-nums`. The pricing calculators are marketing surfaces;
@@ -540,6 +623,10 @@ Fonts are loaded in `src/app/layout.tsx`:
 Type rules:
 
 - Minimum text size is **11px** (`text-[0.6875rem]`).
+- Every control shares one label scale: `text-xs lg:text-[0.6875rem]` — 12px
+  below `lg`, 11px at `lg`. `Button`, `Input`, `Textarea`, `Select`,
+  `DropdownMenu`, `Tabs` and `SegmentedTabs` set it in the primitive, so call
+  sites never restate a text size. Prose uses `text-sm lg:text-xs`.
 - Body copy is sentence case. Headlines, labels and buttons do not end in a
   period.
 - Page titles: `text-[1.875rem]` / `sm:text-[2.25rem]`, medium, tight tracking.
@@ -558,6 +645,28 @@ Type rules:
   sections instead of rebuilding the type/rhythm.
 - Small controls are 32–40px tall; icon buttons use `size-8`/`size-9`.
 
+### Shared primitives
+
+Consistency over repetition: when the same UI appears twice it becomes one
+component configured by props, never a second copy with slightly different
+classes. The shared UI set lives in `src/ui/`, one file per primitive with its
+prop types and class strings inline — no folder, no `types.ts` or
+`constants.ts`:
+
+| Component        | Owns                                                                        |
+| ---------------- | --------------------------------------------------------------------------- |
+| `SegmentedTabs`  | All/image/video chip bars, optional icons, `fullWidth` and `scrollable`     |
+| `SearchInput`    | Search field, icon, optional hotkey hint, clear button and Escape behaviour |
+| `CountBadge`     | Monospace count and metadata pills                                          |
+| `EmptyState`     | Dashed empty panel with icon, title, description and optional action        |
+| `IconBox`        | Bordered square around a leading icon                                       |
+| `PageShell`      | Route padding wrapper (`px-5 py-7`)                                         |
+| `MediaKindBadge` | Image/video badge on media overlays, with optional time and icon-only mode  |
+
+CTAs use `buttonVariants` sizes (`cta`, `cta-sm`, `cta-xs`) and the default brand
+variant; callers do not repeat `bg-brand`, `hover:bg-brand-hover` or a custom
+height and type scale.
+
 ### Overlays
 
 - Menus and selects are portalled and use popper positioning, so they open
@@ -567,6 +676,10 @@ Type rules:
   groups (`src/ui/dropdown-menu.tsx`), not `Select`. A menu has no
   item-aligned mode, so it can only anchor above or below its trigger — the
   mobile bug where the list covered the button cannot come back.
+- Menus and selects share one popup shape: a 36px (`h-9`) trigger and a
+  `rounded-lg` `p-1` surface whose items use `px-2 py-1.5` and the control text
+  scale. Do not restyle item text, height or radius at a call site; pass only
+  the spacing a specific row needs.
 - Menu and select content matches the trigger width unless a wider menu is set
   explicitly.
 - Selected indicators in menus are 12px checks, not large checkbox tiles.
@@ -578,10 +691,17 @@ Type rules:
 - Durations: 200ms for hover/nav, 260ms for the rail, 300ms for fades.
   Easing for layout: `cubic-bezier(0.32,0.72,0,1)`.
 - Layout changes use 400–450ms: a critically damped spring
-  (`layoutSpring` in `src/lib/motion.ts`) for measured containers and grid
-  reflows, a named CSS transition for dimension swaps such as the studio
-  aspect frame. Do not hand-write `style` for sizes; keep them in Tailwind
-  classes.
+  (`LAYOUT_SPRING` in `src/components/motion/constants.ts`) for measured
+  containers and grid reflows, a named CSS transition for dimension swaps such
+  as the studio aspect frame. Do not hand-write `style` for sizes; keep them in
+  Tailwind classes.
+- Reusable animation pieces live in `src/motion`, beside `src/components` and
+  `src/ui`, each in its own folder with the same `index.tsx` / `constants.ts`
+  / `types.ts` shape as a feature. Shared transitions live in
+  `src/motion/constants.ts`; features import them instead of re-declaring a
+  spring or fade.
+- Tailwind is v4: use canonical utilities and the named scale, never the
+  removed v3 names.
 - The studio aspect frame is capped by `100dvh` at every breakpoint, with a
   smaller offset below `lg` (stacked page) and a larger one at `lg` (fixed
   nav + studio header + preview chrome). A square or portrait preview must fit
@@ -652,16 +772,16 @@ Type rules:
 
 - Shared generation state lives in `src/components/studio/state.ts`: mode,
   prompt, model, aspect ratio, duration, resolution, audio, optional template,
-  attachment and balance. These map to `GenerationSettings` and the
+  attachment and balance. These map to the generation settings and the
   `POST /generations` body. The home composer and studio stay in sync because
   they read the same atoms.
-- Other Jotai atoms belong in that feature's own `state.ts`, not in a catch-all
-  store under `src/lib`.
-- Ephemeral UI state (open menus, queues, active take) belongs in the feature's
-  `hooks.ts`.
+- Other Jotai atoms belong in that feature's own `state.ts`, not in a
+  catch-all store. Do not create an atom for state one component owns.
+- Ephemeral UI state (open menus, queues, active take, rail expansion) belongs
+  in local state or the feature's `hooks.ts`.
 - Actions are simulated: submitting the composer navigates to
   `/create/${mode}`, and every catalogue item, price and result comes from
-  `src/lib`. The studio and home composer validate every control against the
+  `src/mocks`. The studio and home composer validate every control against the
   selected model's capabilities.
 - Settings shows only `users.email`, `users.id` and `users.created_at`, plus
   the `notifications` rows; there are no preference, security or API-key panes.
@@ -679,17 +799,17 @@ Type rules:
 
 ## Testing
 
-| Layer      | Command                   | Contract                                                       |
-| ---------- | ------------------------- | -------------------------------------------------------------- |
-| Unit       | `npm run test:unit`       | `src/lib` maths and `src/mocks` data, plus `src/proxy.test.ts` |
-| Component  | `npm run test:components` | `src/components` and `src/app` behaviour                       |
-| All Vitest | `npm test`                | every colocated `*.test.ts(x)` in both apps                    |
-| Coverage   | `npm run test:coverage`   | floors enforced                                                |
-| E2E        | `npm run test:e2e`        | production build on `:3100`                                    |
-| Typecheck  | `npm run typecheck`       | `tsc --noEmit` in every workspace                              |
-| Lint       | `npm run lint`            | oxlint                                                         |
-| Format     | `npm run format:check`    | oxfmt, shared config at the repo root                          |
-| Everything | `npm run check`           | typecheck + lint + coverage                                    |
+| Layer      | Command                   | Contract                                    |
+| ---------- | ------------------------- | ------------------------------------------- |
+| Unit       | `npm run test:unit`       | the `src/proxy.test.ts` routing rules       |
+| Component  | `npm run test:components` | `src/components` behaviour                  |
+| All Vitest | `npm test`                | every colocated `*.test.ts(x)` in both apps |
+| Coverage   | `npm run test:coverage`   | floors enforced                             |
+| E2E        | `npm run test:e2e`        | production build on `:3100`                 |
+| Typecheck  | `npm run typecheck`       | `tsc --noEmit` in every workspace           |
+| Lint       | `npm run lint`            | oxlint                                      |
+| Format     | `npm run format:check`    | oxfmt, shared config at the repo root       |
+| Everything | `npm run check`           | typecheck + lint + coverage                 |
 
 The root `vitest.config.mts` runs `projects: ["apps/*"]`, so `npm test` covers
 `apps/lab` and `apps/engine` from one command. Each app keeps only its deltas:
@@ -699,11 +819,15 @@ The root `vitest.config.mts` runs `projects: ["apps/*"]`, so `npm test` covers
 
 Conventions:
 
-- Tests are colocated: `src/lib/utils/index.test.ts`,
-  `src/components/nav/index.test.tsx`, `src/app/(website)/page.test.tsx`,
-  `src/components/pricing/pricing-order-tabs.test.tsx`.
-  Name the file after the module it covers and import it with `"."` or
-  `"./hooks"`.
+- Tests are colocated: `src/components/studio/utils.test.ts`,
+  `src/components/nav/index.test.tsx`,
+  `src/components/pricing/pricing-quantity-slider.test.tsx`. Name the file after
+  the module it covers and import it with `"."` or `"./hooks"`.
+- Only test real logic: component behaviour, `utils.ts` and `hooks.ts`. No
+  tests for constants, copy, metadata, `robots.ts`, `sitemap.ts`, route
+  `page.tsx` glue that only renders a component, or demo fixtures in
+  `src/mocks`. A test that restates a constant or asserts a heading is noise;
+  delete it.
 - Playwright specs live in `src/e2e` and end in `.e2e.ts`.
 - Query by role, accessible name, label or visible copy. Avoid internal class
   names and DOM shape.
@@ -715,9 +839,9 @@ Conventions:
 - E2E builds into `.next-e2e` and never reuses a running server. Wait for
   `document.documentElement.dataset.hydrated === "true"` via `openApp`.
 - Coverage floors are 85% statements, 83% branches, 80% functions, 87% lines
-  over `src/**` excluding UI primitives, route layouts, tests, e2e and test
-  infrastructure. Raise them when the numbers rise; never lower them to make a
-  change pass.
+  over `src/**` excluding UI primitives, route files, demo fixtures, tests,
+  e2e and test infrastructure. Raise them when the numbers rise; never lower
+  them to make a change pass.
 - State modules are covered through the behaviour that reads them; do not add
   tests whose only job is asserting atom defaults.
 - The full Playwright suite is slow. Run it when routing, layout or shared
@@ -745,27 +869,28 @@ with its markup and, when it owns copy, a colocated `constants.ts` for its
 visible strings, then make the page export `metadata` where the route needs it
 and return `<Route />`. Add it under `src/app/(website)/` if it shows the
 footer, or `src/app/(workspace)/` if it should not; a chrome-free route needs an
-opt-out in `AppShell` (see `/login`). Add
-`page.test.tsx` beside the route and an E2E route entry if it belongs in the
-shell.
+opt-out in `AppShell` (see `/login`). Add an E2E route entry if the route
+belongs in the shell.
 
 **Add a feature component:** create `src/components/<feature>/index.tsx` plus
-`constants.ts`, `hooks.ts`, `state.ts` and `types.ts` as the feature needs them.
-Mark the interactive root `"use client"`. Put every visible string in
-`constants.ts`, write single flat props inline, and import types/rules from
-`src/lib` and demo rows from `src/mocks`. Add `index.test.tsx` beside it.
+`constants.ts`, `hooks.ts`, `state.ts`, `types.ts` and `utils.ts` as the feature
+needs them. `index.tsx` holds the component and its logic only; every named
+type goes in `types.ts`, every named value in `constants.ts` (uppercase), every
+named function in `utils.ts` and every atom in `state.ts`. Mark the interactive
+root `"use client"`, write single flat props inline, and import demo rows from
+`src/mocks`. Add `index.test.tsx` beside it.
 
 **Add a model or price:** add a `generation_models` row (with capabilities) in
 `src/mocks/generation.ts` and its price in `modelCosts`; update
-`src/lib/pricing/index.ts` if quantity maths changes. A model name, provider or
-capability must exist in the contract first. Add a unit test.
+`src/components/pricing/utils.ts` if quantity maths changes. A model name,
+provider or capability must exist in the contract first. Add a unit test.
 
 **Add an endpoint:** the module that owns the data owns the route. Register it
 in `apps/engine/src/modules/<module>/index.ts` on that module's router, keep the
 logic in its `controller.ts`, `service.ts` and `repository.ts`, and mount a new
-module in `app.ts` with one `app.use("/api/v1/<module>", router)`. The path goes
-into `API_PATHS` in `src/lib/design/index.ts` and into `ROADMAP.md` §1.4; the
-contract change comes first. Nothing imports another module's internals.
+module in `app.ts` with one `app.use("/api/v1/<module>", router)`. Record the
+path in `ROADMAP.md` §1.4; the contract change comes first. Nothing imports
+another module's internals.
 
 **Add a design token:** add the variable in `:root`, mirror it in `@theme
 inline` as `--color-*`, use the generated Tailwind class, and update this doc.

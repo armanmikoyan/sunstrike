@@ -1,12 +1,12 @@
-import { wallColumns } from "./constants";
+import { WALL_COLUMNS } from "./constants";
 import { VideoWallTile } from "./video-wall-tile";
 
 export function VideoWall() {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div className="absolute inset-0 flex justify-center">
-        <div className="flex w-full min-w-[45rem] gap-2 px-2">
-          {wallColumns.map((column, columnIndex) => (
+        <div className="flex w-full min-w-180 gap-2 px-2">
+          {WALL_COLUMNS.map((column, columnIndex) => (
             <div
               key={columnIndex}
               className="wall-column flex w-1/5 flex-col"
@@ -20,9 +20,7 @@ export function VideoWall() {
                     <VideoWallTile
                       key={`${repeat}-${id}`}
                       id={id}
-                      preload={
-                        columnIndex < 2 && index === 0 ? "auto" : "metadata"
-                      }
+                      preload={columnIndex < 2 && index === 0 ? "auto" : "metadata"}
                     />
                   ))}
                 </div>

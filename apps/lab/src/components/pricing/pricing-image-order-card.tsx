@@ -1,150 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { RollingNumber } from "@/components/rolling-number";
-import { Button } from "@/ui/button";
-import { QuantityButton } from "@/components/pricing/pricing-quantity-button";
-import { QuantitySlider } from "@/components/pricing/pricing-quantity-slider";
-import { imageTiers, pricingCardCopy } from "./constants";
-import { MAX_IMAGES, MIN_IMAGES, getImageQuote } from "@/lib/pricing";
-import { cn } from "@/lib/utils";
+import { getImageQuote } from "@/components/pricing/utils";
+import { PricingImageOrderCta } from "./pricing-image-order-cta";
+import { PricingImageOrderQuantity } from "./pricing-image-order-quantity";
+import { PricingImageOrderSummary } from "./pricing-image-order-summary";
+import { PricingImageOrderTiers } from "./pricing-image-order-tiers";
 
 export function ImageOrderCard() {
   const [quantity, setQuantity] = useState(10);
   const quote = getImageQuote(quantity);
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[23.75rem] overflow-hidden rounded-2xl border border-white/10 glass-card">
+    <div className="relative mx-auto h-full w-full max-w-95 overflow-hidden rounded-2xl border border-white/10 glass-card">
       <div className="flex h-full flex-col p-5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs lg:text-[0.6875rem] text-muted-foreground">{pricingCardCopy.yourOrder}</span>
-          <span className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">{pricingCardCopy.payg}</span>
-        </div>
-
-        <div className="mt-5 flex items-end justify-between gap-4">
-          <div>
-            <p className="font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-              {pricingCardCopy.images}
-            </p>
-            <div className="mt-1 flex items-end gap-2">
-              <RollingNumber
-                value={quote.quantity}
-                className="text-[1.875rem] font-medium leading-none tracking-[-0.03em]"
-              />
-              <span className="pb-1 text-xs lg:text-[0.6875rem] text-muted-foreground">
-                {pricingCardCopy.imagesLower}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <QuantityButton
-              onClick={() => setQuantity((value) => Math.max(MIN_IMAGES, value - 1))}
-              disabled={quantity <= MIN_IMAGES}
-              aria-label={pricingCardCopy.decreaseImages}
-            >
-              −
-            </QuantityButton>
-            <QuantityButton
-              onClick={() => setQuantity((value) => Math.min(MAX_IMAGES, value + 1))}
-              disabled={quantity >= MAX_IMAGES}
-              aria-label={pricingCardCopy.increaseImages}
-            >
-              +
-            </QuantityButton>
-          </div>
-        </div>
-
-        <QuantitySlider
-          value={quantity}
-          min={MIN_IMAGES}
-          max={MAX_IMAGES}
-          onValueChange={setQuantity}
-          ariaLabel={pricingCardCopy.numberOfImages}
-          className="mt-5"
-        />
-        <div className="mt-2 flex justify-between font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/70">
-          <span>{pricingCardCopy.imageRangeStart}</span>
-          <span>{pricingCardCopy.imageRangeEnd}</span>
-        </div>
-
-        <div className="mt-5 grid grid-cols-3 gap-2">
-          {imageTiers.map((tier) => {
-            const active = tier.active(quote.quantity);
-            return (
-              <button
-                key={tier.label}
-                type="button"
-                onClick={() => setQuantity(tier.start)}
-                aria-pressed={active}
-                className={cn(
-                  "rounded-xl border p-2.5 text-left transition-colors",
-                  active
-                    ? "border-brand-secondary/40 bg-brand-secondary/10 hover:border-brand-secondary/55 hover:bg-brand-secondary/15"
-                    : "border-white/10 hover:border-white/25 hover:bg-white/4",
-                )}
-              >
-                <span
-                  className={cn(
-                    "font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em]",
-                    active ? "text-brand-secondary" : "text-muted-foreground",
-                  )}
-                >
-                  {tier.label}
-                </span>
-                <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-sm lg:text-[0.75rem] font-medium tracking-[-0.02em] text-foreground">
-                  <span className="tabular-nums font-normal">{tier.price}</span>
-                  <span className="text-xs lg:text-[0.6875rem] font-normal text-muted-foreground">
-                    {pricingCardCopy.imageUnit}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-5 space-y-2.5 border-t border-white/7 pt-4 text-xs lg:text-[0.6875rem]">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{pricingCardCopy.images}</span>
-            <RollingNumber value={quote.quantity} />
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{pricingCardCopy.perImage}</span>
-            <RollingNumber value={quote.unit} decimalPlaces={2} prefix={pricingCardCopy.currency} />
-          </div>
-          <div
-            aria-hidden={quote.savings <= 0}
-            className={cn("flex justify-between text-brand-secondary", quote.savings <= 0 && "invisible")}
-          >
-            <span>{pricingCardCopy.volumeSaving}</span>
-            <RollingNumber value={quote.savings} decimalPlaces={2} prefix={pricingCardCopy.negativeCurrency} />
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-end justify-between border-t border-white/7 pt-4">
-          <span className="text-sm lg:text-[0.75rem] text-muted-foreground">{pricingCardCopy.total}</span>
-          <RollingNumber
-            value={quote.total}
-            decimalPlaces={2}
-            prefix={pricingCardCopy.currency}
-            className="text-[1.875rem] font-medium leading-none tracking-[-0.03em]"
-          />
-        </div>
-
-        <Button
-          asChild
-          className="mt-5 h-10 w-full rounded-lg bg-brand text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
-        >
-          <Link href="/settings/billing">
-            {pricingCardCopy.get} <RollingNumber value={quote.quantity} /> {pricingCardCopy.imagesLower}
-            <ArrowRight className="size-3.5" />
-          </Link>
-        </Button>
-        <p className="mt-3 text-center font-mono text-xs lg:text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground/65">
-          {pricingCardCopy.paymentNote}
-        </p>
+        <PricingImageOrderQuantity quote={quote} onQuantityChange={setQuantity} />
+        <PricingImageOrderTiers quote={quote} onQuantityChange={setQuantity} />
+        <PricingImageOrderSummary quote={quote} />
+        <PricingImageOrderCta quote={quote} />
       </div>
     </div>
   );

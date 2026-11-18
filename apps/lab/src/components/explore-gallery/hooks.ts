@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { mixMediaByKind } from "@/lib/media";
+import { mixMediaByKind } from "@/components/media-card/utils";
 import { mediaItems } from "@/mocks/media";
 import type { KindFilter } from "./types";
 
@@ -33,5 +33,3 @@ export function useExploreGallery() {
     filtered,
   };
 }
-
-export type ExploreGalleryState = ReturnType<typeof useExploreGallery>;

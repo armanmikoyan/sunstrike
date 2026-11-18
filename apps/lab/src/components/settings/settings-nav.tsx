@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { settingsNav } from "./constants";
+import { cn } from "cn";
+import { SETTINGS_NAV } from "./constants";
 
 export function SettingsNav() {
   const pathname = usePathname();
@@ -13,7 +13,7 @@ export function SettingsNav() {
       aria-label="Settings sections"
       className="-mx-0.5 flex gap-0.5 overflow-x-auto px-0.5 py-0.5 lg:sticky lg:top-14 lg:m-0 lg:flex-col lg:gap-1 lg:self-start lg:overflow-visible lg:p-0"
     >
-      {settingsNav.map((item) => {
+      {SETTINGS_NAV.map((item) => {
         const active = pathname === item.href;
         const Icon = item.icon;
 

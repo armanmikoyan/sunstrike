@@ -29,6 +29,14 @@
     "**/next-env.d.ts"
   ],
   "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
     "react/react-in-jsx-scope": "off",
     "react/exhaustive-effect-dependencies": "off",
     "import/no-unassigned-import": "off",

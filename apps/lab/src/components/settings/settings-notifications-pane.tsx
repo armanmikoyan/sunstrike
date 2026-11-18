@@ -1,12 +1,11 @@
 import { Bell } from "lucide-react";
-import { notificationTypeLabels } from "@/lib/notifications";
+import { NOTIFICATION_TYPE_LABELS } from "@/components/nav/constants";
 import { notifications } from "@/mocks/notifications";
-import { cn } from "@/lib/utils";
-import { settingsCopy } from "./constants";
+import { cn } from "cn";
+import { SETTINGS_COPY } from "./constants";
 
 export function SettingsNotificationsPane() {
-  const copy = settingsCopy.notifications;
-  const formatter = new Intl.DateTimeFormat(settingsCopy.account.dateLocale, {
+  const formatter = new Intl.DateTimeFormat(SETTINGS_COPY.account.dateLocale, {
     dateStyle: "medium",
     timeStyle: "short",
   });
@@ -14,12 +13,14 @@ export function SettingsNotificationsPane() {
   return (
     <div>
       <div className="border-b border-white/6 px-5 py-4">
-        <h2 className="text-sm lg:text-[0.75rem] font-medium">{copy.title}</h2>
-        <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">{copy.description}</p>
+        <h2 className="text-sm lg:text-xs font-medium">{SETTINGS_COPY.notifications.title}</h2>
+        <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
+          {SETTINGS_COPY.notifications.description}
+        </p>
       </div>
       <div className="p-5">
         {notifications.length === 0 ? (
-          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{copy.empty}</p>
+          <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{SETTINGS_COPY.notifications.empty}</p>
         ) : (
           <div className="divide-y divide-white/6 rounded-xl border border-white/7">
             {notifications.map((notification) => (
@@ -34,7 +35,7 @@ export function SettingsNotificationsPane() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs lg:text-[0.6875rem] font-medium">
-                    {notificationTypeLabels[notification.type] ?? notification.type}
+                    {NOTIFICATION_TYPE_LABELS[notification.type] ?? notification.type}
                   </p>
                   <p className="mt-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
                     {notification.generationId}
@@ -44,7 +45,7 @@ export function SettingsNotificationsPane() {
                   </p>
                 </div>
                 <span className="shrink-0 text-xs lg:text-[0.6875rem] text-muted-foreground">
-                  {notification.readAt ? copy.read : copy.unread}
+                  {notification.readAt ? SETTINGS_COPY.notifications.read : SETTINGS_COPY.notifications.unread}
                 </span>
               </div>
             ))}

@@ -1,4 +1,4 @@
-import type { Notification } from "@/lib/design";
+import type { Notification } from "@/components/nav/types";
 
 /**
  * Notifications from 02 Core entities. Every row points at the generation that
@@ -28,6 +28,4 @@ export const notifications: Notification[] = [
   },
 ];
 
-export const unreadNotifications = notifications.filter(
-  (notification) => notification.readAt === null,
-);
+export const unreadNotifications = notifications.filter((notification) => notification.readAt === null);

@@ -1,4 +1,4 @@
-import type { Template } from "@/lib/design";
+import type { Template } from "@/components/studio/types";
 
 /**
  * Curated templates from 02 Core entities. Each one points at a source media
@@ -59,5 +59,4 @@ export const templates: Template[] = [
   },
 ];
 
-export const templateById = (id: string) =>
-  templates.find((template) => template.id === id);
+export const templateById = (id: string) => templates.find((template) => template.id === id);

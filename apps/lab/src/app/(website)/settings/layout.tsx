@@ -1,5 +1,6 @@
-import { SettingsShell } from "@/components/settings";
+import { Settings } from "@/components/settings";
+import type { ReactNode } from "react";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <SettingsShell>{children}</SettingsShell>;
+export default function Layout({ children }: { children: ReactNode }) {
+  return <Settings>{children}</Settings>;
 }

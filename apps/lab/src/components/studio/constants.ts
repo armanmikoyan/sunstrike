@@ -1,34 +1,38 @@
-import type { GenerationMode } from "@/lib/generation";
-import type { MediaItem } from "@/lib/media";
-import { mediaById } from "@/mocks/media";
+import type { GenerationMode } from "@/components/studio/types";
+import { takesFrom } from "./utils";
 
-const videoTakeIds = ["09", "07", "14", "16"];
-const imageTakeIds = ["05", "10", "17", "18"];
+/** UI descriptors for the ratios a model may advertise. */
+export const ASPECT_RATIOS = [
+  { value: "16:9", label: "Landscape", shape: "h-2.25 w-4" },
+  { value: "9:16", label: "Portrait", shape: "h-4 w-2.25" },
+  { value: "1:1", label: "Square", shape: "size-3" },
+  { value: "4:3", label: "Classic", shape: "h-3 w-4" },
+  { value: "3:4", label: "Editorial", shape: "h-4 w-3" },
+  { value: "21:9", label: "Cinema", shape: "h-1.75 w-4.5" },
+];
 
-const takesFrom = (ids: string[]): MediaItem[] =>
-  ids
-    .map((id) => mediaById(id))
-    .filter((item): item is MediaItem => Boolean(item));
+/** Fallback duration list; the selected model's capabilities win. */
+export const DURATIONS = ["4s", "5s", "6s", "8s", "12s"];
 
-export const videoTakes = takesFrom(videoTakeIds);
-export const imageTakes = takesFrom(imageTakeIds);
+const VIDEO_TAKE_IDS = ["09", "07", "14", "16"];
+const IMAGE_TAKE_IDS = ["05", "10", "17", "18"];
 
-export const starterPrompts: Record<GenerationMode, string> = {
+export const VIDEO_TAKES = takesFrom(VIDEO_TAKE_IDS);
+export const IMAGE_TAKES = takesFrom(IMAGE_TAKE_IDS);
+
+export const STARTER_PROMPTS: Record<GenerationMode, string> = {
   video:
     "A slow dolly through a rain-soaked Tokyo alley at midnight, neon reflections on wet asphalt, shallow depth of field, anamorphic flare, cinematic color grade.",
   image:
     "An editorial portrait in cool blue studio light, direct gaze, subtle film grain, 85mm lens, minimal styling, crisp catchlights.",
 };
 
-export const studioModels: Record<
-  GenerationMode,
-  { create: string; label: string }
-> = {
+export const STUDIO_MODELS: Record<GenerationMode, { create: string; label: string }> = {
   video: { create: "Chronolab Motion 2", label: "Video Studio" },
   image: { create: "Chronolab Image 2", label: "Image Studio" },
 };
 
-export const studioCopy = {
+export const STUDIO_COPY = {
   header: {
     backHome: "Back home",
     video: "Video",
@@ -57,7 +61,7 @@ export const studioCopy = {
     silent: "Silent",
     audioHint: "Use the model's generated soundtrack.",
     estimatedCost: "Estimated cost",
-    generate: { video: "Generate video", image: "Generate image" },
+    generate: { video: "Generate video", image: "Generate image", signIn: "Sign in to generate" },
     available: "available · pay as you go",
   },
   summary: {
@@ -103,17 +107,19 @@ export const studioCopy = {
  * larger offset at `lg`, where the nav, studio header and preview chrome sit
  * above a height-locked panel.
  */
-export const studioFrameClasses: Record<string, string> = {
+export const STUDIO_FRAME_CLASSES: Record<string, string> = {
   "16:9":
-    "aspect-[16/9] max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.7778))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.7778))]",
+    "aspect-video max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.7778))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.7778))]",
   "9:16":
-    "aspect-[9/16] max-w-[min(22.5rem,calc((100dvh_-_9.5rem)_*_0.5625))] lg:max-w-[min(22.5rem,calc((100dvh_-_16rem)_*_0.5625))]",
-  "1:1":
-    "aspect-square max-w-[min(47.5rem,calc(100dvh_-_9.5rem))] lg:max-w-[min(47.5rem,calc(100dvh_-_16rem))]",
+    "aspect-9/16 max-w-[min(22.5rem,calc((100dvh_-_9.5rem)_*_0.5625))] lg:max-w-[min(22.5rem,calc((100dvh_-_16rem)_*_0.5625))]",
+  "1:1": "aspect-square max-w-[min(47.5rem,calc(100dvh_-_9.5rem))] lg:max-w-[min(47.5rem,calc(100dvh_-_16rem))]",
   "4:3":
-    "aspect-[4/3] max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.3333))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.3333))]",
+    "aspect-4/3 max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.3333))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.3333))]",
   "3:4":
-    "aspect-[3/4] max-w-[min(22.5rem,calc((100dvh_-_9.5rem)_*_0.75))] lg:max-w-[min(22.5rem,calc((100dvh_-_16rem)_*_0.75))]",
+    "aspect-3/4 max-w-[min(22.5rem,calc((100dvh_-_9.5rem)_*_0.75))] lg:max-w-[min(22.5rem,calc((100dvh_-_16rem)_*_0.75))]",
   "21:9":
-    "aspect-[21/9] max-w-[min(61.25rem,calc((100dvh_-_9.5rem)_*_2.3333))] lg:max-w-[min(61.25rem,calc((100dvh_-_16rem)_*_2.3333))]",
+    "aspect-21/9 max-w-[min(61.25rem,calc((100dvh_-_9.5rem)_*_2.3333))] lg:max-w-[min(61.25rem,calc((100dvh_-_16rem)_*_2.3333))]",
 };
+
+/** Sentinel row for "no template"; it never reaches the state as an id. */
+export const TEMPLATE_NONE = "none";

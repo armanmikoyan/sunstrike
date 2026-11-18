@@ -1,4 +1,4 @@
-export const autoTopUpCopy = {
+export const AUTO_TOP_UP_COPY = {
   title: "Auto top-up",
   enabled: "Refills at",
   disabled: "Off",

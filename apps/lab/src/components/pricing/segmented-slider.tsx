@@ -1,45 +1,22 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
-
-type SegmentedSliderProps = {
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  onValueChange: (value: number) => void;
-  label: string;
-  /** Upper bound on how many ticks the strip may draw. */
-  ticks?: number;
-  className?: string;
-};
-
-const TICK_HEIGHT = 16;
-const TICK_WIDTH = 3;
-const TICK_RADIUS = 4;
-const PITCH = 11;
-const FILL_MS = 150;
-/** Taller than the resting tick so the swell has room to grow both ways. */
-const BOX_HEIGHT = 24;
-const POP_MS = 260;
-const POP_SCALE = 1.45;
-
-const FILLED = [167, 139, 250] as const;
-const EMPTY = [255, 255, 255] as const;
-const EMPTY_ALPHA = 0.2;
-
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value));
-
-const easeOut = (t: number) => 1 - (1 - t) ** 3;
-
-type TickLayout = {
-  width: number;
-  ratio: number;
-  /** Sub-pixel part of the track's device offset, nudged back to a whole pixel. */
-  snap: number;
-};
+import { cn } from "cn";
+import {
+  BOX_HEIGHT,
+  EMPTY,
+  EMPTY_ALPHA,
+  FILL_MS,
+  FILLED,
+  PITCH,
+  POP_MS,
+  POP_SCALE,
+  TICK_HEIGHT,
+  TICK_RADIUS,
+  TICK_WIDTH,
+} from "./constants";
+import { clamp, easeOut } from "./utils";
+import type { SegmentedSliderProps, TickLayout } from "./types";
 
 /**
  * A slider drawn as a row of thin bars that spans the whole track, modelled on
@@ -98,10 +75,7 @@ export function SegmentedSlider({
 
     measure();
 
-    const observer =
-      typeof ResizeObserver === "undefined"
-        ? null
-        : new ResizeObserver(measure);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
     observer?.observe(element);
     window.addEventListener("resize", measure);
 
@@ -112,8 +86,7 @@ export function SegmentedSlider({
   }, []);
 
   const toFraction = useCallback(
-    (amount: number) =>
-      Math.log(clamp(amount, min, max) / min) / Math.log(max / min),
+    (amount: number) => Math.log(clamp(amount, min, max) / min) / Math.log(max / min),
     [min, max],
   );
 
@@ -155,10 +128,7 @@ export function SegmentedSlider({
   const deviceWidth = Math.round(width * ratio);
   const tickDevice = Math.max(2, Math.round(TICK_WIDTH * ratio));
   const restHeightDevice = Math.max(2, Math.round(TICK_HEIGHT * ratio));
-  const heightDevice = Math.max(
-    restHeightDevice,
-    Math.round(BOX_HEIGHT * ratio),
-  );
+  const heightDevice = Math.max(restHeightDevice, Math.round(BOX_HEIGHT * ratio));
   const radiusDevice = Math.max(1, Math.round(TICK_RADIUS * ratio));
   const count = width ? clamp(Math.round(width / PITCH) + 1, 16, ticks) : 0;
 
@@ -227,16 +197,11 @@ export function SegmentedSlider({
         levels[index] = level;
         if (progress < 1) moving = true;
 
-        const popProgress = pops[index]
-          ? clamp((time - pops[index]) / POP_MS, 0, 1)
-          : 1;
+        const popProgress = pops[index] ? clamp((time - pops[index]) / POP_MS, 0, 1) : 1;
         if (popProgress < 1) moving = true;
 
         const swell = 1 + (POP_SCALE - 1) * Math.sin(Math.PI * popProgress);
-        const height = Math.min(
-          heightDevice,
-          Math.round(restHeightDevice * swell),
-        );
+        const height = Math.min(heightDevice, Math.round(restHeightDevice * swell));
         const top = Math.round((heightDevice - height) / 2);
 
         const red = Math.round(EMPTY[0] + (FILLED[0] - EMPTY[0]) * level);
@@ -266,17 +231,7 @@ export function SegmentedSlider({
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
       frameRef.current = null;
     };
-  }, [
-    count,
-    endIndex,
-    deviceWidth,
-    heightDevice,
-    restHeightDevice,
-    tickDevice,
-    radiusDevice,
-    baseGap,
-    extraGaps,
-  ]);
+  }, [count, endIndex, deviceWidth, heightDevice, restHeightDevice, tickDevice, radiusDevice, baseGap, extraGaps]);
 
   return (
     <div

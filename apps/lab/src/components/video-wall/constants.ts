@@ -1,5 +1,5 @@
 /** Five columns, each a loop of three clips, all mixed from the three videos. */
-export const wallColumns = [
+export const WALL_COLUMNS = [
   ["01", "02", "03"],
   ["04", "07", "08"],
   ["09", "11", "14"],

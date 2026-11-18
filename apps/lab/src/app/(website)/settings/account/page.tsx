@@ -1,4 +1,4 @@
-import { SettingsAccountPane } from "@/components/settings";
+import { SettingsAccountPane } from "@/components/settings/settings-account-pane";
 
 export const metadata = {
   title: "Settings",

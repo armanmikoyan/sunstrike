@@ -1,4 +1,4 @@
-import type { MediaCategory, MediaItem } from "@/lib/media";
+import type { MediaCategory, MediaItem } from "@/components/media-card/types";
 
 export const VIDEO_VARIANTS = [
   {
@@ -15,11 +15,7 @@ export const VIDEO_VARIANTS = [
   },
 ] as const;
 
-export const IMAGE_VARIANTS = [
-  "/images/freediver.png",
-  "/images/shibuya.png",
-  "/images/marco-valdez.png",
-] as const;
+export const IMAGE_VARIANTS = ["/images/freediver.png", "/images/shibuya.png", "/images/marco-valdez.png"] as const;
 
 const categoryFallback: Record<MediaCategory, string> = {
   Portrait: "linear-gradient(150deg, #262130 0%, #3a2f4b 60%, #4e4066 100%)",
@@ -61,8 +57,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "03",
     title: "Red Room",
-    prompt:
-      "Crowd in a crimson-lit club, handheld flash camera in frame, haze and hard shadows",
+    prompt: "Crowd in a crimson-lit club, handheld flash camera in frame, haze and hard shadows",
     kind: "video",
     category: "City",
     aspect: "9 / 16",
@@ -74,8 +69,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "04",
     title: "Last Light Run",
-    prompt:
-      "Crimson sports coupe model on a train window ledge at golden hour, parallax city blur outside",
+    prompt: "Crimson sports coupe model on a train window ledge at golden hour, parallax city blur outside",
     kind: "video",
     category: "City",
     aspect: "9 / 16",
@@ -87,8 +81,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "05",
     title: "Soft Object",
-    prompt:
-      "Iridescent ceramic form floating in pastel haze, softbox lighting, product study",
+    prompt: "Iridescent ceramic form floating in pastel haze, softbox lighting, product study",
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
@@ -99,8 +92,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "06",
     title: "Signal Fold",
-    prompt:
-      "Orange and teal folded paper sculpture, graphic paper composition, crisp shadows",
+    prompt: "Orange and teal folded paper sculpture, graphic paper composition, crisp shadows",
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
@@ -111,8 +103,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "07",
     title: "High Desert",
-    prompt:
-      "Man in a white shirt seated in a folding chair in a dry desert valley, warm late light, static frame",
+    prompt: "Man in a white shirt seated in a folding chair in a dry desert valley, warm late light, static frame",
     kind: "video",
     category: "Nature",
     aspect: "9 / 16",
@@ -150,8 +141,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "10",
     title: "Lower Manhattan",
-    prompt:
-      "New York skyline at blue hour from the harbor, thin clouds, aerial perspective",
+    prompt: "New York skyline at blue hour from the harbor, thin clouds, aerial perspective",
     kind: "image",
     category: "City",
     aspect: "3 / 4",
@@ -162,8 +152,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "11",
     title: "Last Light Run II",
-    prompt:
-      "Crimson sports coupe model on a train window ledge at golden hour, parallax city blur outside",
+    prompt: "Crimson sports coupe model on a train window ledge at golden hour, parallax city blur outside",
     kind: "video",
     category: "City",
     aspect: "9 / 16",
@@ -175,8 +164,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "12",
     title: "Quietwater",
-    prompt:
-      "Alpine lake with a timber cabin, low clouds on the ridge, muted film stock",
+    prompt: "Alpine lake with a timber cabin, low clouds on the ridge, muted film stock",
     kind: "image",
     category: "Nature",
     aspect: "3 / 4",
@@ -187,8 +175,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "13",
     title: "Dusk Ridge",
-    prompt:
-      "Layered mountain ridges at dusk, atmospheric depth, soft peach gradient sky",
+    prompt: "Layered mountain ridges at dusk, atmospheric depth, soft peach gradient sky",
     kind: "image",
     category: "Nature",
     aspect: "3 / 4",
@@ -212,8 +199,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "15",
     title: "Deep Field",
-    prompt:
-      "Dense star field, faint dust lanes, deep space survey photography, cold highlights",
+    prompt: "Dense star field, faint dust lanes, deep space survey photography, cold highlights",
     kind: "image",
     category: "Space",
     aspect: "3 / 4",
@@ -237,8 +223,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "17",
     title: "Chromatic Spill",
-    prompt:
-      "Cyan and red ink blooming in water, macro, frozen motion, rich color separation",
+    prompt: "Cyan and red ink blooming in water, macro, frozen motion, rich color separation",
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
@@ -249,8 +234,7 @@ const items: Omit<MediaItem, "src" | "poster" | "fallback">[] = [
   {
     id: "18",
     title: "Ember Study",
-    prompt:
-      "Abstract oil painting in saffron, vermilion and teal, heavy texture, gallery light",
+    prompt: "Abstract oil painting in saffron, vermilion and teal, heavy texture, gallery light",
     kind: "image",
     category: "Abstract",
     aspect: "3 / 4",
@@ -274,5 +258,4 @@ export const mediaItems: MediaItem[] = items.map((item, index) => {
   };
 });
 
-export const mediaById = (id: string) =>
-  mediaItems.find((item) => item.id === id);
+export const mediaById = (id: string) => mediaItems.find((item) => item.id === id);

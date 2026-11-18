@@ -1,15 +1,13 @@
-import type { GenerationMode } from "@/lib/generation";
-import type { PromptComposerState } from "./hooks";
+import type { GenerationMode } from "@/components/studio/types";
+import type { usePromptComposer } from "./hooks";
 
-export type ComposerAspectMenuProps = {
-  composer: PromptComposerState;
+export type PromptComposerState = ReturnType<typeof usePromptComposer>;
+
+export type PromptComposerProps = {
+  className?: string;
 };
 
-export type ComposerDurationMenuProps = {
-  composer: PromptComposerState;
-};
-
-export type ComposerModelMenuProps = {
+export type ComposerProps = {
   composer: PromptComposerState;
 };
 
@@ -17,14 +15,6 @@ export type ComposerModeSwitchProps = {
   mode: GenerationMode;
   cost: PromptComposerState["cost"];
   onSwitch: (mode: GenerationMode) => void;
-};
-
-export type ComposerAttachmentChipProps = {
-  composer: PromptComposerState;
-};
-
-export type ComposerAttachMenuProps = {
-  composer: PromptComposerState;
 };
 
 export type TypingOptions = {

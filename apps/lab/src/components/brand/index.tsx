@@ -1,27 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { FC } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import {
   LOCKUP_HEIGHT,
   LOCKUP_SRC,
   LOCKUP_WIDTH,
   MARK_POSTER_SIZE,
   MARK_POSTER_SRC,
-  brandCopy,
+  BRAND_COPY,
+  VIOLET_ORB,
 } from "./constants";
-import type {
-  ChronosphereProps,
-  LogoLockupProps,
-  VioletOrbProps,
-} from "./types";
-
-/**
- * `violet-orb` is a custom element registered by `/brand/violet-orb.js`. The
- * cast keeps the runtime tag a string while letting JSX type its attributes;
- * no global JSX augmentation is needed.
- */
-const VioletOrb = "violet-orb" as unknown as FC<VioletOrbProps>;
+import type { ChronosphereProps, LogoLockupProps } from "./types";
 
 /**
  * The rotating chronosphere. The still poster holds the slot until the violet
@@ -33,10 +22,7 @@ const VioletOrb = "violet-orb" as unknown as FC<VioletOrbProps>;
  */
 export function Chronosphere({ className, duration = 18 }: ChronosphereProps) {
   return (
-    <span
-      aria-hidden="true"
-      className={cn("relative grid shrink-0 place-items-center", className)}
-    >
+    <span aria-hidden="true" className={cn("relative grid shrink-0 place-items-center", className)}>
       <Image
         src={MARK_POSTER_SRC}
         alt=""
@@ -45,7 +31,7 @@ export function Chronosphere({ className, duration = 18 }: ChronosphereProps) {
         unoptimized
         className="absolute inset-0 size-full object-contain"
       />
-      <VioletOrb duration={String(duration)} className="relative size-full" />
+      <VIOLET_ORB duration={String(duration)} className="relative size-full" />
     </span>
   );
 }
@@ -61,7 +47,7 @@ export function LogoLockup({
     <Link
       href={href}
       className={cn("group flex items-center", className)}
-      aria-label={brandCopy.home}
+      aria-label={BRAND_COPY.home}
       aria-hidden={inactive || undefined}
       tabIndex={inactive ? -1 : undefined}
     >
@@ -72,11 +58,7 @@ export function LogoLockup({
         height={LOCKUP_HEIGHT}
         unoptimized
         loading="eager"
-        className={cn(
-          "h-auto w-auto max-w-full",
-          compact ? "max-h-11" : "max-h-16",
-          imageClassName,
-        )}
+        className={cn("h-auto w-auto max-w-full", compact ? "max-h-11" : "max-h-16", imageClassName)}
       />
     </Link>
   );

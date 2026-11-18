@@ -2,21 +2,21 @@
 
 import { Search } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { EmptyState } from "@/ui/empty-state";
 import { MediaCard } from "@/components/media-card";
 import { Button } from "@/ui/button";
-import { instantTransition, layoutSpring } from "@/lib/motion";
-import { exploreResultsCopy } from "./constants";
-import type { ExploreResultsProps } from "./types";
+import { CONTENT_FADE, INSTANT_TRANSITION } from "@/motion/constants";
+import { EXPLORE_RESULTS_COPY } from "./constants";
+import type { ExploreGalleryProps } from "./types";
 
-export function ExploreResults({ gallery }: ExploreResultsProps) {
-  const { filtered, kind, setKind, setQuery } = gallery;
+export function ExploreResults({ gallery: { filtered, kind, setKind, setQuery } }: ExploreGalleryProps) {
   const reduceMotion = useReducedMotion();
 
   return (
     <div className="pt-6">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-xs text-muted-foreground lg:text-[0.6875rem]">
-          {filtered.length} {filtered.length === 1 ? exploreResultsCopy.frame : exploreResultsCopy.frames}
+          {filtered.length} {filtered.length === 1 ? EXPLORE_RESULTS_COPY.frame : EXPLORE_RESULTS_COPY.frames}
           {kind !== "all" ? ` · ${kind}` : ""}
         </p>
       </div>
@@ -27,11 +27,10 @@ export function ExploreResults({ gallery }: ExploreResultsProps) {
             {filtered.map((item) => (
               <motion.div
                 key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={reduceMotion ? instantTransition : layoutSpring}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={reduceMotion ? INSTANT_TRANSITION : CONTENT_FADE}
                 className="mb-3 break-inside-avoid"
               >
                 <MediaCard item={item} aspect={item.aspect} />
@@ -40,31 +39,32 @@ export function ExploreResults({ gallery }: ExploreResultsProps) {
           </AnimatePresence>
         </div>
       ) : (
-        <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/1.5 text-center">
-          <Search className="size-5 text-muted-foreground" />
-          <p className="mt-3 text-sm font-medium lg:text-[0.75rem]">{exploreResultsCopy.emptyTitle}</p>
-          <p className="mt-1 text-sm text-muted-foreground lg:text-[0.75rem]">{exploreResultsCopy.emptyDescription}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4 h-9 rounded-lg border-white/10 text-sm lg:h-8 lg:text-[0.6875rem]"
-            onClick={() => {
-              setKind("all");
-              setQuery("");
-            }}
-          >
-            {exploreResultsCopy.clearFilters}
-          </Button>
-        </div>
+        <EmptyState
+          icon={Search}
+          title={EXPLORE_RESULTS_COPY.emptyTitle}
+          description={EXPLORE_RESULTS_COPY.emptyDescription}
+          action={
+            <Button
+              variant="outline"
+              className="h-9 border-white/10 lg:h-8"
+              onClick={() => {
+                setKind("all");
+                setQuery("");
+              }}
+            >
+              {EXPLORE_RESULTS_COPY.clearFilters}
+            </Button>
+          }
+        />
       )}
 
       {filtered.length ? (
         <div className="mt-6 flex justify-center">
           <Button
             variant="outline"
-            className="h-10 rounded-lg border-white/8 bg-white/1.5 px-5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground lg:h-9 lg:text-[0.6875rem]"
+            className="h-10 border-white/8 bg-white/1.5 px-5 text-muted-foreground hover:bg-white/5 hover:text-foreground lg:h-9"
           >
-            {exploreResultsCopy.loadMore}
+            {EXPLORE_RESULTS_COPY.loadMore}
           </Button>
         </div>
       ) : null}

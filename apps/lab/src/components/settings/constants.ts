@@ -1,14 +1,13 @@
 import { Bell, CreditCard, Gauge, UserRound } from "lucide-react";
-import type { User } from "@/lib/design";
-import type { SettingsTab } from "./types";
+import type { SettingsTab, User } from "./types";
 
-export const currentUser: User = {
+export const CURRENT_USER: User = {
   id: "usr_01",
   email: "arman@chronolab.ai",
   createdAt: "2026-08-14T09:00:00.000Z",
 };
 
-export const settingsNav: {
+export const SETTINGS_NAV: {
   key: SettingsTab;
   label: string;
   href: string;
@@ -40,11 +39,10 @@ export const settingsNav: {
   },
 ];
 
-export const settingsCopy = {
+export const SETTINGS_COPY = {
   eyebrow: "Account",
   title: "Settings",
-  description:
-    "Your account, balance and the notifications tied to your generations.",
+  description: "Your account, balance and the notifications tied to your generations.",
   save: {
     saved: "Saved",
     action: "Save changes",

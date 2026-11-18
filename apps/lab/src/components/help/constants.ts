@@ -1,8 +1,8 @@
 import { CreditCard, Layers3, Video } from "lucide-react";
 
-export const supportEmail = "support@chronolab.ai";
+export const SUPPORT_EMAIL = "support@chronolab.ai";
 
-export const helpGuides = [
+export const HELP_GUIDES = [
   {
     title: "Your first shot",
     description: "Prompting, references, templates and settings.",
@@ -23,7 +23,7 @@ export const helpGuides = [
   },
 ];
 
-export const helpQuestions = [
+export const HELP_QUESTIONS = [
   {
     question: "How does billing work?",
     answer:
@@ -50,11 +50,10 @@ export const helpQuestions = [
   },
 ];
 
-export const helpCopy = {
+export const HELP_COPY = {
   eyebrow: "Support",
   title: "Help center",
-  description:
-    "Short answers, working examples and a real person when you need one.",
+  description: "Short answers, working examples and a real person when you need one.",
   contactSupport: "Contact support",
   commonQuestions: "Common questions",
   stuckTitle: "Need more help?",

@@ -1,14 +1,15 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { MobileSidebar, Sidebar } from ".";
+import { Sidebar } from ".";
+import { MobileSidebar } from "./mobile-sidebar";
 import { TooltipProvider } from "@/ui/tooltip";
 import { setPathname } from "~/vitest.setup";
 
-function renderSidebar(props: { expanded: boolean; onToggle?: () => void }) {
+function renderSidebar(expanded: boolean, onToggle: () => void = vi.fn()) {
   return render(
     <TooltipProvider>
-      <Sidebar expanded={props.expanded} onToggle={props.onToggle ?? vi.fn()} />
+      <Sidebar expanded={expanded} onToggle={onToggle} />
     </TooltipProvider>,
   );
 }
@@ -33,48 +34,37 @@ function renderDrawer(open = true) {
   };
 }
 
-const railNavLinks = () =>
-  within(screen.getByRole("navigation", { name: "Studio" })).getAllByRole(
-    "link",
-  );
+const railNavLinks = () => within(screen.getByRole("navigation", { name: "Studio" })).getAllByRole("link");
 
 describe("sidebar rail", () => {
   it("lists the primary destinations", () => {
-    renderSidebar({ expanded: false });
+    renderSidebar(false);
     const hrefs = railNavLinks().map((link) => link.getAttribute("href"));
-    expect(hrefs).toEqual([
-      "/create/video",
-      "/explore",
-      "/library",
-      "/assets",
-      "/favorites",
-    ]);
+    expect(hrefs).toEqual(["/create/video", "/explore", "/library", "/assets", "/favorites"]);
   });
 
   it("fades the labels out when collapsed and back in when expanded", () => {
-    const { unmount } = renderSidebar({ expanded: false });
+    const { unmount } = renderSidebar(false);
     expect(screen.getByRole("link", { name: "Library" })).toBeInTheDocument();
     // The label stays mounted so the rail can fade it instead of snapping.
     expect(screen.getByText("Library")).toHaveClass("opacity-0");
     unmount();
 
-    renderSidebar({ expanded: true });
+    renderSidebar(true);
     expect(screen.getByText("Library")).toHaveClass("opacity-100");
     expect(screen.getByText("Favorites")).toHaveClass("opacity-100");
   });
 
   it("keeps pricing and help in the rail but not the settings page", () => {
-    renderSidebar({ expanded: true });
-    const hrefs = screen
-      .getAllByRole("link")
-      .map((link) => link.getAttribute("href"));
+    renderSidebar(true);
+    const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"));
     expect(hrefs).toContain("/pricing");
     expect(hrefs).toContain("/help");
     expect(hrefs).not.toContain("/settings/account");
   });
 
   it("gives the pricing icon a muted duotone and leaves help neutral", () => {
-    renderSidebar({ expanded: true });
+    renderSidebar(true);
 
     const pricing = screen.getByRole("link", { name: "Pricing" });
     const gem = pricing.querySelector("svg.lucide-gem");
@@ -82,51 +72,39 @@ describe("sidebar rail", () => {
     expect(gem).toHaveClass("text-brand-secondary");
     expect(gem?.getAttribute("class")).toContain("stroke-brand-tertiary");
 
-    const helpIcon = screen
-      .getByRole("link", { name: "Help" })
-      .querySelector("svg");
+    const helpIcon = screen.getByRole("link", { name: "Help" }).querySelector("svg");
     expect(helpIcon).not.toHaveClass("text-brand-secondary");
   });
 
   it("marks the current section", () => {
     setPathname("/library");
-    renderSidebar({ expanded: true });
-    expect(screen.getByRole("link", { name: "Library" })).toHaveClass(
-      "bg-secondary",
-    );
-    expect(screen.getByRole("link", { name: "Assets" })).not.toHaveClass(
-      "bg-secondary",
-    );
+    renderSidebar(true);
+    expect(screen.getByRole("link", { name: "Library" })).toHaveClass("bg-secondary");
+    expect(screen.getByRole("link", { name: "Assets" })).not.toHaveClass("bg-secondary");
   });
 
   it("treats every create route as the create destination", () => {
     setPathname("/create/image");
-    renderSidebar({ expanded: true });
-    expect(screen.getByRole("link", { name: "Create" })).toHaveClass(
-      "bg-secondary",
-    );
+    renderSidebar(true);
+    expect(screen.getByRole("link", { name: "Create" })).toHaveClass("bg-secondary");
   });
 
   it("hands the expand control back to the shell", async () => {
     const onToggle = vi.fn();
-    renderSidebar({ expanded: false, onToggle });
-    await userEvent.click(
-      screen.getByRole("button", { name: "Expand sidebar" }),
-    );
+    renderSidebar(false, onToggle);
+    await userEvent.click(screen.getByRole("button", { name: "Expand sidebar" }));
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
 
   it("links to the composer from the new generation call to action", () => {
-    renderSidebar({ expanded: true });
-    expect(
-      screen.getByRole("link", { name: /New generation/ }),
-    ).toHaveAttribute("href", "/create/video");
+    renderSidebar(true);
+    expect(screen.getByRole("link", { name: /New generation/ })).toHaveAttribute("href", "/create/video");
   });
 });
 
 describe("sidebar profile menu", () => {
   it("keeps the balance and settings inside the profile", async () => {
-    renderSidebar({ expanded: true });
+    renderSidebar(true);
     await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
@@ -138,16 +116,12 @@ describe("sidebar profile menu", () => {
     expect(balance).toHaveAttribute("href", "/settings/billing");
     expect(balance).toHaveTextContent("$10.54");
 
-    expect(
-      within(menu).getByRole("menuitem", { name: "Settings" }),
-    ).toHaveAttribute("href", "/settings/account");
-    expect(
-      within(menu).getByRole("menuitem", { name: /Sign out/ }),
-    ).toHaveAttribute("href", "/login");
+    expect(within(menu).getByRole("menuitem", { name: "Settings" })).toHaveAttribute("href", "/settings/account");
+    expect(within(menu).getByRole("menuitem", { name: /Sign out/ })).toHaveAttribute("href", "/login");
   });
 
   it("shows the same entries from the collapsed rail", async () => {
-    renderSidebar({ expanded: false });
+    renderSidebar(false);
     await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
@@ -159,7 +133,7 @@ describe("sidebar profile menu", () => {
   });
 
   it("never mentions credits", () => {
-    renderSidebar({ expanded: true });
+    renderSidebar(true);
     expect(screen.queryByText(/credit/i)).not.toBeInTheDocument();
   });
 });
@@ -171,17 +145,13 @@ describe("mobile drawer", () => {
 
     expect(within(dialog).getByRole("link", { name: "Create" })).toBeVisible();
     expect(within(dialog).getByRole("link", { name: "Library" })).toBeVisible();
-    expect(
-      within(dialog).getByRole("link", { name: /New generation/ }),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByRole("link", { name: /New generation/ })).toBeInTheDocument();
   });
 
   it("closes from its unexpand control", async () => {
     const { onOpenChange } = renderDrawer(true);
     const dialog = await screen.findByRole("dialog");
-    await userEvent.click(
-      within(dialog).getByRole("button", { name: "Close navigation" }),
-    );
+    await userEvent.click(within(dialog).getByRole("button", { name: "Close navigation" }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
@@ -195,24 +165,53 @@ describe("mobile drawer", () => {
   it("reveals the account panel inline", async () => {
     renderDrawer(true);
     const dialog = await screen.findByRole("dialog");
-    await userEvent.click(
-      within(dialog).getByRole("button", { name: "Account menu" }),
-    );
+    await userEvent.click(within(dialog).getByRole("button", { name: "Account menu" }));
 
     const panel = await screen.findByRole("dialog");
-    expect(
-      within(panel).getByRole("link", { name: /Balance/ }),
-    ).toHaveAttribute("href", "/settings/billing");
-    expect(
-      within(panel).getByRole("link", { name: "Settings" }),
-    ).toBeInTheDocument();
-    expect(
-      within(panel).getByRole("button", { name: /Sign out/ }),
-    ).toBeVisible();
+    expect(within(panel).getByRole("link", { name: /Balance/ })).toHaveAttribute("href", "/settings/billing");
+    expect(within(panel).getByRole("link", { name: "Settings" })).toBeInTheDocument();
+    expect(within(panel).getByRole("button", { name: /Sign out/ })).toBeVisible();
+  });
+
+  it("closes the inline account on escape", async () => {
+    renderDrawer(true);
+    const dialog = await screen.findByRole("dialog");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Account menu" }));
+    expect(await screen.findByRole("link", { name: /Balance/ })).toBeVisible();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("link", { name: /Balance/ })).not.toBeInTheDocument());
+  });
+
+  it("closes the inline account when the page is tapped elsewhere", async () => {
+    renderDrawer(true);
+    const dialog = await screen.findByRole("dialog");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Account menu" }));
+    expect(await screen.findByRole("link", { name: /Balance/ })).toBeVisible();
+
+    await userEvent.click(document.body);
+
+    expect(screen.queryByRole("link", { name: /Balance/ })).not.toBeInTheDocument();
   });
 
   it("does not render when closed", () => {
     renderDrawer(false);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("collapsed rail tooltip", () => {
+  it("names an icon-only destination on hover", async () => {
+    renderSidebar(false);
+    await userEvent.hover(screen.getByRole("link", { name: "Library" }));
+
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Library");
+  });
+
+  it("stays quiet while the rail is expanded", async () => {
+    renderSidebar(true);
+    await userEvent.hover(screen.getByRole("link", { name: "Library" }));
+
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
   });
 });

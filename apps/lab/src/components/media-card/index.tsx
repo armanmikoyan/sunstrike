@@ -1,102 +1,17 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowUpRight, Film, ImageIcon, Play } from "lucide-react";
-import { VideoWithFallback } from "@/components/video-with-fallback";
-import { cn } from "@/lib/utils";
-import { mediaCardCopy } from "./constants";
+import { cn } from "cn";
+import { MediaCardMedia } from "./media-card-media";
+import { MediaCardOverlay } from "./media-card-overlay";
 import type { MediaCardProps } from "./types";
 
-export function MediaCard({
-  item,
-  className,
-  aspect,
-  priority = false,
-  showMeta = true,
-}: MediaCardProps) {
+export function MediaCard({ item, className, aspect, priority = false, showMeta = true }: MediaCardProps) {
   return (
-    <article
-      className={cn(
-        "group relative overflow-hidden rounded-xl bg-card",
-        className,
-      )}
-    >
+    <article className={cn("group relative overflow-hidden rounded-xl bg-card", className)}>
       <div
-        className="relative aspect-[3/4] w-full overflow-hidden bg-secondary"
+        className="relative aspect-3/4 w-full overflow-hidden bg-secondary"
         style={aspect ? { aspectRatio: aspect } : undefined}
       >
-        {item.kind === "video" ? (
-          <VideoWithFallback
-            src={item.src}
-            poster={item.poster}
-            fallback={item.fallback}
-            preload={priority ? "auto" : "metadata"}
-            className="absolute inset-0 size-full object-cover"
-          />
-        ) : (
-          <Image
-            src={item.poster}
-            alt={item.title}
-            fill
-            priority={priority}
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-            className="object-cover transition-opacity duration-300"
-          />
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/0 to-black/15 opacity-80" />
-
-        <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
-          <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-black/45 px-2 py-1 text-xs text-white/85 lg:text-[0.6875rem] backdrop-blur-md">
-            {item.kind === "video" ? (
-              <Film className="size-3" />
-            ) : (
-              <ImageIcon className="size-3" />
-            )}
-            {item.kind === "video" ? "Video" : "Image"}
-            {item.kind === "video" ? (
-              <span className="font-mono text-white/65">{item.duration}</span>
-            ) : null}
-          </span>
-        </div>
-
-        <div className="absolute inset-x-0 bottom-0">
-          <div className="pointer-events-none p-3 opacity-0 transition-opacity duration-200 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100">
-            <p className="line-clamp-2 text-xs leading-relaxed text-white/75 lg:text-[0.6875rem]">
-              {item.prompt}
-            </p>
-            <div className="mt-2.5 flex items-center gap-1.5">
-              <Link
-                href={`/create/${item.kind}`}
-                className="flex h-8 items-center gap-1.5 rounded-md bg-foreground px-2.5 text-xs font-medium text-background lg:text-[0.6875rem] transition-colors hover:bg-foreground/90"
-              >
-                <Play className="size-3 fill-current" />
-                {mediaCardCopy.remix}
-              </Link>
-              <Link
-                href="/explore"
-                className="flex h-8 items-center gap-1.5 rounded-md border border-white/15 bg-black/35 px-2.5 text-xs font-medium text-white/85 lg:text-[0.6875rem] backdrop-blur transition-colors hover:bg-black/55 hover:text-white"
-              >
-                {mediaCardCopy.details}
-                <ArrowUpRight className="size-3" />
-              </Link>
-            </div>
-          </div>
-
-          {showMeta ? (
-            <div className="p-3 pt-0">
-              <div className="flex items-end justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-white lg:text-[0.75rem]">
-                    {item.title}
-                  </p>
-                  <p className="mt-0.5 truncate text-xs text-white/65 lg:text-[0.6875rem]">
-                    {item.model}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </div>
+        <MediaCardMedia item={item} priority={priority} />
+        <MediaCardOverlay item={item} showMeta={showMeta} />
       </div>
     </article>
   );

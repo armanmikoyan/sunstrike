@@ -25,21 +25,19 @@ export function Login() {
             className="absolute inset-0 size-full object-cover"
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-[#08090b]/20 to-[#08090b]/70" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#08090b] via-[#08090b]/20 to-[#08090b]/70" />
 
         <div className="relative flex min-h-screen flex-col justify-between p-8 xl:p-10">
           <LogoLockup className="w-72" />
 
-          <div className="max-w-[31.25rem]">
+          <div className="max-w-125">
             <p className="text-xs lg:text-[0.6875rem] text-white/70">{loginCopy.brand}</p>
             <h1 className="mt-4 text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-[0.98] tracking-[-0.06em] text-white">
               {loginCopy.heroTitleBefore}
               <br />
               <span className="font-display font-normal">{loginCopy.heroTitleAccent}</span>
             </h1>
-            <p className="mt-4 max-w-[22.5rem] text-xs lg:text-[0.6875rem] leading-relaxed text-white/55">
-              {loginCopy.heroDescription}
-            </p>
+            <p className="mt-4 max-w-90 leading-relaxed text-white/55">{loginCopy.heroDescription}</p>
 
             <div className="mt-7 flex items-end gap-2">
               {thumbnails.map((item, index) => (
@@ -52,18 +50,16 @@ export function Login() {
                   }}
                 >
                   <Image src={item.poster} alt={item.title} fill sizes="120px" className="object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                  <span className="absolute bottom-1.5 left-1.5 text-xs lg:text-[0.6875rem] text-white/70">
-                    {item.title}
-                  </span>
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
+                  <span className="absolute bottom-1.5 left-1.5 text-white/70">{item.title}</span>
                 </div>
               ))}
               <div className="ml-1 flex flex-col gap-2 pb-1">
-                <span className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-white/70">
+                <span className="flex items-center gap-1.5 text-white/70">
                   <Clapperboard className="size-3 text-white/70" />
                   {loginCopy.motion}
                 </span>
-                <span className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-white/70">
+                <span className="flex items-center gap-1.5 text-white/70">
                   <Maximize className="size-3 text-white/70" />
                   {loginCopy.upscale}
                 </span>
@@ -84,12 +80,10 @@ export function Login() {
         </div>
 
         <div className="flex flex-1 items-center justify-center px-5 py-10">
-          <div className="w-full max-w-[21.25rem]">
+          <div className="w-full max-w-85">
             <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{loginCopy.eyebrow}</p>
             <h2 className="mt-3 text-[1.75rem] font-medium tracking-[-0.05em]">{loginCopy.title}</h2>
-            <p className="mt-2 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
-              {loginCopy.description}
-            </p>
+            <p className="mt-2 leading-relaxed text-muted-foreground">{loginCopy.description}</p>
 
             <div className="mt-6 space-y-3">
               <div>
@@ -99,7 +93,7 @@ export function Login() {
                 <Input
                   type="email"
                   placeholder={loginCopy.emailPlaceholder}
-                  className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 text-xs lg:text-[0.6875rem] placeholder:text-muted-foreground"
+                  className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
                 />
               </div>
               <div>
@@ -117,13 +111,10 @@ export function Login() {
                 <Input
                   type="password"
                   placeholder={loginCopy.passwordPlaceholder}
-                  className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 text-xs lg:text-[0.6875rem] placeholder:text-muted-foreground"
+                  className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
                 />
               </div>
-              <Button
-                asChild
-                className="h-10 w-full rounded-lg bg-brand text-xs lg:text-[0.6875rem] font-semibold text-brand-foreground hover:bg-brand-hover"
-              >
+              <Button asChild size="cta" className="w-full font-semibold">
                 <Link href="/">
                   {loginCopy.signIn}
                   <ArrowRight className="size-3.5" />
@@ -140,7 +131,7 @@ export function Login() {
             <Button
               asChild
               variant="outline"
-              className="h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/5"
+              className="h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
             >
               <Link href="/">
                 <Globe className="size-3.5" />
@@ -148,14 +139,14 @@ export function Login() {
               </Link>
             </Button>
 
-            <p className="mt-6 text-center text-xs lg:text-[0.6875rem] text-muted-foreground">
+            <p className="mt-6 text-center text-muted-foreground">
               {loginCopy.newTo}{" "}
               <Link href="/" className="font-medium text-foreground transition-opacity hover:opacity-80">
                 {loginCopy.createStudio}
               </Link>
             </p>
 
-            <p className="mt-8 text-center text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
+            <p className="mt-8 text-center leading-relaxed text-muted-foreground">
               {loginCopy.termsBefore}
               <Link href="/help" className="underline underline-offset-2">
                 {loginCopy.terms}
@@ -169,9 +160,7 @@ export function Login() {
           </div>
         </div>
 
-        <div className="p-5 text-center text-xs lg:text-[0.6875rem] text-muted-foreground lg:hidden">
-          {loginCopy.footer}
-        </div>
+        <div className="p-5 text-center text-muted-foreground lg:hidden">{loginCopy.footer}</div>
       </section>
     </main>
   );

@@ -1,9 +1,6 @@
 import { Button } from "@/ui/button";
 
-export function QuantityButton({
-  children,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function QuantityButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <Button
       type="button"

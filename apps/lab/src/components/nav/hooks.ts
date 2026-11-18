@@ -1,42 +1,19 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { PANEL_GUTTER, PANEL_MAX_WIDTH } from "./constants";
 import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
-
-const NARROW_QUERY = "(max-width: 767px)";
-
-/** Matches the panel's `max-w-[70rem]` and keeps a small gutter to the shell edge. */
-const PANEL_MAX_WIDTH = 1120;
-const PANEL_GUTTER = 8;
-
-/** Nothing to subscribe to: the platform never changes during a session. */
-const subscribeNothing = () => () => {};
-
-const getShortcut = () =>
-  /Mac|iPhone|iPad/.test(navigator.userAgent) ? "\u2318 K" : "Ctrl K";
-const getShortcutOnServer = () => "Ctrl K";
-
-const subscribeNarrow = (onChange: () => void) => {
-  const media = window.matchMedia(NARROW_QUERY);
-  media.addEventListener("change", onChange);
-  return () => media.removeEventListener("change", onChange);
-};
-
-const getNarrow = () => window.matchMedia(NARROW_QUERY).matches;
-const getNarrowOnServer = () => false;
+  getNarrow,
+  getNarrowOnServer,
+  getShortcut,
+  getShortcutOnServer,
+  subscribeNarrow,
+  subscribeNothing,
+} from "./utils";
 
 /** The platform's own hotkey label, resolved after mount so hydration is quiet. */
 export function useShortcutLabel() {
-  return useSyncExternalStore(
-    subscribeNothing,
-    getShortcut,
-    getShortcutOnServer,
-  );
+  return useSyncExternalStore(subscribeNothing, getShortcut, getShortcutOnServer);
 }
 
 export function useCompactNav() {
@@ -69,17 +46,9 @@ export function useMegaMenu() {
       const header = trigger?.closest("header");
       if (trigger && header) {
         const headerWidth = header.getBoundingClientRect().width;
-        const width = Math.max(
-          0,
-          Math.min(PANEL_MAX_WIDTH, headerWidth - PANEL_GUTTER * 2),
-        );
-        const offset =
-          trigger.getBoundingClientRect().left -
-          header.getBoundingClientRect().left;
-        const maxLeft = Math.max(
-          PANEL_GUTTER,
-          headerWidth - width - PANEL_GUTTER,
-        );
+        const width = Math.max(0, Math.min(PANEL_MAX_WIDTH, headerWidth - PANEL_GUTTER * 2));
+        const offset = trigger.getBoundingClientRect().left - header.getBoundingClientRect().left;
+        const maxLeft = Math.max(PANEL_GUTTER, headerWidth - width - PANEL_GUTTER);
         setPanelWidth(width);
         setPanelLeft(Math.min(Math.max(PANEL_GUTTER, offset), maxLeft));
       }

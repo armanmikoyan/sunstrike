@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { legalUpdated } from "@/components/legal/constants";
-import { siteUrl } from "@/lib/site";
+import { LEGAL_UPDATED } from "@/components/legal/constants";
 
-const updated = new Date(`${legalUpdated.iso}T00:00:00.000Z`);
+const SITE_URL = process.env.SITE_URL ?? "https://chronolab.ai";
+const updated = new Date(`${LEGAL_UPDATED.iso}T00:00:00.000Z`);
 
 /**
  * Only the marketing and legal pages belong here. The studio, the library and
@@ -11,37 +11,37 @@ const updated = new Date(`${legalUpdated.iso}T00:00:00.000Z`);
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: `${siteUrl}/`,
+      url: `${SITE_URL}/`,
       lastModified: updated,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${siteUrl}/explore`,
+      url: `${SITE_URL}/explore`,
       lastModified: updated,
       changeFrequency: "daily",
       priority: 0.8,
     },
     {
-      url: `${siteUrl}/pricing`,
+      url: `${SITE_URL}/pricing`,
       lastModified: updated,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
-      url: `${siteUrl}/help`,
+      url: `${SITE_URL}/help`,
       lastModified: updated,
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
-      url: `${siteUrl}/privacy`,
+      url: `${SITE_URL}/privacy`,
       lastModified: updated,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${siteUrl}/terms`,
+      url: `${SITE_URL}/terms`,
       lastModified: updated,
       changeFrequency: "yearly",
       priority: 0.3,

@@ -2,73 +2,43 @@
 
 import Link from "next/link";
 import Script from "next/script";
-import { ChevronDown, PanelLeft } from "lucide-react";
+import { PanelLeft } from "lucide-react";
 import { Chronosphere } from "@/components/brand";
-import { cn } from "@/lib/utils";
-import { megaMenus, navCopy } from "./constants";
+import { MEGA_MENUS, NAV_COPY } from "./constants";
 import { useMegaMenu } from "./hooks";
 import { MegaMenuPanel } from "./mega-menu-panel";
 import { NavBalance } from "./nav-balance";
+import { NavMenuLinks } from "./nav-menu-links";
 import { NavNotifications } from "./nav-notifications";
 import { NavSearch } from "./nav-search";
 import type { TopNavProps } from "./types";
 
 export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
-  const { openMenu, panelLeft, panelWidth, open, close, scheduleClose, cancelClose, registerTrigger } = useMegaMenu();
-
-  const activeMenu = megaMenus.find((menu) => menu.key === openMenu) ?? null;
+  const menu = useMegaMenu();
+  const activeMenu = MEGA_MENUS.find((item) => item.key === menu.openMenu) ?? null;
 
   return (
-    <header className="chrome-bar sticky top-0 z-40 h-11 border-b border-border" onMouseLeave={scheduleClose}>
+    <header className="chrome-bar sticky top-0 z-40 h-11 border-b border-border" onMouseLeave={menu.scheduleClose}>
       <Script src="/brand/violet-orb.js" strategy="afterInteractive" />
       <div className="flex h-full w-full items-center gap-2 pl-3 pr-2 sm:pl-5">
         <button
           type="button"
           ref={menuButtonRef}
           onClick={onOpenMenu}
-          aria-label={navCopy.openNavigation}
+          aria-label={NAV_COPY.openNavigation}
           className="-ml-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:hidden"
         >
-          <PanelLeft className="size-[1.125rem]" strokeWidth={1.8} />
+          <PanelLeft className="size-4.5" strokeWidth={1.8} />
         </button>
         <Link
           href="/"
-          aria-label={navCopy.home}
+          aria-label={NAV_COPY.home}
           className="-ml-1 my-1 shrink-0 rounded-lg p-0.5 outline-none transition-colors hover:bg-white/6 focus-visible:ring-2 focus-visible:ring-white/30"
         >
           <Chronosphere className="size-7 sm:size-8" />
         </Link>
 
-        <nav aria-label={navCopy.tools} className="hidden min-w-0 flex-1 items-center gap-0.5 lg:flex">
-          {megaMenus.map((menu) => {
-            const active = openMenu === menu.key;
-            return (
-              <div
-                key={menu.key}
-                ref={registerTrigger(menu.key)}
-                className="shrink-0"
-                onMouseEnter={() => open(menu.key)}
-                onMouseLeave={scheduleClose}
-              >
-                <Link
-                  href={menu.href}
-                  onFocus={() => open(menu.key)}
-                  onClick={close}
-                  aria-expanded={active}
-                  className={cn(
-                    "flex h-8 items-center gap-1 rounded-lg px-2 text-xs lg:text-[0.6875rem] font-medium text-muted-foreground transition-colors hover:bg-white/4 hover:text-foreground",
-                    active && "bg-white/5.5 text-foreground",
-                  )}
-                >
-                  {menu.label}
-                  <ChevronDown
-                    className={cn("size-3 opacity-45 transition-transform", active && "rotate-180 opacity-70")}
-                  />
-                </Link>
-              </div>
-            );
-          })}
-        </nav>
+        <NavMenuLinks menu={menu} />
 
         <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-1.5 lg:flex-none">
           <NavSearch />
@@ -78,8 +48,8 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
       </div>
 
       {activeMenu ? (
-        <div onMouseEnter={cancelClose} onMouseLeave={scheduleClose} className="hidden lg:block">
-          <MegaMenuPanel menu={activeMenu} onClose={close} left={panelLeft} width={panelWidth} />
+        <div onMouseEnter={menu.cancelClose} onMouseLeave={menu.scheduleClose} className="hidden lg:block">
+          <MegaMenuPanel menu={activeMenu} onClose={menu.close} left={menu.panelLeft} width={menu.panelWidth} />
         </div>
       ) : null}
     </header>

@@ -1,12 +1,10 @@
-export const featuredIds = ["02", "09", "14", "17"];
+import { mediaById } from "@/mocks/media";
 
-export const pricingPoints = [
-  "No subscription",
-  "Balance never expires",
-  "Cost shown up front",
-];
+export const FEATURED_IDS = ["02", "09", "14", "17"];
 
-export const pricingMosaicTiles = [
+export const PRICING_POINTS = ["No subscription", "Balance never expires", "Cost shown up front"];
+
+export const PRICING_MOSAIC_TILES = [
   {
     id: "01",
     label: "16:9",
@@ -23,7 +21,7 @@ export const pricingMosaicTiles = [
   { id: "07", label: "4:3", span: "col-span-2 lg:col-span-3" },
 ];
 
-export const homeCopy = {
+export const HOME_COPY = {
   gallery: {
     titleBefore: "Explore the inside of every ",
     titleAccent: "frame",
@@ -39,8 +37,9 @@ export const homeCopy = {
     primaryAction: "See pricing",
     secondaryAction: "Billing dashboard",
     resultsTitle: "Results, priced up front",
-    resultsDescription:
-      "A few outputs across every ratio, with the cost shown.",
+    resultsDescription: "A few outputs across every ratio, with the cost shown.",
     resultsAction: "Open gallery",
   },
 };
+
+export const FEATURED = FEATURED_IDS.map((id) => mediaById(id)).filter((item) => item !== undefined);

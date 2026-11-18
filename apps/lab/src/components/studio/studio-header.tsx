@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { Button } from "@/ui/button";
-import { formatUSD } from "@/lib/pricing";
-import { cn } from "@/lib/utils";
-import { studioCopy, studioModels } from "./constants";
+import { formatUSD } from "@/components/pricing/utils";
+import { cn } from "cn";
+import { STUDIO_COPY, STUDIO_MODELS } from "./constants";
 import type { StudioHeaderProps } from "./types";
 
 export function StudioHeader({ mode, credits }: StudioHeaderProps) {
   const isVideo = mode === "video";
-  const copy = studioCopy.header;
 
   return (
     <div className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border px-3 sm:px-4">
@@ -19,12 +18,12 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           size="icon"
           className="size-7 rounded-md text-muted-foreground hover:bg-white/5 hover:text-foreground"
         >
-          <Link href="/" aria-label={copy.backHome}>
+          <Link href="/" aria-label={STUDIO_COPY.header.backHome}>
             <ArrowLeft className="size-3.5" />
           </Link>
         </Button>
         <span className="h-4 w-px bg-border" />
-        <span className="w-[4.75rem] truncate text-xs lg:text-[0.6875rem] font-medium">{studioModels[mode].label}</span>
+        <span className="w-19 truncate text-xs lg:text-[0.6875rem] font-medium">{STUDIO_MODELS[mode].label}</span>
         <div className="ml-1 hidden items-center gap-0.5 rounded-lg border border-white/6 bg-white/2.5 p-0.5 sm:flex">
           <Link
             href="/create/video"
@@ -33,7 +32,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
               isVideo && "bg-white/8 text-foreground",
             )}
           >
-            {copy.video}
+            {STUDIO_COPY.header.video}
           </Link>
           <Link
             href="/create/image"
@@ -42,7 +41,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
               !isVideo && "bg-white/8 text-foreground",
             )}
           >
-            {copy.image}
+            {STUDIO_COPY.header.image}
           </Link>
         </div>
       </div>
@@ -58,7 +57,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           className="h-7 rounded-md border-white/9 bg-white/2.5 px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/5 hover:text-foreground"
         >
           <Link href="/library">
-            {copy.library}
+            {STUDIO_COPY.header.library}
             <ArrowUpRight className="size-3" />
           </Link>
         </Button>

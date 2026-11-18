@@ -1,9 +1,9 @@
-import type { ReactElement, RefObject } from "react";
+import type { ElementType, ReactElement, RefObject } from "react";
 
 export type SidebarItemProps = {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: ElementType;
   iconClassName?: string;
   active: boolean;
   expanded: boolean;
@@ -23,22 +23,57 @@ export type AccountMenuProps = {
   align: "start" | "end";
 };
 
-export type SidebarBodyProps = {
-  expanded: boolean;
-  onToggle: () => void;
+export type SidebarProps = Pick<SidebarToggleProps, "expanded" | "onToggle">;
+
+export type SidebarBodyProps = SidebarProps & {
   showToggle?: boolean;
   onNavigate?: () => void;
   /** Drawer only: the account pane expands inline over the footer links. */
   inlineAccount?: boolean;
 };
 
-export type SidebarProps = {
-  expanded: boolean;
-  onToggle: () => void;
-};
-
 export type MobileSidebarProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   returnFocusRef?: RefObject<HTMLButtonElement | null>;
+};
+
+export type NavLink = Pick<SidebarItemProps, "label" | "href" | "icon" | "iconClassName">;
+
+export type PricingIconProps = {
+  className?: string;
+  strokeWidth?: number;
+};
+
+export type SidebarExpandedState = {
+  expanded: boolean;
+  showToggle: boolean;
+};
+
+export type SidebarToggleProps = SidebarExpandedState & {
+  onToggle: () => void;
+};
+
+export type SidebarNewGenerationProps = SidebarExpandedState & {
+  onNavigate?: () => void;
+};
+
+export type SidebarLinksProps = {
+  links: NavLink[];
+  expanded: boolean;
+  rail: boolean;
+  isActive: (href: string) => boolean;
+  onNavigate?: () => void;
+};
+
+export type SidebarInlineAccountProps = {
+  onNavigate?: () => void;
+};
+
+export type SidebarAccountTriggerProps = SidebarExpandedState;
+
+export type MobileSidebarPanelProps = {
+  panelRef: RefObject<HTMLDivElement | null>;
+  overlayRef: RefObject<HTMLButtonElement | null>;
+  onClose: () => void;
 };

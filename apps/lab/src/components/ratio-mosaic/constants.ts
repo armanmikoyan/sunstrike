@@ -1,5 +1,5 @@
 /** Grid placement per tile, tuned so the mosaic keeps its rhythm on desktop. */
-export const mosaicTiles = [
+export const MOSAIC_TILES = [
   {
     id: "09",
     label: "9:16",
@@ -14,11 +14,10 @@ export const mosaicTiles = [
   { id: "17", label: "3:4", span: "hidden md:block md:col-span-3" },
 ];
 
-export const mosaicCopy = {
+export const MOSAIC_COPY = {
   titleBefore: "Every frame finds its ",
   titleAccent: "shape",
-  description:
-    "Images and motion across every ratio, without rebuilding the shot.",
-  count: `${mosaicTiles.length} frames`,
+  description: "Images and motion across every ratio, without rebuilding the shot.",
+  count: `${MOSAIC_TILES.length} frames`,
   action: "Explore more",
 };

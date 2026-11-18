@@ -1,12 +1,10 @@
-import type { MediaKind } from "@/lib/media";
-import type { ExploreGalleryState } from "./hooks";
+import type { MediaKind } from "@/components/media-card/types";
+import type { useExploreGallery } from "./hooks";
 
 export type KindFilter = "all" | MediaKind;
 
-export type ExploreResultsProps = {
-  gallery: ExploreGalleryState;
-};
+export type ExploreGalleryState = ReturnType<typeof useExploreGallery>;
 
-export type ExploreToolbarProps = {
+export type ExploreGalleryProps = {
   gallery: ExploreGalleryState;
 };

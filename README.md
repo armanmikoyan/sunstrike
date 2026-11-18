@@ -4,14 +4,16 @@ A dark-studio generative media interface. Generate cinematic video and stills
 from a prompt, pay as you go, and keep every frame.
 
 This is an npm-workspace monorepo. `apps/lab` is the Next.js App Router
-frontend with local demo data — no live backend, database or auth yet.
-`apps/engine` is the modular-monolith backend, scaffolded but not wired. Prices,
-media and generation results are still simulated in `apps/lab/src/mocks`;
-`apps/lab/src/lib` holds the domain contract and pure rules.
+frontend with local demo data and an optional Supabase Auth sign-in — no live
+API or database yet. Browsing the studio, library and assets stays open to
+signed-out visitors; generating asks for an account, and account settings are
+private. `apps/engine` is the modular-monolith backend, scaffolded
+but not wired. Prices, media and generation results are still simulated in
+`apps/lab/src/mocks`; types and pure rules live beside the component that owns
+them.
 
-The UI is modelled on the high-level design contract in
-`apps/lab/src/lib/design`: six entities, the `/api/v1` surface and the
-generation user flow. What is left before real users, real cards and real
+The UI is modelled on the high-level design contract: six entities, the
+`/api/v1` surface and the generation user flow. What is left before real users, real cards and real
 renders is tracked in [`ROADMAP.md`](./ROADMAP.md), mapped to the design's
 functional and non-functional requirements.
 
@@ -27,6 +29,10 @@ npm run start -- -p 3131
 
 The engine reads `PORT` (default `4000`), `CORS_ORIGIN` (comma-separated,
 defaults to `http://localhost:3000`) and `NODE_ENV` (`development` unless set).
+Copy `apps/engine/.env.example` to `apps/engine/.env` and
+`apps/lab/.env.example` to `apps/lab/.env.local`, then fill the Supabase project
+URL and anon key to turn sign-in on; without them the studio stays browsable and
+`/login` explains what is missing.
 
 Scripts run from the repo root and delegate to the workspace. `typecheck`
 covers both apps; lint, tests and e2e run in `apps/lab`.
@@ -56,17 +62,17 @@ npm run check            # typecheck + lint + coverage
   `metadata` where the route has one, so markup, styles and chrome come from
   the component and the layout.
 - `src/components/<feature>` — one folder per product feature and per route
-  surface (`home`, `library`, `pricing`, …). The entry point `index.tsx` owns
-  the markup, styles and composition. A feature adds `constants.ts` for static
-  data and visible copy, `hooks.ts` for stateful logic, `state.ts` for shared
-  Jotai atoms, `types.ts` for shaped props, plus any private parts. Tests sit
-  beside the module they cover (`index.test.tsx`, `page.test.tsx`,
-  `pricing-order-tabs.test.tsx`).
+  surface (`home`, `library`, `pricing`, …). Each file has one job:
+  `index.tsx` is the feature's main component and its logic, never a sibling
+  named after the feature; `types.ts` every named type, `constants.ts` every
+  named constant in `UPPER_SNAKE_CASE`, `utils.ts` every reusable function,
+  `state.ts` every Jotai atom, and `hooks.ts` stateful logic. Private parts
+  stay in the folder too. One type per shape: reuse it through `Pick`, `Omit`,
+  an intersection or a shared prop type instead of redeclaring the same props.
+  Tests sit beside the module they cover (`index.test.tsx`, `utils.test.ts`).
 - `src/ui` — shadcn primitives, a sibling of `src/components`; keep their layout.
-- `src/lib/<name>/` — one folder per library (`design`, `generation`,
-  `notifications`, `media`, `pricing`, `utils`) with `index.ts` and a
-  colocated `index.test.ts`. `design` is the product contract; no demo rows
-  live here.
+- `src/app/auth` — server-only auth: the Supabase service, HTTP helpers,
+  routes, env and server client, plus the proxy session refresh.
 - `src/mocks` — the demo rows the UI renders today (`generation`, `media`,
   `templates`, `notifications`, `pricing`) plus their lookups and tests. This
   is the seam to replace with `/api/v1` data.

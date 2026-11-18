@@ -1,15 +1,28 @@
-import { fireEvent, render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, render } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { VideoWithFallback } from ".";
+
+let onIntersect: IntersectionObserverCallback | null = null;
+const OriginalObserver = globalThis.IntersectionObserver;
+
+class FakeObserver {
+  constructor(callback: IntersectionObserverCallback) {
+    onIntersect = callback;
+  }
+  observe() {}
+  disconnect() {}
+}
+
+afterEach(() => {
+  onIntersect = null;
+  globalThis.IntersectionObserver = OriginalObserver;
+  vi.restoreAllMocks();
+});
 
 describe("video with fallback", () => {
   it("renders a muted, looping, inline player", () => {
     const { container } = render(
-      <VideoWithFallback
-        src="/media/01.mp4"
-        poster="/media/01.jpg"
-        fallback="linear-gradient(#000, #111)"
-      />,
+      <VideoWithFallback src="/media/01.mp4" poster="/media/01.jpg" fallback="linear-gradient(#000, #111)" />,
     );
 
     const video = container.querySelector("video");
@@ -22,12 +35,7 @@ describe("video with fallback", () => {
   });
 
   it("swaps to the gradient when the clip fails", () => {
-    const { container } = render(
-      <VideoWithFallback
-        src="/media/missing.mp4"
-        fallback="linear-gradient(#123, #456)"
-      />,
-    );
+    const { container } = render(<VideoWithFallback src="/media/missing.mp4" fallback="linear-gradient(#123, #456)" />);
 
     fireEvent.error(container.querySelector("video")!);
 
@@ -39,11 +47,7 @@ describe("video with fallback", () => {
 
   it("reveals the player once data is loaded", () => {
     const { container } = render(
-      <VideoWithFallback
-        src="/media/02.mp4"
-        poster="/media/02.jpg"
-        fallback="linear-gradient(#000, #111)"
-      />,
+      <VideoWithFallback src="/media/02.mp4" poster="/media/02.jpg" fallback="linear-gradient(#000, #111)" />,
     );
 
     const video = container.querySelector("video")!;
@@ -51,5 +55,29 @@ describe("video with fallback", () => {
 
     fireEvent.loadedData(video);
     expect(video.className).toContain("opacity-100");
+  });
+});
+
+describe("video playback", () => {
+  it("plays only while the clip is on screen", () => {
+    globalThis.IntersectionObserver = FakeObserver as never;
+    const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);
+    const pause = vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+
+    const { container } = render(
+      <VideoWithFallback src="/media/01.mp4" poster="/media/01.jpg" fallback="linear-gradient(#000, #111)" />,
+    );
+
+    fireEvent.loadedData(container.querySelector("video")!);
+
+    act(() => {
+      onIntersect?.([{ isIntersecting: false } as IntersectionObserverEntry], {} as IntersectionObserver);
+    });
+    expect(pause).toHaveBeenCalled();
+
+    act(() => {
+      onIntersect?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+    });
+    expect(play).toHaveBeenCalled();
   });
 });

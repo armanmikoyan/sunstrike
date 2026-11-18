@@ -1,14 +1,8 @@
 "use client";
 
 import { Faq } from "@/components/faq";
-import { pricingFaqs } from "./constants";
+import { PRICING_FAQS } from "./constants";
 
 export function PricingFaq() {
-  return (
-    <Faq
-      items={pricingFaqs}
-      columns={2}
-      className="mt-4 min-h-[24rem] md:min-h-[16rem] xl:min-h-[13.5rem]"
-    />
-  );
+  return <Faq items={PRICING_FAQS} columns={2} className="mt-4 min-h-96 md:min-h-64 xl:min-h-54" />;
 }

@@ -2,45 +2,18 @@
 
 import { useState } from "react";
 import { Disclosure } from "@/components/disclosure";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
+import type { FaqProps } from "./types";
 
-export type FaqItem = {
-  question: string;
-  answer: string;
-};
-
-type FaqProps = {
-  items: FaqItem[];
-  columns?: 1 | 2;
-  className?: string;
-  itemClassName?: string;
-  questionClassName?: string;
-  answerClassName?: string;
-};
-
-export function Faq({
-  items,
-  columns = 1,
-  className,
-  itemClassName,
-  questionClassName,
-  answerClassName,
-}: FaqProps) {
+export function Faq({ items, columns = 1, className, itemClassName, questionClassName, answerClassName }: FaqProps) {
   const [active, setActive] = useState<number | null>(null);
   const indexed = items.map((item, index) => ({ item, index }));
 
   if (columns === 2) {
-    const columnItems = [0, 1].map((column) =>
-      indexed.filter(({ index }) => index % 2 === column),
-    );
+    const columnItems = [0, 1].map((column) => indexed.filter(({ index }) => index % 2 === column));
 
     return (
-      <div
-        className={cn(
-          "flex flex-col md:grid md:grid-cols-2 md:items-start md:gap-x-12",
-          className,
-        )}
-      >
+      <div className={cn("flex flex-col md:grid md:grid-cols-2 md:items-start md:gap-x-12", className)}>
         {columnItems.map((column, columnIndex) => (
           <div key={columnIndex} className="contents md:flex md:flex-col">
             {column.map(({ item, index }) => (

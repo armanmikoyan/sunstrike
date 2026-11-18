@@ -1,24 +1,14 @@
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import type { SectionHeaderProps } from "./types";
 
-export function SectionHeader({
-  title,
-  description,
-  action,
-  className,
-}: SectionHeaderProps) {
+export function SectionHeader({ title, description, action, className }: SectionHeaderProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between",
-        className,
-      )}
-    >
-      <hgroup className="max-w-[42.5rem]">
+    <div className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
+      <hgroup className="max-w-170">
         <h2 className="font-grotesk text-[1.0625rem] font-semibold uppercase leading-tight tracking-[0.1em] text-foreground sm:text-[1.1875rem]">
           {title}
         </h2>
-        <p className="mt-2 max-w-[35rem] text-sm lg:text-[0.8125rem] leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-140 text-sm lg:text-[0.8125rem] leading-relaxed text-muted-foreground">
           {description}
         </p>
       </hgroup>

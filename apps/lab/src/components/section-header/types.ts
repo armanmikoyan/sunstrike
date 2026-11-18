@@ -1,8 +1,5 @@
-import type { ReactNode } from "react";
+import type { HeadingProps } from "@/components/page-header/types";
 
-export type SectionHeaderProps = {
-  title: ReactNode;
+export type SectionHeaderProps = HeadingProps & {
   description: string;
-  action?: ReactNode;
-  className?: string;
 };

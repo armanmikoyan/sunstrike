@@ -9,12 +9,7 @@ function Harness() {
   const [amount, setAmount] = useState(5);
 
   return (
-    <PricingCustomTopUp
-      videoModels={videoRates}
-      imageModels={imageRates}
-      amount={amount}
-      onAmountChange={setAmount}
-    />
+    <PricingCustomTopUp videoModels={videoRates} imageModels={imageRates} amount={amount} onAmountChange={setAmount} />
   );
 }
 
@@ -28,20 +23,14 @@ describe("custom top-up", () => {
     const slider = screen.getByRole("slider", { name: "Custom top-up amount" });
     expect(slider).toHaveAttribute("aria-valuemin", "5");
     expect(slider).toHaveAttribute("aria-valuenow", "5");
-    expect(
-      screen.getByRole("button", { name: "Decrease amount" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Decrease amount" })).toBeDisabled();
   });
 
   it("steps the amount up one dollar per press", async () => {
     renderCard();
-    await userEvent.click(
-      screen.getByRole("button", { name: "Increase amount" }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: "Increase amount" }));
 
-    expect(
-      screen.getByRole("slider", { name: "Custom top-up amount" }),
-    ).toHaveAttribute("aria-valuenow", "6");
+    expect(screen.getByRole("slider", { name: "Custom top-up amount" })).toHaveAttribute("aria-valuenow", "6");
   });
 
   it("shows the selected model's rate and asset estimate in the box", async () => {

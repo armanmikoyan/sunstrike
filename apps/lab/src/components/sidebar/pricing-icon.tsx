@@ -1,5 +1,6 @@
 import { Gem } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
+import type { PricingIconProps } from "./types";
 
 /**
  * Pricing gets a duotone gem: the outline and the girdle sit in the brand
@@ -11,15 +12,7 @@ import { cn } from "@/lib/utils";
  * through their position: outline, inner V and girdle. A gradient was tried
  * first and read as a cheap stock tint at 18px.
  */
-export type PricingIconProps = {
-  className?: string;
-  strokeWidth?: number;
-};
-
-export function PricingIcon({
-  className,
-  strokeWidth = 1.8,
-}: PricingIconProps) {
+export function PricingIcon({ className, strokeWidth = 1.8 }: PricingIconProps) {
   return (
     <Gem
       className={cn(

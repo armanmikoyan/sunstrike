@@ -15,14 +15,13 @@ import {
 } from "lucide-react";
 import type { MegaMenu } from "./types";
 
-export const megaMenus: MegaMenu[] = [
+export const MEGA_MENUS: MegaMenu[] = [
   {
     key: "image",
     label: "Image",
     eyebrow: "Image generation",
     title: "Images with a point of view",
-    description:
-      "Art-direct a frame with references, precise ratios and production-ready detail.",
+    description: "Art-direct a frame with references, precise ratios and production-ready detail.",
     href: "/create/image",
     cta: "Open image studio",
     features: [
@@ -70,8 +69,7 @@ export const megaMenus: MegaMenu[] = [
     label: "Video",
     eyebrow: "Motion generation",
     title: "Shots that hold up in the edit",
-    description:
-      "Generate cinematic motion from an image or a prompt, then keep the good takes.",
+    description: "Generate cinematic motion from an image or a prompt, then keep the good takes.",
     href: "/create/video",
     cta: "Open video studio",
     features: [
@@ -119,8 +117,7 @@ export const megaMenus: MegaMenu[] = [
     label: "Motion",
     eyebrow: "Camera & performance",
     title: "Direct the movement",
-    description:
-      "Guide the camera and performance without rebuilding the whole frame.",
+    description: "Guide the camera and performance without rebuilding the whole frame.",
     href: "/create/video",
     cta: "Open motion tools",
     features: [
@@ -168,8 +165,7 @@ export const megaMenus: MegaMenu[] = [
     label: "Edit",
     eyebrow: "Post generation",
     title: "Finish the frame",
-    description:
-      "Small, surgical changes without another full generation. Every edit is priced up front.",
+    description: "Small, surgical changes without another full generation. Every edit is priced up front.",
     href: "/create/image",
     cta: "Open edit tools",
     features: [
@@ -202,19 +198,17 @@ export const megaMenus: MegaMenu[] = [
   },
 ];
 
-export const notificationsCopy = {
+export const NOTIFICATIONS_COPY = {
   label: "Notifications",
 };
 
-export const megaMenuCopy = {
-  video: "Video",
-  image: "Image",
+export const MEGA_MENU_COPY = {
   priceNote: "Every generation shows its price before you start.",
   recentGenerations: "Recent generations",
   payg: "Pay as you go",
 };
 
-export const navCopy = {
+export const NAV_COPY = {
   home: "Chronolab.ai home",
   openNavigation: "Open navigation",
   tools: "Studio tools",
@@ -222,3 +216,15 @@ export const navCopy = {
   compactSearch: "Search",
   clearSearch: "Clear search",
 };
+
+/** Human labels for the notification types the API returns. */
+export const NOTIFICATION_TYPE_LABELS: Record<string, string> = {
+  generation_succeeded: "Generation ready",
+  generation_failed: "Generation failed",
+};
+
+export const NARROW_QUERY = "(max-width: 767px)";
+
+/** Matches the panel's `max-w-280` and keeps a small gutter to the shell edge. */
+export const PANEL_MAX_WIDTH = 1120;
+export const PANEL_GUTTER = 8;

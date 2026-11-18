@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { GenerationMode } from "@/lib/generation";
+import type { GenerationMode } from "./types";
 
 /**
  * Generation state owned by the studio. The home prompt composer is a compact

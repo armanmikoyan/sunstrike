@@ -25,7 +25,12 @@ export default defineConfig({
         "src/e2e/**",
         "vitest.*.{ts,tsx}",
         "src/ui/**",
-        "src/app/**/layout.tsx",
+        // Route files are thin Next.js glue: they compose features and export
+        // metadata. Feature behaviour is covered where it lives, in
+        // src/components, src/motion and the data modules.
+        "src/app/**",
+        // Demo fixtures, not product logic. They are replaced by the API.
+        "src/mocks/**",
       ],
       // Floors sit just under today's numbers: enough to catch a regression
       // during the restructure without failing on unrelated churn.

@@ -1,4 +1,4 @@
-export const footerGroups = [
+export const FOOTER_GROUPS = [
   {
     title: "Create",
     links: [
@@ -19,9 +19,8 @@ export const footerGroups = [
   },
 ];
 
-export const footerCopy = {
-  description:
-    "Images and motion in one studio. No subscription, no seat count, no expiring balance.",
+export const FOOTER_COPY = {
+  description: "Images and motion in one studio. No subscription, no seat count, no expiring balance.",
   status: "All systems operational",
   copyright: "© 2026 Chronolab.ai. All frames reserved.",
   terms: "Terms",

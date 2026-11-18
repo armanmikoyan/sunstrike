@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Film } from "lucide-react";
+import { MediaKindBadge } from "@/ui/media-kind-badge";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { mediaById } from "@/mocks/media";
 import type { VideoWallTileProps } from "./types";
@@ -10,7 +10,7 @@ export function VideoWallTile({ id, preload }: VideoWallTileProps) {
 
   return (
     <div
-      className="group relative aspect-[3/4] w-full overflow-hidden rounded-[0.875rem] bg-secondary sm:rounded-[1.125rem]"
+      className="group relative aspect-3/4 w-full overflow-hidden rounded-[0.875rem] bg-secondary sm:rounded-[1.125rem]"
       style={{
         backgroundImage: `url(${item.poster})`,
         backgroundSize: "cover",
@@ -26,28 +26,19 @@ export function VideoWallTile({ id, preload }: VideoWallTileProps) {
           className="absolute inset-0 size-full object-cover"
         />
       ) : (
-        <Image
-          src={item.poster}
-          alt={item.title}
-          fill
-          sizes="18vw"
-          className="object-cover"
-        />
+        <Image src={item.poster} alt={item.title} fill sizes="18vw" className="object-cover" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:p-4">
         <div className="min-w-0">
-          <p className="truncate text-xs font-medium text-white lg:text-[0.6875rem]">
-            {item.title}
-          </p>
-          <p className="mt-0.5 truncate text-xs lg:text-[0.6875rem] text-white/60">
-            {item.model}
-          </p>
+          <p className="truncate text-xs font-medium text-white lg:text-[0.6875rem]">{item.title}</p>
+          <p className="mt-0.5 truncate text-xs lg:text-[0.6875rem] text-white/60">{item.model}</p>
         </div>
-        <span className="flex shrink-0 items-center gap-1 rounded-md border border-white/15 bg-black/40 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-white/80 backdrop-blur">
-          <Film className="size-3" />
-          {item.kind === "video" ? item.duration : "Image"}
-        </span>
+        <MediaKindBadge
+          kind={item.kind}
+          time={item.kind === "video" ? item.duration : undefined}
+          className="shrink-0"
+        />
       </div>
     </div>
   );

@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 
-export type PageHeaderProps = {
-  eyebrow?: string;
-  title: string;
-  description?: string;
+export type HeadingProps = {
+  title: ReactNode;
+  description?: ReactNode;
   action?: ReactNode;
   className?: string;
+};
+
+export type PageHeaderProps = HeadingProps & {
+  eyebrow?: string;
   divider?: boolean;
 };

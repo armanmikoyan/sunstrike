@@ -29,10 +29,7 @@ function RailTooltipInner({ expanded, label, children }: RailTooltipProps) {
   }
 
   return (
-    <Tooltip
-      open={open && !expanded}
-      onOpenChange={(next) => setOpen(next && !expanded)}
-    >
+    <Tooltip open={open && !expanded} onOpenChange={(next) => setOpen(next && !expanded)}>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
       {expanded ? null : (
         <TooltipContent side="right" sideOffset={12} className="font-medium">

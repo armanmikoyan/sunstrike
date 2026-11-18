@@ -2,12 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  aspectRatiosFor,
-  durationsFor,
-  getGenerationCost,
-  type GenerationMode,
-} from "@/lib/generation";
+import type { GenerationMode } from "@/components/studio/types";
+import { aspectRatiosFor, durationsFor, getGenerationCost } from "@/components/studio/utils";
 import { modelOptions } from "@/mocks/generation";
 import {
   aspectRatioAtom,
@@ -17,8 +13,8 @@ import {
   promptAtom,
   selectedModelAtom,
 } from "@/components/studio/state";
-import { useSharedState } from "@/components/studio/use-shared-state";
-import { defaultModel, promptIdeas } from "./constants";
+import { useSharedState } from "@/components/studio/hooks";
+import { DEFAULT_MODEL, PROMPT_IDEAS } from "./constants";
 import type { TypingOptions } from "./types";
 
 /**
@@ -27,11 +23,7 @@ import type { TypingOptions } from "./types";
  */
 export function useTypingCycle(
   words: readonly string[],
-  {
-    typeSpeed = 55,
-    deleteSpeed = 28,
-    pauseDuration = 1600,
-  }: TypingOptions = {},
+  { typeSpeed = 55, deleteSpeed = 28, pauseDuration = 1600 }: TypingOptions = {},
 ) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
@@ -63,15 +55,7 @@ export function useTypingCycle(
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [
-    text,
-    isDeleting,
-    wordIndex,
-    words,
-    typeSpeed,
-    deleteSpeed,
-    pauseDuration,
-  ]);
+  }, [text, isDeleting, wordIndex, words, typeSpeed, deleteSpeed, pauseDuration]);
 
   return text;
 }
@@ -88,12 +72,11 @@ export function usePromptComposer() {
   const [attachment, setAttachment] = useSharedState(attachmentAtom);
 
   const activeModels = modelOptions[mode];
-  const selectedModel =
-    activeModels.find((item) => item.displayName === model) ?? activeModels[0];
+  const selectedModel = activeModels.find((item) => item.displayName === model) ?? activeModels[0];
   const cost = getGenerationCost(mode, selectedModel, duration);
   const aspectOptions = aspectRatiosFor(selectedModel);
   const durationOptions = durationsFor(selectedModel);
-  const typedPlaceholder = useTypingCycle(promptIdeas[mode]);
+  const typedPlaceholder = useTypingCycle(PROMPT_IDEAS[mode]);
 
   // Model capabilities define which settings are legal.
   useEffect(() => {
@@ -108,7 +91,7 @@ export function usePromptComposer() {
 
   const switchMode = (next: GenerationMode) => {
     setMode(next);
-    setModel(defaultModel[next]);
+    setModel(DEFAULT_MODEL[next]);
   };
 
   const submit = () => {
@@ -139,5 +122,3 @@ export function usePromptComposer() {
     submit,
   };
 }
-
-export type PromptComposerState = ReturnType<typeof usePromptComposer>;

@@ -23,10 +23,7 @@ describe("explore gallery", () => {
 
   it("searches titles, prompts and models", async () => {
     render(<ExploreGallery />);
-    await userEvent.type(
-      screen.getByPlaceholderText("Search"),
-      "Chronolab Motion",
-    );
+    await userEvent.type(screen.getByPlaceholderText("Search"), "Chronolab Motion");
 
     expect(frames().length).toBeGreaterThan(0);
     expect(frames().length).toBeLessThan(20);
@@ -34,10 +31,7 @@ describe("explore gallery", () => {
 
   it("shows an empty state when the filters exclude everything", async () => {
     render(<ExploreGallery />);
-    await userEvent.type(
-      screen.getByPlaceholderText("Search"),
-      "nothing-matches-this",
-    );
+    await userEvent.type(screen.getByPlaceholderText("Search"), "nothing-matches-this");
 
     expect(screen.queryAllByRole("article")).toHaveLength(0);
     expect(screen.getByText("No frames found")).toBeInTheDocument();

@@ -1,18 +1,18 @@
 import type { LegalDocument } from "./types";
 
 /** The date shown on both documents and used as their sitemap timestamp. */
-export const legalUpdated = {
+export const LEGAL_UPDATED = {
   label: "17 November 2026",
   iso: "2026-11-17",
 };
 
-export const privacyDocument: LegalDocument = {
+export const PRIVACY_DOCUMENT: LegalDocument = {
   eyebrow: "Legal",
   title: "Privacy policy",
   description:
     "What the studio collects, why it keeps it and the choices you have over your prompts, frames and account.",
-  updated: legalUpdated.label,
-  updatedIso: legalUpdated.iso,
+  updated: LEGAL_UPDATED.label,
+  updatedIso: LEGAL_UPDATED.iso,
   contactEmail: "privacy@chronolab.ai",
   sections: [
     {
@@ -26,9 +26,7 @@ export const privacyDocument: LegalDocument = {
     {
       id: "collect",
       title: "What we collect",
-      paragraphs: [
-        "We collect the details you give us and the details the studio produces while you work.",
-      ],
+      paragraphs: ["We collect the details you give us and the details the studio produces while you work."],
       bullets: [
         "Account details: your email address, your account id and the date you joined.",
         "Generation data: prompts, settings, references you upload and the frames or clips you keep.",
@@ -40,9 +38,7 @@ export const privacyDocument: LegalDocument = {
     {
       id: "use",
       title: "How we use it",
-      paragraphs: [
-        "Every use below is tied to running the product or to a choice you have made.",
-      ],
+      paragraphs: ["Every use below is tied to running the product or to a choice you have made."],
       bullets: [
         "Render your generations and keep them in your library.",
         "Charge your balance and show the ledger it produces.",
@@ -77,9 +73,7 @@ export const privacyDocument: LegalDocument = {
     {
       id: "retention",
       title: "How long we keep it",
-      paragraphs: [
-        "We keep data only as long as the reason we collected it still stands.",
-      ],
+      paragraphs: ["We keep data only as long as the reason we collected it still stands."],
       bullets: [
         "Account and balance records: while your account is open, then as long as tax law requires.",
         "Generations and uploads: until you delete them or close your account.",
@@ -126,13 +120,12 @@ export const privacyDocument: LegalDocument = {
   ],
 };
 
-export const termsDocument: LegalDocument = {
+export const TERMS_DOCUMENT: LegalDocument = {
   eyebrow: "Legal",
   title: "Terms of service",
-  description:
-    "The agreement behind your account, the balance you spend and the frames you make.",
-  updated: legalUpdated.label,
-  updatedIso: legalUpdated.iso,
+  description: "The agreement behind your account, the balance you spend and the frames you make.",
+  updated: LEGAL_UPDATED.label,
+  updatedIso: LEGAL_UPDATED.iso,
   contactEmail: "support@chronolab.ai",
   sections: [
     {
@@ -233,8 +226,21 @@ export const termsDocument: LegalDocument = {
   ],
 };
 
-export const legalCopy = {
+export const LEGAL_COPY = {
   contentsLabel: "On this page",
   updatedPrefix: "Updated",
   contactNote: "Questions about this page",
 };
+
+/** A heading is active once it reaches the reading line under the nav. */
+export const ACTIVATION_OFFSET = 140;
+
+/**
+ * The shortest scroll distance an item gets. The final sections are often too
+ * short to reach the reading line before the page ends, so the last item is
+ * pinned to the bottom and the rail walks backwards from there. Without this,
+ * one wheel step could skip several final sections.
+ */
+export const MIN_GAP = 90;
+
+export const SCROLL_KEYS = new Set(["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "]);

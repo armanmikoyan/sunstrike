@@ -2,32 +2,28 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ExploreGallery } from "@/components/explore-gallery";
 import { PageHeader } from "@/components/page-header";
+import { PageShell } from "@/ui/page-shell";
 import { Button } from "@/ui/button";
-import { exploreCopy } from "./constants";
+import { EXPLORE_COPY } from "./constants";
 
 export function Explore() {
   return (
-    <>
-      <div className="w-full px-5 py-7">
-        <PageHeader
-          eyebrow={exploreCopy.eyebrow}
-          title={exploreCopy.title}
-          description={exploreCopy.description}
-          divider={false}
-          action={
-            <Button
-              asChild
-              className="h-10 rounded-lg bg-brand px-4 text-sm font-medium text-brand-foreground hover:bg-brand-hover lg:text-[0.6875rem]"
-            >
-              <Link href="/create/video">
-                {exploreCopy.action}
-                <ArrowUpRight className="size-3.5" />
-              </Link>
-            </Button>
-          }
-        />
-        <ExploreGallery />
-      </div>
-    </>
+    <PageShell>
+      <PageHeader
+        eyebrow={EXPLORE_COPY.eyebrow}
+        title={EXPLORE_COPY.title}
+        description={EXPLORE_COPY.description}
+        divider={false}
+        action={
+          <Button asChild size="cta">
+            <Link href="/create/video">
+              {EXPLORE_COPY.action}
+              <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Button>
+        }
+      />
+      <ExploreGallery />
+    </PageShell>
   );
 }

@@ -3,19 +3,15 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/ui/button";
-import { settingsCopy } from "./constants";
+import { SETTINGS_COPY } from "./constants";
 
 export function SettingsSaveButton() {
   const [saved, setSaved] = useState(false);
 
   return (
-    <Button
-      type="button"
-      onClick={() => setSaved(true)}
-      className="h-8 rounded-lg bg-brand px-3 text-xs lg:text-[0.6875rem] font-medium text-brand-foreground hover:bg-brand-hover"
-    >
+    <Button type="button" size="cta-xs" onClick={() => setSaved(true)}>
       {saved ? <Check className="size-3" /> : null}
-      {saved ? settingsCopy.save.saved : settingsCopy.save.action}
+      {saved ? SETTINGS_COPY.save.saved : SETTINGS_COPY.save.action}
     </Button>
   );
 }

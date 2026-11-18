@@ -1,6 +1,6 @@
 import { ArrowDownToLine, Coins, Film, Image as ImageIcon } from "lucide-react";
 
-export const billingTransactions = [
+export const BILLING_TRANSACTIONS = [
   {
     id: "txn_20931",
     title: "Chronolab Motion 2 · After Rain",
@@ -57,10 +57,9 @@ export const billingTransactions = [
   },
 ];
 
-export const billingCopy = {
+export const BILLING_COPY = {
   title: "Billing",
-  description:
-    "One balance for every model. No subscription, no expiry, no seat minimum.",
+  description: "One balance for every model. No subscription, no expiry, no seat minimum.",
   addFunds: "Add funds",
   balance: {
     label: "Available balance",
@@ -84,13 +83,11 @@ export const billingCopy = {
   },
   usage: {
     title: "Usage",
-    description:
-      "Every charge, top-up and refund on your balance, newest first.",
+    description: "Every charge, top-up and refund on your balance, newest first.",
   },
   low: {
     title: "Running low?",
-    description:
-      "Auto top-up keeps your balance above $5. You can switch it off from this page at any time.",
+    description: "Auto top-up keeps your balance above $5. You can switch it off from this page at any time.",
     action: "See top-up options",
   },
   footer: {

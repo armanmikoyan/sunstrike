@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/site-footer";
+import type { ReactNode } from "react";
 
 export default function WebsiteLayout({ children }: { children: ReactNode }) {
   return (

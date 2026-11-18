@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Bell, Check } from "lucide-react";
 import { Button } from "@/ui/button";
-import { notificationTypeLabels } from "@/lib/notifications";
+import { NOTIFICATION_TYPE_LABELS } from "@/components/nav/constants";
 import { notifications, unreadNotifications } from "@/mocks/notifications";
-import { cn } from "@/lib/utils";
-import { notificationsCopy } from "./constants";
+import { cn } from "cn";
+import { NOTIFICATIONS_COPY } from "./constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,21 +24,19 @@ export function NavNotifications() {
           variant="ghost"
           size="icon"
           className="relative size-8 rounded-lg text-muted-foreground hover:bg-white/5 hover:text-foreground"
-          aria-label={notificationsCopy.label}
+          aria-label={NOTIFICATIONS_COPY.label}
         >
-          <Bell className="size-[1.0625rem]" />
+          <Bell className="size-4.25" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72 p-1">
-        <DropdownMenuLabel className="flex items-center justify-between px-2 py-1">
-          {notificationsCopy.label}
-          <span className="text-xs lg:text-[0.6875rem] font-normal text-foreground">
-            {unreadNotifications.length} new
-          </span>
+        <DropdownMenuLabel className="flex items-center justify-between">
+          {NOTIFICATIONS_COPY.label}
+          <span className="font-normal text-foreground">{unreadNotifications.length} new</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.map((item) => (
-          <DropdownMenuItem key={item.id} asChild className="px-2 py-1.5">
+          <DropdownMenuItem key={item.id} asChild>
             <Link href="/library" className="items-start gap-2.5">
               <span
                 className={cn(
@@ -49,12 +47,8 @@ export function NavNotifications() {
                 {item.readAt ? <Check className="size-3.5" /> : <Bell className="size-3.5" />}
               </span>
               <span>
-                <span className="block text-xs lg:text-[0.6875rem] font-medium">
-                  {notificationTypeLabels[item.type] ?? item.type}
-                </span>
-                <span className="mt-0.5 block font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
-                  {item.generationId}
-                </span>
+                <span className="block font-medium">{NOTIFICATION_TYPE_LABELS[item.type] ?? item.type}</span>
+                <span className="mt-0.5 block font-mono text-muted-foreground">{item.generationId}</span>
               </span>
             </Link>
           </DropdownMenuItem>

@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import type { DisclosureProps } from "./types";
 
 export function Disclosure({
@@ -31,7 +31,7 @@ export function Disclosure({
         aria-controls={panelId}
         onClick={() => setOpen(!open)}
         className={cn(
-          "flex w-full cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-sm lg:text-[0.75rem] font-medium",
+          "flex w-full cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-sm lg:text-xs font-medium",
           questionClassName,
         )}
       >
@@ -52,14 +52,14 @@ export function Disclosure({
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "grid transition-[grid-template-rows] duration-[400ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+          "grid transition-[grid-template-rows] duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
           open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
         )}
       >
         <div className="overflow-hidden">
           <p
             className={cn(
-              "max-w-[30rem] pb-4 pt-2 text-sm lg:text-[0.75rem] leading-relaxed text-muted-foreground transition-opacity duration-200 motion-reduce:transition-none",
+              "max-w-120 pb-4 pt-2 text-sm lg:text-xs leading-relaxed text-muted-foreground transition-opacity duration-200 motion-reduce:transition-none",
               open ? "opacity-100" : "opacity-0",
               answerClassName,
             )}
