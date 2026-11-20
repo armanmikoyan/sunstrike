@@ -17,10 +17,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // The e2e server builds into its own folder so a running `next dev` cannot
-  // rewrite the chunks underneath it mid-test.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
   cacheComponents: true,
+  agentRules: false,
   // The floating dev badge overlaps content in the bottom-left rail.
   devIndicators: false,
   partialPrefetching: true,

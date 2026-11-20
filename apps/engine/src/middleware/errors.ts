@@ -1,9 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 
-export const notFound: RequestHandler = (_request, response) => {
-  response.status(404).json({ error: { message: "Not found", status: 404 } });
-};
-
 function statusOf(error: unknown): number {
   if (typeof error === "object" && error !== null && "status" in error) {
     const status = Number((error as { status: unknown }).status);
@@ -17,6 +13,10 @@ function messageOf(error: unknown, status: number): string {
   if (error instanceof Error) return error.message;
   return "Request failed";
 }
+
+export const notFound: RequestHandler = (_request, _response, next) => {
+  next(Object.assign(new Error("Not found"), { status: 404 }));
+};
 
 export const errorHandler: ErrorRequestHandler = (error, _request, response, next) => {
   if (response.headersSent) {

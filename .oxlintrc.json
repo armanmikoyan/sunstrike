@@ -51,6 +51,23 @@
       }
     },
     {
+      "files": ["apps/engine/src/**/*.ts"],
+      "excludeFiles": ["apps/engine/src/app.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/modules/*/*", "**/modules/*/*"],
+                "message": "Import a module through its index.ts only. Only app.ts may import a module's router.ts."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["**/*.e2e.ts"],
       "rules": {
         "no-shadow": "off",
