@@ -24,7 +24,7 @@ export function PricingModelRates() {
         title={
           <>
             {PRICING_COPY.rates.titleBefore}
-            <span className="font-serif italic text-brand">{PRICING_COPY.rates.titleAccent}</span>
+            {PRICING_COPY.rates.titleAccent}
           </>
         }
         description={PRICING_COPY.rates.description}

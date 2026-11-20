@@ -13,7 +13,7 @@ export function HomeGallery() {
           title={
             <>
               {HOME_COPY.gallery.titleBefore}
-              <span className="font-serif italic text-brand">{HOME_COPY.gallery.titleAccent}</span>
+              {HOME_COPY.gallery.titleAccent}
             </>
           }
           description={HOME_COPY.gallery.description}

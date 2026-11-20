@@ -52,6 +52,12 @@
     },
     {
       "files": ["apps/engine/src/**/*.ts"],
+      "rules": {
+        "import/no-relative-parent-imports": "error"
+      }
+    },
+    {
+      "files": ["apps/engine/src/**/*.ts"],
       "excludeFiles": ["apps/engine/src/app.ts"],
       "rules": {
         "no-restricted-imports": [

@@ -14,7 +14,7 @@ export function HomePricing() {
             <div>
               <h2 className="max-w-140 font-grotesk text-[clamp(1.75rem,3.6vw,2.5rem)] font-medium leading-[1.05] tracking-[-0.045em]">
                 {HOME_COPY.pricing.titleBefore}
-                <span className="font-serif italic text-brand">{HOME_COPY.pricing.titleAccent}</span>
+                {HOME_COPY.pricing.titleAccent}
                 {HOME_COPY.pricing.titleAfter}
               </h2>
               <p className="mt-3 max-w-120 text-sm lg:text-xs leading-relaxed text-muted-foreground">

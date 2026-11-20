@@ -13,7 +13,7 @@ export function RatioMosaic() {
           title={
             <>
               {MOSAIC_COPY.titleBefore}
-              <span className="font-serif italic text-brand">{MOSAIC_COPY.titleAccent}</span>
+              {MOSAIC_COPY.titleAccent}
             </>
           }
           description={MOSAIC_COPY.description}

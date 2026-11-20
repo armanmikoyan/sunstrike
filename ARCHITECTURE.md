@@ -3,88 +3,77 @@
 Chronolab.ai is a generative media product. Its system design — requirements,
 entities, API, data flow, services and deep dives — is on the design board,
 [`architecture.excalidraw`](./architecture.excalidraw). This document describes
-the repository that implements it: how the code is divided, which layer owns
-what, and the conventions that keep it consistent.
+the repository that implements it: the parts it is made of, what each part owns,
+and the conventions that keep them consistent.
 
-## Engine and lab
+## Parts
 
-Chronolab.ai is an npm-workspace monorepo with two apps, `lab` and `engine`.
-`apps/lab` runs the browser bundle and the Next.js server that renders it.
-`apps/engine` runs the Express service and its worker. The API layer in
-`apps/lab/src/app/api` is the boundary; nothing else crosses it.
+Chronolab.ai is one npm workspace with two apps.
 
-| App           | Layer                       | Owns                                             | Never                             |
-| ------------- | --------------------------- | ------------------------------------------------ | --------------------------------- |
-| `apps/lab`    | Lab UI                      | Rendering, interaction, client state             | Call the engine, hold credentials |
-| `apps/lab`    | Lab API layer `src/app/api` | Session, authentication, forwarding              | Business rules, database access   |
-| `apps/engine` | Modules                     | Validation, pricing, persistence, jobs, outcomes | Render, trust client input        |
-| `apps/engine` | Infrastructure              | Clients for database, cache, queue and storage   | Decide business rules             |
+- **Engine** (`apps/engine`) — the backend. An Express service and its worker:
+  validation, pricing, persistence, jobs and outcomes.
+- **Lab** (`apps/lab`) — the frontend. A Next.js app for the browser and the
+  server that renders it: rendering, interaction and client state.
+- **API layer** (`apps/lab/src/app/api`) — the boundary between them: session,
+  authentication and forwarding to the engine.
 
-Each layer owns one job and depends only on the layer beneath it.
+Each part owns one job, and a request flows one way: Lab → API layer → Engine.
 
 ## Why the API layer
 
-1. **Secrets.** The Supabase service key, AWS credentials, provider keys and
-   database stay on the server and never reach the browser.
+1. **Secrets.** The Supabase service key, provider keys and database stay on
+   the server and never reach the browser.
 2. **Same-origin sessions.** The session lives in an httpOnly cookie on the web
    app, so there is no token in client JavaScript and no cross-origin surface.
 3. **One trust boundary.** Authentication is attached in a single place, and
    the engine accepts requests only from that layer.
 
-## Repository
-
-```text
-apps/
-  lab/                     Next.js web app
-    src/
-      app/                 routes, layouts, metadata, and the API layer in api/
-      components/          product features, one folder each
-      ui/                  generic primitives, one file each
-      motion/              animation primitives
-      e2e/                 Playwright specs
-      mocks/               demo rows until the API is wired
-  engine/                  Engine service and background worker
-    src/
-      app.ts               builds the app and mounts every module
-      main.ts              serves HTTP
-      worker.ts            runs background jobs
-      modules/             one folder per domain
-      infrastructure/      adapters for external services
-      middleware/          request pipeline, 404 and error handling
-```
-
-Pages stay thin: each renders one feature component, so markup and chrome live
-in `components`. Route groups describe chrome, not URLs.
-
-## Engine modules
+## Engine
 
 `apps/engine` is a modular monolith: one deployable, divided into modules by
 business domain. A module owns one area of behaviour, the data behind it, and
-the public interface other modules use to reach it.
+the public interface other modules use to reach it. `app.ts` builds the app and
+mounts every module, `main.ts` serves HTTP, and `worker.ts` runs background jobs.
 
-```text
-modules/<module>/
-  index.ts        the public object
-  router.ts       Express router, mounted by app.ts
-  controller.ts   HTTP handlers
-  service.ts      rules and implementation
-  repository.ts   the module's tables
-  types.ts        public and internal types
-  utils.ts        small pure helpers
-```
+### Module files
 
-`index.ts` exposes one typed object per module; other modules import it. The
-router is a separate file that `app.ts` mounts. A module never reaches a
-sibling through its router. The controller, service, repository and types stay
-private; `worker.ts` and `providers/` exist only where a module needs them.
+Each file has one job, and the table below says which.
 
-- **Talk only to the interface.** A module's controller, service, repository,
-  worker, provider adapters and tables are private. Cross-module work goes
-  through its public interface, `index.ts`, and nothing else. When a need does
-  not fit the interface, extend the interface; never reach around it.
-- **One import path.** Import a module only as `modules/<module>`, never a file
-  inside it. The single exception is `app.ts`, the only file allowed to import
-  a module's `router.ts`.
+| File            | Owns                                                            |
+| --------------- | --------------------------------------------------------------- |
+| `index.ts`      | Public interface: a module-named object of services, plus types |
+| `router.ts`     | The module's URLs and the controller for each                   |
+| `controller.ts` | Network only: read the request, call one service, write reply   |
+| `service.ts`    | Business logic only: the module's rules and decisions           |
+| `repository.ts` | Database only: read and write the module's own tables           |
+| `types.ts`      | The shapes that cross a boundary                                |
+| `utils.ts`      | Pure helpers only: shape, format or check, no state, no I/O     |
+| `worker.ts`     | Background jobs, where the module has them                      |
+| `providers/`    | Adapters for external services, where needed                    |
+
+`utils.ts` holds the module's pure helpers: small functions that shape, format
+or check values, with no state and no I/O. They keep that work in one place for
+the controller, service and repository.
+
+### Module rules
+
+- **Single responsibility.** One file, one job. A helper goes in `utils.ts`,
+  SQL in `repository.ts`, a rule in `service.ts`, request and reply in
+  `controller.ts` — never in each other's files.
+- **Modules talk only through `index.ts`.** Import a module as
+  `@/modules/<module>` and use the object it exports, named after the module:
+  `import { users } from "@/modules/users"` gives `users`. Everything else —
+  controller, service, repository, worker, providers, tables — is private.
+  When a need does not fit, extend the object; never reach around it.
+- **One import path, one exception.** Never import a file inside a module, only
+  `@/modules/<module>`. `app.ts` is the only exception: it imports each
+  module's `router.ts` to mount it, and nothing else imports a router.
+- **Build the public interface, never re-export.** The public interface is one
+  object named after the module, such as `export const users = { … }`, built
+  from its services; controllers and routers never enter it, and the types
+  others use are exported beside it. No `export … from "./file"` barrel, and
+  never a generic object name like `contract` — every module would collide on
+  import.
 - **Own your data.** A module reads and writes its own tables. Cross-module
   joins, direct reads and shared tables are out; the owning module answers.
 - **Ask for data, publish facts.** A need is a direct call through the public
@@ -99,50 +88,55 @@ private; `worker.ts` and `providers/` exist only where a module needs them.
   `infrastructure` and `middleware`; domain helpers stay inside their module.
 - Dependencies stay acyclic and point one way.
 
-`src/infrastructure/<client>/index.ts` is the only place a database, cache,
-queue or storage client is created or imported. A strict boundary is what makes
-later extraction cheap; the monolith stays one deployment either way.
+### Infrastructure
 
-## Lab components
+`src/infrastructure` is the only place a database, cache, queue or storage
+client is created or imported. A strict boundary is what makes later extraction
+cheap; the monolith stays one deployment either way.
 
-In `apps/lab`, every folder under `src/components` splits by job.
-`index.tsx` declares the feature component and its logic, and nothing else.
+## Lab
 
-| File                   | Holds                                                                |
-| ---------------------- | -------------------------------------------------------------------- |
-| `index.tsx`            | The component and its logic. No named types, constants or helpers    |
-| `types.ts`             | Every `type` and `interface`                                         |
-| `constants.ts`         | Every named constant, `UPPER_SNAKE_CASE`, including all visible copy |
-| `utils.ts`             | Every reusable function, `function` declarations, nothing else       |
-| `hooks.ts`             | Custom hooks only, `useXxx`, usually returning one object            |
-| `state.ts`             | Jotai atoms, only for state shared beyond one component              |
-| `<feature>-<part>.tsx` | Private subcomponents, not entry points                              |
-| `*.test.ts(x)`         | Colocated with the file it covers                                    |
+`apps/lab` is the Next.js app. Pages stay thin: each renders one feature
+component, so markup and chrome live in `components`. Route groups describe
+chrome, not URLs.
 
-- No barrels: import the defining file, never re-export through a folder.
+### Component files
+
+Every folder under `src/components` splits by job. `index.tsx` declares the
+feature component and its logic, and nothing else.
+
+| File                   | Holds                                                            |
+| ---------------------- | ---------------------------------------------------------------- |
+| `index.tsx`            | The component and its logic                                      |
+| `types.ts`             | Every `type` and `interface`                                     |
+| `constants.ts`         | Every named constant, `UPPER_SNAKE_CASE`, including visible copy |
+| `utils.ts`             | Every reusable function, as `function` declarations              |
+| `hooks.ts`             | Custom hooks, `useXxx`, usually returning one object             |
+| `state.ts`             | Jotai atoms for state shared beyond one component                |
+| `<feature>-<part>.tsx` | Private subcomponents                                            |
+| `*.test.ts(x)`         | Tests, colocated with the file they cover                        |
+
+- Import the defining file directly; folders hold files, not re-exports.
 - One type per shape, reused with `Pick`, `Omit`, an intersection or a shared
-  prop type. No inline prop types.
+  prop type. Prop types are named.
 
-## Lab UI
+### UI
 
 | Folder                     | Belongs here                                                                                                                         |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/ui`                   | Generic, product-agnostic primitives: one file per component, types and class strings inline, no folder, no product copy             |
+| `src/ui`                   | Generic, product-agnostic primitives: one file per component, types and class strings inline                                         |
 | `src/components/<feature>` | Anything with product copy, domain types, data, composition or feature state. A part reused inside one feature stays in that feature |
 | `src/motion`               | Reusable animation primitives and transitions, each in its own folder                                                                |
 
-- **Consistency over repetition.** The same UI in two places is one shared
-  component configured by props, never a second copy with tuned classes.
-- **Same component, same size.** The primitive owns height, radius and text
-  scale; call sites override layout only. Need a different size? Change the
-  primitive, not one page.
-- Extend a primitive through named props; never fork its markup.
+- The same UI in two places is one shared component configured by props.
+- The primitive owns height, radius and text scale; call sites override layout
+  only. A different size is a change to the primitive, not to one page.
+- A primitive grows through named props.
 
-## Lab tests
+### Tests
 
 - Colocate `<file>.test.ts(x)` next to the file it covers.
-- Cover behaviour and rules: components, `utils.ts`, `hooks.ts`. Never copy,
-  constants, metadata, page glue or mock fixtures.
+- Cover behaviour and rules: components, `utils.ts` and `hooks.ts`.
 - Playwright specs live in `src/e2e`, end in `.e2e.ts`, and wait for
   `data-hydrated="true"`.
 - Query by role, accessible name, label or visible copy.

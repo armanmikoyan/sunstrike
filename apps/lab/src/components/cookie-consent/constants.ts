@@ -5,8 +5,7 @@ export const CONSENT_EVENT = "chronolab:cookie-consent";
 
 export const COOKIE_CONSENT_COPY = {
   regionLabel: "Cookie consent",
-  title: "Cookies,",
-  titleAccent: "briefly",
+  title: "We use cookies",
   description:
     "Essential cookies keep you signed in and remember this choice. With your permission we also measure which pages and models get used, so the studio keeps improving.",
   policyLink: "Privacy policy",

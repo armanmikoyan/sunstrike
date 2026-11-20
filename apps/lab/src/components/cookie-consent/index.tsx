@@ -60,8 +60,7 @@ export function CookieConsent() {
         </span>
         <div className="min-w-0">
           <p className="text-sm font-medium tracking-[-0.02em]">
-            {COOKIE_CONSENT_COPY.title}{" "}
-            <span className="font-serif italic text-brand">{COOKIE_CONSENT_COPY.titleAccent}</span>
+            {COOKIE_CONSENT_COPY.title}
           </p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
             {COOKIE_CONSENT_COPY.description}
