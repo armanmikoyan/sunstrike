@@ -9,7 +9,6 @@ export const EXIT_MS = 260;
 export const CTA_BEVEL = "inset 0 -0.1875rem 0 0 rgba(0, 0, 0, 0.43)";
 
 export const ACCOUNT = {
-  email: "arman@chronolab.ai",
   balance: "$10.54",
 } as const;
 
@@ -18,6 +17,7 @@ export const ACCOUNT_MENU_COPY = {
   balance: "Balance",
   signIn: "Sign in",
   signOut: "Sign out",
+  signedOut: "Not signed in",
 };
 
 export const SIDEBAR_COPY = {

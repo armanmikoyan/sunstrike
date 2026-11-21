@@ -11,22 +11,11 @@ and the conventions that keep them consistent.
 Chronolab.ai is one npm workspace with two apps.
 
 - **Engine** (`apps/engine`) — the backend. An Express service and its worker:
-  validation, pricing, persistence, jobs and outcomes.
+  validation, pricing, persistence, jobs, outcomes and authentication. It is
+  the only part that talks to Supabase.
 - **Lab** (`apps/lab`) — the frontend. A Next.js app for the browser and the
-  server that renders it: rendering, interaction and client state.
-- **API layer** (`apps/lab/src/app/api`) — the boundary between them: session,
-  authentication and forwarding to the engine.
-
-Each part owns one job, and a request flows one way: Lab → API layer → Engine.
-
-## Why the API layer
-
-1. **Secrets.** The Supabase service key, provider keys and database stay on
-   the server and never reach the browser.
-2. **Same-origin sessions.** The session lives in an httpOnly cookie on the web
-   app, so there is no token in client JavaScript and no cross-origin surface.
-3. **One trust boundary.** Authentication is attached in a single place, and
-   the engine accepts requests only from that layer.
+  server that renders it: rendering, interaction and client state. It imports
+  no Supabase package and holds no Supabase key.
 
 ## Engine
 
@@ -48,12 +37,18 @@ Each file has one job, and the table below says which.
 | `repository.ts` | Database only: read and write the module's own tables           |
 | `types.ts`      | The shapes that cross a boundary                                |
 | `utils.ts`      | Pure helpers only: shape, format or check, no state, no I/O     |
+| `middleware.ts` | Module-level request middleware, where the module has it        |
 | `worker.ts`     | Background jobs, where the module has them                      |
 | `providers/`    | Adapters for external services, where needed                    |
 
 `utils.ts` holds the module's pure helpers: small functions that shape, format
 or check values, with no state and no I/O. They keep that work in one place for
 the controller, service and repository.
+
+Global middleware — security headers, CORS, compression, body parsing and
+logging — lives in `src/middleware`. Middleware that belongs
+to one module lives in that module's `middleware.ts`. When another module needs
+it, expose it on the module's public object, as `identity.requireAuth` is.
 
 ### Module rules
 
@@ -99,6 +94,12 @@ cheap; the monolith stays one deployment either way.
 `apps/lab` is the Next.js app. Pages stay thin: each renders one feature
 component, so markup and chrome live in `components`. Route groups describe
 chrome, not URLs.
+
+### API layer
+
+`src/app/api` is the lab's server boundary. The private `_engine` module is the
+client that talks to the engine; route handlers expose only the operations the
+browser needs. Browser code calls those routes, never the engine directly.
 
 ### Component files
 

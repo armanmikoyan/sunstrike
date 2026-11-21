@@ -15,3 +15,7 @@ export type FieldProps = {
   htmlFor?: string;
   children: ReactNode;
 };
+
+export type SettingsGateProps = {
+  children: ReactNode;
+};

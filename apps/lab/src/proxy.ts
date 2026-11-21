@@ -1,16 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { REFRESH_COOKIE, SESSION_COOKIE } from "@/app/api/auth/constants";
 
 const studios = new Set(["video", "image"]);
 
-/**
- * Only two studios exist. Validating the segment here keeps an unknown mode a
- * real 404: the page-level `notFound()` runs inside the partially prerendered
- * shell, which has already committed a 200 response by the time it throws.
- */
 export function proxy(request: NextRequest) {
-  const [section, mode, ...rest] = request.nextUrl.pathname
-    .split("/")
-    .filter(Boolean);
+  const { pathname, search } = request.nextUrl;
+
+  if (pathname.startsWith("/settings")) {
+    if (!request.cookies.get(SESSION_COOKIE) && !request.cookies.get(REFRESH_COOKIE)) {
+      const login = new URL("/login", request.url);
+      login.searchParams.set("next", `${pathname}${search}`);
+
+      return NextResponse.redirect(login);
+    }
+
+    return NextResponse.next();
+  }
+
+  const [section, mode, ...rest] = pathname.split("/").filter(Boolean);
 
   if (section !== "create" || rest.length > 0) return NextResponse.next();
   if (mode && studios.has(mode)) return NextResponse.next();
@@ -21,5 +28,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/create/:path*",
+  matcher: ["/create/:path*", "/settings/:path*"],
 };

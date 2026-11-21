@@ -21,6 +21,9 @@ export type RailTooltipProps = {
 export type AccountMenuProps = {
   side: "top" | "right";
   align: "start" | "end";
+  email: string | null;
+  onSignOut: () => void;
+  pending?: boolean;
 };
 
 export type SidebarProps = Pick<SidebarToggleProps, "expanded" | "onToggle">;

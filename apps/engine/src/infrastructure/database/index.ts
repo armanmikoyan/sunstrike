@@ -1,15 +1,12 @@
 import { Pool, type PoolClient } from "pg";
+import { config } from "@/infrastructure/config";
 import type { Row, Transaction } from "./types";
 
 let pool: Pool | undefined;
 
 function connection(): Pool {
   if (!pool) {
-    const connectionString = process.env.DATABASE_URL;
-
-    if (!connectionString) throw new Error("Database is not configured");
-
-    pool = new Pool({ connectionString });
+    pool = new Pool({ connectionString: config.databaseUrl() });
     pool.on("error", (error) => {
       console.error("Database connection failed", error);
     });

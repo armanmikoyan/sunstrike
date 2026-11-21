@@ -1,21 +1,128 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clapperboard, Globe, Maximize } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Clapperboard, Maximize } from "lucide-react";
 import { LogoLockup } from "@/components/brand";
 import { VideoWithFallback } from "@/components/video-with-fallback";
+import { navigate, readMessage, safeNext } from "@/components/auth/utils";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { mediaById } from "@/mocks/media";
-import { loginCopy, loginHeroId, loginThumbnailIds } from "./constants";
+import { loginCopy, loginErrors, loginHeroId, loginProviders, loginThumbnailIds } from "./constants";
+import { ProviderIcon } from "./provider-icon";
+import type { LoginPending, LoginProps, LoginProvider, LoginStep, OAuthUrlResponse } from "./types";
 
 const thumbnails = loginThumbnailIds.map((id) => mediaById(id)).filter((item) => item !== undefined);
 
-export function Login() {
+export function Login({ next, initialError }: LoginProps) {
+  const router = useRouter();
+  const [step, setStep] = useState<LoginStep>("email");
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
+  const [pending, setPending] = useState<LoginPending>(null);
+  const [emailValid, setEmailValid] = useState(false);
+  const [error, setError] = useState(() => loginErrors[initialError ?? ""] ?? "");
+  const [notice, setNotice] = useState("");
   const hero = mediaById(loginHeroId);
+  const target = safeNext(next);
+
+  async function sendCode(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setPending("email");
+
+    try {
+      const response = await fetch("/api/auth/otp", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        setError(await readMessage(response, loginCopy.unreachable));
+        return;
+      }
+
+      setStep("code");
+      setToken("");
+      setNotice(loginCopy.codeSent.replace("{email}", email));
+    } catch {
+      setError(loginCopy.unreachable);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  async function verifyCode(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setPending("code");
+
+    try {
+      const response = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, token }),
+      });
+
+      if (!response.ok) {
+        setError(await readMessage(response, loginCopy.unreachable));
+        return;
+      }
+
+      router.replace(target);
+      router.refresh();
+    } catch {
+      setError(loginCopy.unreachable);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  async function continueWith(provider: LoginProvider) {
+    setError("");
+    setPending(provider);
+
+    try {
+      const response = await fetch(`/api/auth/oauth/${provider}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ next: target }),
+      });
+
+      if (!response.ok) {
+        setError(await readMessage(response, loginCopy.unreachable));
+        return;
+      }
+
+      const body = (await response.json()) as OAuthUrlResponse;
+
+      if (typeof body.url !== "string" || !body.url) {
+        setError(loginCopy.unreachable);
+        return;
+      }
+
+      navigate(body.url);
+    } catch {
+      setError(loginCopy.unreachable);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  function useDifferentEmail() {
+    setStep("email");
+    setToken("");
+    setNotice("");
+    setError("");
+  }
 
   return (
     <main className="min-h-screen lg:grid lg:grid-cols-[1.08fr_1fr]">
-      <section className="relative hidden min-h-screen overflow-hidden border-r border-border lg:block">
+      <section className="relative hidden min-h-screen overflow-hidden lg:block">
         {hero ? (
           <VideoWithFallback
             src={hero.src}
@@ -37,7 +144,9 @@ export function Login() {
               <br />
               <span className="font-display font-normal">{loginCopy.heroTitleAccent}</span>
             </h1>
-            <p className="mt-4 max-w-90 leading-relaxed text-white/55">{loginCopy.heroDescription}</p>
+            <p className="mt-4 max-w-90 text-sm leading-relaxed text-white/55 lg:text-xs">
+              {loginCopy.heroDescription}
+            </p>
 
             <div className="mt-7 flex items-end gap-2">
               {thumbnails.map((item, index) => (
@@ -51,15 +160,17 @@ export function Login() {
                 >
                   <Image src={item.poster} alt={item.title} fill sizes="120px" className="object-cover" />
                   <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
-                  <span className="absolute bottom-1.5 left-1.5 text-white/70">{item.title}</span>
+                  <span className="absolute bottom-1.5 left-1.5 text-xs text-white/70 lg:text-[0.6875rem]">
+                    {item.title}
+                  </span>
                 </div>
               ))}
               <div className="ml-1 flex flex-col gap-2 pb-1">
-                <span className="flex items-center gap-1.5 text-white/70">
+                <span className="flex items-center gap-1.5 text-xs text-white/70 lg:text-[0.6875rem]">
                   <Clapperboard className="size-3 text-white/70" />
                   {loginCopy.motion}
                 </span>
-                <span className="flex items-center gap-1.5 text-white/70">
+                <span className="flex items-center gap-1.5 text-xs text-white/70 lg:text-[0.6875rem]">
                   <Maximize className="size-3 text-white/70" />
                   {loginCopy.upscale}
                 </span>
@@ -80,73 +191,106 @@ export function Login() {
         </div>
 
         <div className="flex flex-1 items-center justify-center px-5 py-10">
-          <div className="w-full max-w-85">
-            <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{loginCopy.eyebrow}</p>
-            <h2 className="mt-3 text-[1.75rem] font-medium tracking-[-0.05em]">{loginCopy.title}</h2>
-            <p className="mt-2 leading-relaxed text-muted-foreground">{loginCopy.description}</p>
+          <div className="w-full max-w-85 text-sm lg:text-xs">
+            <h2 className="text-[1.75rem] font-medium tracking-[-0.05em]">{loginCopy.title}</h2>
 
-            <div className="mt-6 space-y-3">
-              <div>
-                <label className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
-                  {loginCopy.emailLabel}
-                </label>
-                <Input
-                  type="email"
-                  placeholder={loginCopy.emailPlaceholder}
-                  className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
-                />
-              </div>
-              <div>
-                <div className="flex items-center justify-between">
-                  <label className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
-                    {loginCopy.passwordLabel}
-                  </label>
-                  <Link
-                    href="/help"
-                    className="text-xs lg:text-[0.6875rem] text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {loginCopy.forgot}
-                  </Link>
-                </div>
-                <Input
-                  type="password"
-                  placeholder={loginCopy.passwordPlaceholder}
-                  className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
-                />
-              </div>
-              <Button asChild size="cta" className="w-full font-semibold">
-                <Link href="/">
-                  {loginCopy.signIn}
-                  <ArrowRight className="size-3.5" />
-                </Link>
-              </Button>
+            <div className="mt-6 grid gap-2">
+              {loginProviders.map((provider) => (
+                <Button
+                  key={provider}
+                  type="button"
+                  variant="outline"
+                  className="h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
+                  onClick={() => continueWith(provider)}
+                  disabled={pending !== null}
+                >
+                  <ProviderIcon provider={provider} className="size-3.5" />
+                  {pending === provider ? loginCopy.connecting : loginCopy[provider]}
+                </Button>
+              ))}
             </div>
 
-            <div className="my-5 flex items-center gap-3">
+            <div className="my-4 flex items-center gap-3">
               <span className="h-px flex-1 bg-border" />
               <span className="text-xs lg:text-[0.6875rem] text-muted-foreground">{loginCopy.or}</span>
               <span className="h-px flex-1 bg-border" />
             </div>
 
-            <Button
-              asChild
-              variant="outline"
-              className="h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
-            >
-              <Link href="/">
-                <Globe className="size-3.5" />
-                {loginCopy.google}
-              </Link>
-            </Button>
+            {step === "email" ? (
+              <form onSubmit={sendCode}>
+                <label htmlFor="email" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
+                  {loginCopy.emailLabel}
+                </label>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder={loginCopy.emailPlaceholder}
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      setEmailValid(
+                        event.currentTarget.validity.valid &&
+                          event.currentTarget.value.lastIndexOf(".") > event.currentTarget.value.lastIndexOf("@"),
+                      );
+                    }}
+                    required
+                    className="h-10 min-w-0 flex-1 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
+                  />
+                  <Button type="submit" size="cta" className="font-semibold" disabled={!emailValid || pending !== null}>
+                    {pending === "email" ? loginCopy.sending : loginCopy.sendCode}
+                    <ArrowRight className="size-3.5" />
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={verifyCode} className="space-y-3">
+                <p className="leading-relaxed text-muted-foreground">{loginCopy.codeSent.replace("{email}", email)}</p>
+                <div>
+                  <label htmlFor="code" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
+                    {loginCopy.codeLabel}
+                  </label>
+                  <Input
+                    id="code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder={loginCopy.codePlaceholder}
+                    value={token}
+                    onChange={(event) => setToken(event.target.value)}
+                    required
+                    className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
+                  />
+                </div>
+                <Button type="submit" size="cta" className="w-full font-semibold" disabled={pending !== null}>
+                  {pending === "code" ? loginCopy.verifying : loginCopy.verifyCode}
+                  <ArrowRight className="size-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={useDifferentEmail}
+                  disabled={pending !== null}
+                >
+                  {loginCopy.differentEmail}
+                </Button>
+              </form>
+            )}
 
-            <p className="mt-6 text-center text-muted-foreground">
-              {loginCopy.newTo}{" "}
-              <Link href="/" className="font-medium text-foreground transition-opacity hover:opacity-80">
-                {loginCopy.createStudio}
-              </Link>
-            </p>
+            <div aria-live="polite">
+              {error ? (
+                <p role="alert" className="mt-2 text-xs text-red-400 lg:text-[0.6875rem]">
+                  {error}
+                </p>
+              ) : notice ? (
+                <p role="status" className="mt-2 text-xs text-muted-foreground lg:text-[0.6875rem]">
+                  {notice}
+                </p>
+              ) : null}
+            </div>
 
-            <p className="mt-8 text-center leading-relaxed text-muted-foreground">
+            <p className="mt-3 text-left text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
               {loginCopy.termsBefore}
               <Link href="/help" className="underline underline-offset-2">
                 {loginCopy.terms}
@@ -160,7 +304,9 @@ export function Login() {
           </div>
         </div>
 
-        <div className="p-5 text-center text-muted-foreground lg:hidden">{loginCopy.footer}</div>
+        <div className="p-5 text-center text-xs text-muted-foreground lg:hidden lg:text-[0.6875rem]">
+          {loginCopy.footer}
+        </div>
       </section>
     </main>
   );

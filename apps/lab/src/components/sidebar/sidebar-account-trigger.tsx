@@ -3,12 +3,16 @@
 import { UserRound } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { cn } from "cn";
-import { ACCOUNT, SIDEBAR_COPY } from "./constants";
+import { useSessionUser, useSignOut } from "@/components/auth/hooks";
+import { ACCOUNT_MENU_COPY, SIDEBAR_COPY } from "./constants";
 import { AccountMenu } from "./account-menu";
 import type { SidebarAccountTriggerProps } from "./types";
 
 /** Rail account row; the menu opens on the side the rail points to. */
 export function SidebarAccountTrigger({ expanded, showToggle }: SidebarAccountTriggerProps) {
+  const { user } = useSessionUser();
+  const { signOut, pending } = useSignOut();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,12 +34,18 @@ export function SidebarAccountTrigger({ expanded, showToggle }: SidebarAccountTr
             )}
           >
             <span className="block truncate text-xs font-medium text-foreground lg:text-[0.6875rem]">
-              {ACCOUNT.email}
+              {user?.email ?? ACCOUNT_MENU_COPY.account}
             </span>
           </span>
         </button>
       </DropdownMenuTrigger>
-      <AccountMenu side={expanded ? "top" : "right"} align={expanded ? "start" : "end"} />
+      <AccountMenu
+        side={expanded ? "top" : "right"}
+        align={expanded ? "start" : "end"}
+        email={user?.email ?? null}
+        onSignOut={signOut}
+        pending={pending}
+      />
     </DropdownMenu>
   );
 }

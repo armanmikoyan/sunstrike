@@ -11,16 +11,12 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   legal, on `src/mocks`.
 - Design tokens, primitives in `src/ui`, motion primitives and shared control
   sizing.
+- **Auth UI.** Email OTP and Google, GitHub and Apple sign-in through the lab BFF,
+  session refresh, a session-aware account menu and the `/settings` gate.
 
 ### Next
 
-- **Configuration.** `.env.example` and `ENGINE_URL`; the build passes with and
-  without env.
-- **API layer.** `src/app/api/v1/[...path]` forwards every engine route with the
-  session bearer; signed-out calls return 401.
-- **Sign-in and session.** Supabase sign-in, proxy refresh, the `/settings`
-  gate, `useSessionUser` and `useRequireAuth`; a signed-out generate resumes its
-  draft after sign-in.
+- **Draft resume.** A signed-out generate resumes its draft after sign-in.
 - **Real data.** Studio, library, assets, billing, settings and notifications
   read engine rows, with no mock on a product screen.
 - **End-to-end.** Sign in, upload, quote, generate, notify, history and top up,
@@ -32,20 +28,20 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 - Express app, middleware, error handling, health route and module routers as
   stubs.
+- Configuration through `infrastructure/config`; the build passes with and
+  without env.
+- Auth schema: `users` and `identities` migrations with RLS scoped to
+  `auth.uid()`.
+- Identity and users: bearer verification, lazy provisioning and
+  `GET /api/v1/users/me`.
+- Identity API: email OTP, session, refresh, sign-out and Google, GitHub and Apple
+  OAuth on the identity module; Supabase stays in `infrastructure/supabase`.
 
 ### Next
 
 #### Foundation
 
-- **Configuration.** `.env.example`, `@supabase/*` declared; the build passes
-  with and without env.
-- **Schema.** Migrations build from empty; one fixture row per table; a user
-  reads only their own rows.
-
-#### Account
-
-- **Identity.** Validates the bearer and returns the subject.
-- **Users.** Provisions the user row and serves `GET /api/v1/users`.
+- **Fixtures.** Migrations build from empty; one fixture row per table.
 
 #### Catalog and media
 

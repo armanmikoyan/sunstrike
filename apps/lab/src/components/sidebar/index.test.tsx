@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Sidebar } from ".";
 import { MobileSidebar } from "./mobile-sidebar";
 import { TooltipProvider } from "@/ui/tooltip";
-import { setPathname } from "~/vitest.setup";
+import { fetchMock, routerMock, setPathname } from "~/vitest.setup";
 
 function renderSidebar(expanded: boolean, onToggle: () => void = vi.fn()) {
   return render(
@@ -35,6 +35,15 @@ function renderDrawer(open = true) {
 }
 
 const railNavLinks = () => within(screen.getByRole("navigation", { name: "Studio" })).getAllByRole("link");
+
+function mockSession(email = "arman@chronolab.ai") {
+  fetchMock.mockResolvedValueOnce(
+    new Response(JSON.stringify({ user: { id: "user-1", email } }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    }),
+  );
+}
 
 describe("sidebar rail", () => {
   it("lists the primary destinations", () => {
@@ -104,7 +113,9 @@ describe("sidebar rail", () => {
 
 describe("sidebar profile menu", () => {
   it("keeps the balance and settings inside the profile", async () => {
+    mockSession();
     renderSidebar(true);
+    expect(await screen.findByText("arman@chronolab.ai")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
@@ -117,7 +128,27 @@ describe("sidebar profile menu", () => {
     expect(balance).toHaveTextContent("$10.54");
 
     expect(within(menu).getByRole("menuitem", { name: "Settings" })).toHaveAttribute("href", "/settings/account");
-    expect(within(menu).getByRole("menuitem", { name: /Sign out/ })).toHaveAttribute("href", "/login");
+    expect(within(menu).getByRole("menuitem", { name: /Sign out/ })).toBeInTheDocument();
+  });
+
+  it("shows a neutral account label without a session", async () => {
+    renderSidebar(true);
+    expect(await screen.findByText("Account")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
+
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByText("Not signed in")).toBeInTheDocument();
+  });
+
+  it("signs out through the BFF and returns to login", async () => {
+    mockSession();
+    renderSidebar(true);
+    await screen.findByText("arman@chronolab.ai");
+    await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
+    await userEvent.click(await screen.findByRole("menuitem", { name: /Sign out/ }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/auth/sign-out", { method: "POST" }));
+    expect(routerMock.replace).toHaveBeenCalledWith("/login");
   });
 
   it("shows the same entries from the collapsed rail", async () => {

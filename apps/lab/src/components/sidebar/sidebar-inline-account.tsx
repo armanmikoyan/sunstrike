@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Coins, LogOut, Plus, UserRound } from "lucide-react";
 import { cn } from "cn";
+import { useSessionUser, useSignOut } from "@/components/auth/hooks";
 import { ACCOUNT, ACCOUNT_LINKS, ACCOUNT_MENU_COPY, SIDEBAR_COPY } from "./constants";
 import type { SidebarInlineAccountProps } from "./types";
 
@@ -14,6 +15,8 @@ import type { SidebarInlineAccountProps } from "./types";
 export function SidebarInlineAccount({ onNavigate }: SidebarInlineAccountProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { user } = useSessionUser();
+  const { signOut, pending } = useSignOut();
 
   // A tap away or Escape closes it, matching every other dropdown.
   useEffect(() => {
@@ -65,7 +68,13 @@ export function SidebarInlineAccount({ onNavigate }: SidebarInlineAccountProps) 
           ))}
           <button
             type="button"
-            className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:text-[0.6875rem]"
+            disabled={pending}
+            onClick={() => {
+              setOpen(false);
+              onNavigate?.();
+              void signOut();
+            }}
+            className="flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground disabled:opacity-50 lg:text-[0.6875rem]"
           >
             <LogOut className="size-3.5" />
             {ACCOUNT_MENU_COPY.signOut}
@@ -85,7 +94,7 @@ export function SidebarInlineAccount({ onNavigate }: SidebarInlineAccountProps) 
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-xs font-medium text-foreground lg:text-[0.6875rem]">
-            {ACCOUNT.email}
+            {user?.email ?? ACCOUNT_MENU_COPY.account}
           </span>
         </span>
         <ChevronDown
