@@ -23,7 +23,7 @@ import type { TypingOptions } from "./types";
  */
 export function useTypingCycle(
   words: readonly string[],
-  { typeSpeed = 55, deleteSpeed = 28, pauseDuration = 1600 }: TypingOptions = {},
+  { typeSpeed = 24, deleteSpeed = 10, pauseDuration = 1200 }: TypingOptions = {},
 ) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");

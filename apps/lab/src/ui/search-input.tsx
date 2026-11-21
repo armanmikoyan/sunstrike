@@ -64,7 +64,7 @@ export function SearchInput({
               type="button"
               onClick={clear}
               aria-label={clearLabel}
-              className="grid size-4.5 shrink-0 appearance-none place-items-center rounded-full bg-white/20 p-0 leading-none text-background transition-colors hover:bg-white/35"
+              className="grid size-3.5 shrink-0 appearance-none place-items-center rounded-full bg-white/20 p-0 leading-none text-background transition-colors hover:bg-white/35"
             >
               <X className="block size-3 shrink-0" strokeWidth={2.5} />
             </button>
