@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    // Keep security-upgrade reminders on for future `next dev` / `next build`.
+    agentUpgrade: "security",
+  },
   // Keep the conventional root favicon URL working while the asset lives with
   // the rest of the brand files.
   async rewrites() {
