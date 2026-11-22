@@ -9,7 +9,7 @@ let client: SupabaseClient | undefined;
 
 function getClient(): SupabaseClient {
   if (!client) {
-    client = createClient(config.supabaseUrl(), config.supabaseAnonKey(), authOptions());
+    client = createClient(config.supabaseUrl(), config.supabaseKey(), authOptions());
   }
 
   return client;
@@ -72,7 +72,7 @@ export async function signOut(accessToken: string): Promise<void> {
   await fetch(`${base}/auth/v1/logout`, {
     method: "POST",
     headers: {
-      apikey: config.supabaseAnonKey(),
+      apikey: config.supabaseKey(),
       authorization: `Bearer ${accessToken}`,
     },
   });
@@ -81,7 +81,7 @@ export async function signOut(accessToken: string): Promise<void> {
 export async function startOAuth(provider: Provider, redirectTo: string): Promise<OAuthStart> {
   const verifier = createVerifierStorage();
 
-  const oauth = createClient(config.supabaseUrl(), config.supabaseAnonKey(), {
+  const oauth = createClient(config.supabaseUrl(), config.supabaseKey(), {
     auth: { ...authOptions().auth, storage: verifier.storage },
   });
 
@@ -106,7 +106,7 @@ export async function exchangeCode(
 ): Promise<SupabaseSession> {
   const verifier = createVerifierStorage(codeVerifier);
 
-  const oauth = createClient(config.supabaseUrl(), config.supabaseAnonKey(), {
+  const oauth = createClient(config.supabaseUrl(), config.supabaseKey(), {
     auth: { ...authOptions().auth, storage: verifier.storage },
   });
 

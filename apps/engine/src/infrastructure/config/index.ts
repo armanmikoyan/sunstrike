@@ -14,7 +14,7 @@ function required(name: string): string {
 export const config = {
   databaseUrl: () => required("DATABASE_URL"),
   supabaseUrl: () => required("SUPABASE_URL"),
-  supabaseAnonKey: () => required("SUPABASE_ANON_KEY"),
+  supabaseKey: () => required("SUPABASE_PUBLISHABLE_KEY"),
   corsOrigins: () =>
     (process.env.CORS_ORIGIN ?? "http://localhost:3000")
       .split(",")
