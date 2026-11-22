@@ -1,9 +1,9 @@
 "use client";
 
 import { useRequireAuth } from "@/components/auth/hooks";
-import type { SettingsGateProps } from "./types";
+import type { AuthGateProps } from "./types";
 
-export function SettingsGate({ children }: SettingsGateProps) {
+export function AuthGate({ children }: AuthGateProps) {
   const { user, loading } = useRequireAuth();
 
   if (loading || !user) return null;

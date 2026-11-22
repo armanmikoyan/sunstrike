@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { fetchMock, routerMock, setPathname } from "~/vitest.setup";
-import { SettingsGate } from "./settings-gate";
+import { AuthGate } from "./auth-gate";
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -10,13 +10,13 @@ function json(body: unknown, status = 200) {
   });
 }
 
-describe("settings gate", () => {
+describe("auth gate", () => {
   it("redirects a signed-out visitor and hides the content", async () => {
     setPathname("/settings/account");
     render(
-      <SettingsGate>
+      <AuthGate>
         <p>Account settings</p>
-      </SettingsGate>,
+      </AuthGate>,
     );
 
     expect(screen.queryByText("Account settings")).not.toBeInTheDocument();
@@ -26,9 +26,9 @@ describe("settings gate", () => {
   it("renders the content for a signed-in visitor", async () => {
     fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
     render(
-      <SettingsGate>
+      <AuthGate>
         <p>Account settings</p>
-      </SettingsGate>,
+      </AuthGate>,
     );
 
     expect(await screen.findByText("Account settings")).toBeInTheDocument();

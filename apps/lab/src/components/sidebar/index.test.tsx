@@ -116,7 +116,7 @@ describe("sidebar profile menu", () => {
     mockSession();
     renderSidebar(true);
     expect(await screen.findByText("arman@chronolab.ai")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
+    await userEvent.hover(screen.getByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
     expect(within(menu).getByText("Account")).toBeInTheDocument();
@@ -131,6 +131,16 @@ describe("sidebar profile menu", () => {
     expect(within(menu).getByRole("menuitem", { name: /Sign out/ })).toBeInTheDocument();
   });
 
+  it("opens the profile on hover without a row highlight", async () => {
+    mockSession();
+    renderSidebar(true);
+    const trigger = await screen.findByRole("button", { name: "Account menu" });
+
+    fireEvent.pointerEnter(trigger);
+    expect(await screen.findByRole("menu")).toBeInTheDocument();
+    expect(trigger).not.toHaveClass("hover:bg-secondary");
+  });
+
   it("links to login without a session", async () => {
     renderSidebar(true);
 
@@ -138,21 +148,38 @@ describe("sidebar profile menu", () => {
     expect(screen.queryByRole("button", { name: "Account menu" })).not.toBeInTheDocument();
   });
 
-  it("signs out through the BFF and returns to login", async () => {
+  it("returns to the current page after login", async () => {
+    setPathname("/library");
+    renderSidebar(true);
+
+    expect(await screen.findByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login?next=%2Flibrary");
+  });
+
+  it("shows a neutral placeholder while the session is loading", () => {
+    fetchMock.mockImplementationOnce(() => new Promise(() => {}));
+    renderSidebar(true);
+
+    expect(screen.queryByRole("button", { name: "Account menu" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Log in" })).not.toBeInTheDocument();
+  });
+
+  it("signs out through the BFF and stays on a public page", async () => {
+    setPathname("/library");
     mockSession();
     renderSidebar(true);
     await screen.findByText("arman@chronolab.ai");
-    await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
+    await userEvent.hover(screen.getByRole("button", { name: "Account menu" }));
     await userEvent.click(await screen.findByRole("menuitem", { name: /Sign out/ }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/auth/sign-out", { method: "POST" }));
-    expect(routerMock.replace).toHaveBeenCalledWith("/login");
+    expect(routerMock.replace).not.toHaveBeenCalled();
+    expect(await screen.findByRole("link", { name: "Log in" })).toBeInTheDocument();
   });
 
   it("shows the same entries from the collapsed rail", async () => {
     mockSession();
     renderSidebar(false);
-    await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
+    await userEvent.hover(await screen.findByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
     expect(
@@ -235,6 +262,17 @@ describe("mobile drawer", () => {
     expect(within(dialog).queryByRole("button", { name: "Account menu" })).not.toBeInTheDocument();
   });
 
+  it("returns to the current page after login", async () => {
+    setPathname("/library");
+    renderDrawer(true);
+    const dialog = await screen.findByRole("dialog");
+
+    expect(await within(dialog).findByRole("link", { name: "Log in" })).toHaveAttribute(
+      "href",
+      "/login?next=%2Flibrary",
+    );
+  });
+
   it("does not render when closed", () => {
     renderDrawer(false);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -247,6 +285,13 @@ describe("collapsed rail tooltip", () => {
     await userEvent.hover(screen.getByRole("link", { name: "Library" }));
 
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Library");
+  });
+
+  it("names the signed-out account action on hover", async () => {
+    renderSidebar(false);
+    await userEvent.hover(await screen.findByRole("link", { name: "Log in" }));
+
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Log in");
   });
 
   it("stays quiet while the rail is expanded", async () => {

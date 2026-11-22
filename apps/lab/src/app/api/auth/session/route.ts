@@ -8,8 +8,8 @@ import {
 } from "@/app/api/auth/session";
 import { errorResponse } from "@/app/api/_engine";
 
-function unauthorized() {
-  const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+function noSession() {
+  const response = NextResponse.json({ user: null });
   clearSessionCookies(response);
 
   return response;
@@ -26,12 +26,12 @@ export async function GET() {
     if (current.status !== 401) return errorResponse(current);
   }
 
-  if (!refreshToken) return unauthorized();
+  if (!refreshToken) return noSession();
 
   const refreshed = await requestRefresh(refreshToken);
 
   if (!refreshed.ok) {
-    return refreshed.status === 401 ? unauthorized() : errorResponse(refreshed);
+    return refreshed.status === 401 ? noSession() : errorResponse(refreshed);
   }
 
   const response = NextResponse.json({ user: refreshed.data.user });

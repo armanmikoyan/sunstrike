@@ -43,6 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`dark scroll-smooth motion-reduce:scroll-auto ${INTER.variable} ${SPACE_GROTESK.variable} ${SPACE_MONO.variable} ${INSTRUMENT_SERIF.variable}`}
     >
       <body>

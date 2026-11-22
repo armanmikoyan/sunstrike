@@ -38,8 +38,8 @@ const defaultFetch = async (input: RequestInfo | URL) => {
   const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
 
   if (url === "/api/auth/session") {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
+    return new Response(JSON.stringify({ user: null }), {
+      status: 200,
       headers: { "content-type": "application/json" },
     });
   }

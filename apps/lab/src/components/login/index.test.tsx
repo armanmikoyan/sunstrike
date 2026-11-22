@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { fetchMock, routerMock } from "~/vitest.setup";
@@ -112,6 +112,98 @@ describe("login", () => {
     expect(screen.queryByLabelText(loginCopy.codeLabel)).not.toBeInTheDocument();
   });
 
+  it("keeps the clicked provider loading and disables the other actions", async () => {
+    let resolveFetch!: (response: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+    render(<Login />);
+
+    const google = screen.getByRole("button", { name: new RegExp(loginCopy.google) });
+    await userEvent.click(google);
+
+    expect(screen.getByLabelText(loginCopy.emailLabel)).toBeDisabled();
+    expect(google).toBeDisabled();
+    expect(google).toHaveAttribute("aria-busy", "true");
+    expect(google).toHaveTextContent(loginCopy.connecting);
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.github) })).toBeDisabled();
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.apple) })).toBeDisabled();
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) })).toBeDisabled();
+
+    await act(async () => {
+      resolveFetch(json({ url: "https://google.example/oauth" }));
+    });
+
+    expect(navigate).toHaveBeenCalledWith("https://google.example/oauth");
+    expect(google).toBeDisabled();
+    expect(google).toHaveTextContent(loginCopy.connecting);
+  });
+
+  it("keeps send code loading and disables the other actions", async () => {
+    let resolveFetch!: (response: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+    render(<Login />);
+
+    await userEvent.type(screen.getByLabelText(loginCopy.emailLabel), "arman@chronolab.ai");
+    const email = screen.getByLabelText(loginCopy.emailLabel);
+    const send = screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) });
+    await userEvent.click(send);
+
+    expect(email).toBeDisabled();
+    expect(send).toBeDisabled();
+    expect(send).toHaveAttribute("aria-busy", "true");
+    expect(send).toHaveTextContent(loginCopy.sending);
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.google) })).toBeDisabled();
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.github) })).toBeDisabled();
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.apple) })).toBeDisabled();
+
+    await act(async () => {
+      resolveFetch(json({ ok: true }, 202));
+    });
+
+    expect(await screen.findByLabelText(loginCopy.codeLabel)).toBeInTheDocument();
+  });
+
+  it("keeps verify loading after a successful exchange", async () => {
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+    let resolveFetch!: (response: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+    render(<Login />);
+
+    await enterEmail();
+    await userEvent.type(await screen.findByLabelText(loginCopy.codeLabel), "123456");
+    const code = screen.getByLabelText(loginCopy.codeLabel);
+    const verify = screen.getByRole("button", { name: new RegExp(loginCopy.verifyCode) });
+    await userEvent.click(verify);
+
+    expect(code).toBeDisabled();
+    expect(verify).toBeDisabled();
+    expect(verify).toHaveAttribute("aria-busy", "true");
+    expect(verify).toHaveTextContent(loginCopy.verifying);
+    expect(screen.getByRole("button", { name: loginCopy.differentEmail })).toBeDisabled();
+
+    await act(async () => {
+      resolveFetch(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    });
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/");
+    expect(verify).toBeDisabled();
+    expect(verify).toHaveTextContent(loginCopy.verifying);
+  });
+
   it.each(loginProviders)("starts %s sign-in and follows the returned URL", async (provider) => {
     const url = `https://${provider}.example/oauth`;
     fetchMock.mockResolvedValueOnce(json({ url }));
@@ -138,10 +230,17 @@ describe("login", () => {
     expect(screen.getByRole("alert")).not.toHaveTextContent("engine");
   });
 
-  it("shows the callback error passed by the server", () => {
+  it("shows the callback error passed by the server", async () => {
     render(<Login initialError="callback" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Sign-in could not be completed");
+    await waitFor(() => expect(routerMock.replace).toHaveBeenCalledWith("/login", { scroll: false }));
+  });
+
+  it("keeps the return path when clearing a callback error", async () => {
+    render(<Login next="/library" initialError="callback" />);
+
+    await waitFor(() => expect(routerMock.replace).toHaveBeenCalledWith("/login?next=%2Flibrary", { scroll: false }));
   });
 
   it("links terms and privacy to their pages", () => {

@@ -23,6 +23,8 @@ export type AccountMenuProps = {
   align: "start" | "end";
   email: string | null;
   onSignOut: () => void;
+  onPointerEnter?: () => void;
+  onPointerLeave?: () => void;
   pending?: boolean;
 };
 

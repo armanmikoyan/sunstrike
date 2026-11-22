@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { SessionResponse, SessionState } from "./types";
 
+const SIGNED_OUT_EVENT = "identity:signed-out";
+
 export function useSessionUser(): SessionState {
   const [state, setState] = useState<SessionState>({ user: null, loading: true });
 
@@ -32,16 +34,21 @@ export function useSessionUser(): SessionState {
       }
     }
 
-    void load();
+    const signedOut = () => setState({ user: null, loading: false });
 
-    return () => controller.abort();
+    load();
+    window.addEventListener(SIGNED_OUT_EVENT, signedOut);
+
+    return () => {
+      controller.abort();
+      window.removeEventListener(SIGNED_OUT_EVENT, signedOut);
+    };
   }, []);
 
   return state;
 }
 
 export function useSignOut() {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
 
   const signOut = useCallback(async () => {
@@ -50,25 +57,44 @@ export function useSignOut() {
     try {
       await fetch("/api/auth/sign-out", { method: "POST" });
     } finally {
-      router.replace("/login");
-      router.refresh();
+      window.dispatchEvent(new Event(SIGNED_OUT_EVENT));
       setPending(false);
     }
-  }, [router]);
+  }, []);
 
   return { signOut, pending };
 }
 
+export function useLoginHref(): string {
+  const pathname = usePathname();
+
+  return pathname === "/" ? "/login" : `/login?next=${encodeURIComponent(pathname)}`;
+}
+
 export function useRequireAuth(): SessionState {
   const state = useSessionUser();
+  const [signedOut, setSignedOut] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    const onSignedOut = () => setSignedOut(true);
+    window.addEventListener(SIGNED_OUT_EVENT, onSignedOut);
+
+    return () => window.removeEventListener(SIGNED_OUT_EVENT, onSignedOut);
+  }, []);
+
+  useEffect(() => {
     if (state.loading || state.user) return;
 
-    router.replace(`/login?next=${encodeURIComponent(pathname)}`);
-  }, [pathname, router, state.loading, state.user]);
+    if (signedOut) {
+      router.replace("/");
+      return;
+    }
+
+    const next = `${pathname}${window.location.search}`;
+    router.replace(`/login?next=${encodeURIComponent(next)}`);
+  }, [pathname, router, signedOut, state.loading, state.user]);
 
   return state;
 }

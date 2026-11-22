@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type AuthProvider = "google" | "github" | "apple";
 
 export type SessionUser = {
@@ -11,7 +13,7 @@ export type SessionState = {
 };
 
 export type SessionResponse = {
-  user?: SessionUser;
+  user?: SessionUser | null;
 };
 
 export type ErrorMessageBody = {
@@ -33,6 +35,11 @@ export type GoogleCredentialResponse = {
   credential?: string;
 };
 
+export type GoogleNonce = {
+  nonce: string;
+  hashedNonce: string;
+};
+
 export type GoogleAccountsId = {
   initialize: (options: {
     client_id: string;
@@ -40,8 +47,10 @@ export type GoogleAccountsId = {
     auto_select?: boolean;
     cancel_on_tap_outside?: boolean;
     use_fedcm_for_prompt?: boolean;
+    nonce?: string;
   }) => void;
   prompt: () => void;
+  cancel: () => void;
 };
 
 export type GoogleWindow = Window & {
@@ -50,4 +59,8 @@ export type GoogleWindow = Window & {
       id?: GoogleAccountsId;
     };
   };
+};
+
+export type AuthGateProps = {
+  children: ReactNode;
 };

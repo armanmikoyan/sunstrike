@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Clapperboard, Maximize } from "lucide-react";
+import { ArrowRight, Clapperboard, LoaderCircle, Maximize } from "lucide-react";
 import { LogoLockup } from "@/components/brand";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { navigate, readMessage, safeNext, startOAuthSignIn } from "@/components/auth/utils";
@@ -28,6 +28,13 @@ export function Login({ next, initialError }: LoginProps) {
   const [notice, setNotice] = useState("");
   const hero = mediaById(loginHeroId);
   const target = safeNext(next);
+
+  useEffect(() => {
+    if (!initialError) return;
+
+    const loginPath = next ? `/login?next=${encodeURIComponent(target)}` : "/login";
+    router.replace(loginPath, { scroll: false });
+  }, [initialError, next, router, target]);
 
   async function sendCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,6 +77,7 @@ export function Login({ next, initialError }: LoginProps) {
 
       if (!response.ok) {
         setError(await readMessage(response, loginCopy.unreachable));
+        setPending(null);
         return;
       }
 
@@ -77,7 +85,6 @@ export function Login({ next, initialError }: LoginProps) {
       router.refresh();
     } catch {
       setError(loginCopy.unreachable);
-    } finally {
       setPending(null);
     }
   }
@@ -91,11 +98,13 @@ export function Login({ next, initialError }: LoginProps) {
 
       if (!result.ok) {
         setError(result.error);
+        setPending(null);
         return;
       }
 
       navigate(result.url);
-    } finally {
+    } catch {
+      setError(loginCopy.unreachable);
       setPending(null);
     }
   }
@@ -190,8 +199,13 @@ export function Login({ next, initialError }: LoginProps) {
                   className="relative h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
                   onClick={() => continueWith(provider)}
                   disabled={pending !== null}
+                  aria-busy={pending === provider}
                 >
-                  <ProviderIcon provider={provider} className="size-3.5" />
+                  {pending === provider ? (
+                    <LoaderCircle className="size-3.5 animate-spin motion-reduce:animate-none" />
+                  ) : (
+                    <ProviderIcon provider={provider} className="size-3.5" />
+                  )}
                   <span>{pending === provider ? loginCopy.connecting : loginCopy[provider]}</span>
                 </Button>
               ))}
@@ -208,28 +222,37 @@ export function Login({ next, initialError }: LoginProps) {
                 <label htmlFor="email" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
                   {loginCopy.emailLabel}
                 </label>
-                <div className="mt-1.5 flex items-center gap-2">
-                  <Input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder={loginCopy.emailPlaceholder}
-                    value={email}
-                    onChange={(event) => {
-                      setEmail(event.target.value);
-                      setEmailValid(
-                        event.currentTarget.validity.valid &&
-                          event.currentTarget.value.lastIndexOf(".") > event.currentTarget.value.lastIndexOf("@"),
-                      );
-                    }}
-                    required
-                    className="h-10 min-w-0 flex-1 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
-                  />
-                  <Button type="submit" size="cta" className="font-semibold" disabled={!emailValid || pending !== null}>
-                    {pending === "email" ? loginCopy.sending : loginCopy.sendCode}
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={loginCopy.emailPlaceholder}
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    setEmailValid(
+                      event.currentTarget.validity.valid &&
+                        event.currentTarget.value.lastIndexOf(".") > event.currentTarget.value.lastIndexOf("@"),
+                    );
+                  }}
+                  required
+                  disabled={pending !== null}
+                  className="mt-1.5 h-10 w-full rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
+                />
+                <Button
+                  type="submit"
+                  size="cta"
+                  className="mt-2 w-full font-semibold"
+                  disabled={!emailValid || pending !== null}
+                  aria-busy={pending === "email"}
+                >
+                  {pending === "email" ? loginCopy.sending : loginCopy.sendCode}
+                  {pending === "email" ? (
+                    <LoaderCircle className="size-3.5 animate-spin motion-reduce:animate-none" />
+                  ) : (
                     <ArrowRight className="size-3.5" />
-                  </Button>
-                </div>
+                  )}
+                </Button>
               </form>
             ) : (
               <form onSubmit={verifyCode} className="space-y-3">
@@ -246,12 +269,23 @@ export function Login({ next, initialError }: LoginProps) {
                     value={token}
                     onChange={(event) => setToken(event.target.value)}
                     required
+                    disabled={pending !== null}
                     className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
                   />
                 </div>
-                <Button type="submit" size="cta" className="w-full font-semibold" disabled={pending !== null}>
+                <Button
+                  type="submit"
+                  size="cta"
+                  className="w-full font-semibold"
+                  disabled={pending !== null}
+                  aria-busy={pending === "code"}
+                >
                   {pending === "code" ? loginCopy.verifying : loginCopy.verifyCode}
-                  <ArrowRight className="size-3.5" />
+                  {pending === "code" ? (
+                    <LoaderCircle className="size-3.5 animate-spin motion-reduce:animate-none" />
+                  ) : (
+                    <ArrowRight className="size-3.5" />
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -265,13 +299,13 @@ export function Login({ next, initialError }: LoginProps) {
               </form>
             )}
 
-            <div aria-live="polite">
+            <div aria-live="polite" className="mt-2 min-h-4">
               {error ? (
-                <p role="alert" className="mt-2 text-xs text-red-400 lg:text-[0.6875rem]">
+                <p role="alert" className="text-xs text-red-400 lg:text-[0.6875rem]">
                   {error}
                 </p>
               ) : notice ? (
-                <p role="status" className="mt-2 text-xs text-muted-foreground lg:text-[0.6875rem]">
+                <p role="status" className="text-xs text-muted-foreground lg:text-[0.6875rem]">
                   {notice}
                 </p>
               ) : null}

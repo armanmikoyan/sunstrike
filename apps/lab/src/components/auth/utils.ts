@@ -1,4 +1,13 @@
-import type { AuthProvider, ErrorMessageBody, OAuthStartResult, OAuthUrlResponse } from "./types";
+import { GOOGLE_ONE_TAP_OPTIONS } from "./constants";
+import type {
+  AuthProvider,
+  ErrorMessageBody,
+  GoogleAccountsId,
+  GoogleCredentialResponse,
+  GoogleNonce,
+  OAuthStartResult,
+  OAuthUrlResponse,
+} from "./types";
 
 export function safeNext(value: string | null | undefined): string {
   if (!value) return "/";
@@ -54,4 +63,60 @@ export async function startOAuthSignIn(
   } catch {
     return { ok: false, error: fallback };
   }
+}
+
+export async function signInWithGoogleCredential(credential: string, nonce: string): Promise<boolean> {
+  try {
+    const response = await fetch("/api/auth/google", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ credential, nonce }),
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function startGoogleOneTap(
+  googleId: GoogleAccountsId,
+  clientId: string,
+  onSuccess: () => void,
+): Promise<void> {
+  try {
+    const { nonce, hashedNonce } = await createGoogleNonce();
+
+    googleId.initialize({
+      ...GOOGLE_ONE_TAP_OPTIONS,
+      client_id: clientId,
+      callback: async (response: GoogleCredentialResponse) => {
+        if (!response.credential) return;
+        if (await signInWithGoogleCredential(response.credential, nonce)) onSuccess();
+      },
+      nonce: hashedNonce,
+    });
+
+    googleId.prompt();
+  } catch {
+    return;
+  }
+}
+
+export function supportsGoogleOneTap(): boolean {
+  return (
+    window.isSecureContext !== false &&
+    typeof globalThis.crypto?.subtle?.digest === "function" &&
+    typeof globalThis.crypto?.getRandomValues === "function"
+  );
+}
+
+export async function createGoogleNonce(): Promise<GoogleNonce> {
+  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(nonce));
+  const hashedNonce = Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+
+  return { nonce, hashedNonce };
 }

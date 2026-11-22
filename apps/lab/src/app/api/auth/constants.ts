@@ -1,5 +1,7 @@
-export const SESSION_COOKIE = "session";
-export const REFRESH_COOKIE = "refresh";
+export const AUTH_COOKIE_PREFIX = "identity";
+
+export const SESSION_COOKIE = `${AUTH_COOKIE_PREFIX}.session`;
+export const REFRESH_COOKIE = `${AUTH_COOKIE_PREFIX}.refresh`;
 
 export const REFRESH_MAX_AGE = 60 * 60 * 24 * 30;
 

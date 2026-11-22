@@ -4,9 +4,24 @@ import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuS
 import { ACCOUNT, ACCOUNT_LINKS, ACCOUNT_MENU_COPY } from "./constants";
 import type { AccountMenuProps } from "./types";
 
-export function AccountMenu({ side, align, email, onSignOut, pending }: AccountMenuProps) {
+export function AccountMenu({
+  side,
+  align,
+  email,
+  onSignOut,
+  onPointerEnter,
+  onPointerLeave,
+  pending,
+}: AccountMenuProps) {
   return (
-    <DropdownMenuContent side={side} align={align} sideOffset={8} className="w-60 p-1">
+    <DropdownMenuContent
+      side={side}
+      align={align}
+      sideOffset={8}
+      className="w-60 p-1"
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
       <DropdownMenuLabel className="h-9">
         <span className="block font-medium text-foreground">{ACCOUNT_MENU_COPY.account}</span>
         <span className="mt-0.5 block font-normal text-muted-foreground">{email ?? ACCOUNT_MENU_COPY.signedOut}</span>

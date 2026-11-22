@@ -4,8 +4,12 @@ import { clearOAuthCookie, readOAuthCookie } from "@/app/api/auth/oauth/cookies"
 import { setSessionCookies } from "@/app/api/auth/session";
 import type { AuthSession } from "@/app/api/auth/types";
 
-function redirectToLogin(request: NextRequest, error: string) {
-  const response = NextResponse.redirect(new URL(`/login?error=${error}`, request.url));
+function redirectToLogin(request: NextRequest, error: string, next?: string) {
+  const login = new URL("/login", request.url);
+  login.searchParams.set("error", error);
+  if (next) login.searchParams.set("next", next);
+
+  const response = NextResponse.redirect(login);
   clearOAuthCookie(response);
 
   return response;
@@ -16,8 +20,8 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const error = request.nextUrl.searchParams.get("error");
 
-  if (error || !oauth) return redirectToLogin(request, "callback");
-  if (!code) return redirectToLogin(request, "callback");
+  if (error || !oauth) return redirectToLogin(request, "callback", oauth?.next);
+  if (!code) return redirectToLogin(request, "callback", oauth.next);
 
   const result = await engineRequest<AuthSession>("/api/v1/identity/callback", {
     method: "POST",
@@ -28,7 +32,7 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  if (!result.ok) return redirectToLogin(request, "callback");
+  if (!result.ok) return redirectToLogin(request, "callback", oauth.next);
 
   const response = NextResponse.redirect(new URL(oauth.next, request.url));
   setSessionCookies(response, result.data);

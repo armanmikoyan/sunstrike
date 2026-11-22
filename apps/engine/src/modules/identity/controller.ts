@@ -36,13 +36,13 @@ export async function verifyOtpCode(request: Request, response: Response) {
 }
 
 export async function signInWithGoogleIdToken(request: Request, response: Response) {
-  const { credential } = (request.body ?? {}) as GoogleIdTokenBody;
+  const { credential, nonce } = (request.body ?? {}) as GoogleIdTokenBody;
 
-  if (typeof credential !== "string" || !credential) {
-    throw badRequest("A Google credential is required.");
+  if (typeof credential !== "string" || !credential || typeof nonce !== "string" || !nonce) {
+    throw badRequest("A Google credential and nonce are required.");
   }
 
-  const session = await service.signInWithGoogleIdToken(credential);
+  const session = await service.signInWithGoogleIdToken(credential, nonce);
 
   response.status(200).json(session);
 }

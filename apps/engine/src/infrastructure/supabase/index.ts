@@ -38,8 +38,12 @@ export async function sendOtpCode(email: string): Promise<void> {
   if (error) throwAuthError(error, "Could not send the code");
 }
 
-export async function signInWithGoogleIdToken(token: string): Promise<SupabaseSession> {
-  const { data, error } = await getClient().auth.signInWithIdToken({ provider: "google", token });
+export async function signInWithGoogleIdToken(token: string, nonce: string): Promise<SupabaseSession> {
+  const { data, error } = await getClient().auth.signInWithIdToken({
+    provider: "google",
+    token,
+    nonce,
+  });
 
   if (error) throwAuthError(error, "Could not sign in with Google");
 
@@ -82,7 +86,7 @@ export async function startOAuth(provider: Provider, redirectTo: string): Promis
   const verifier = createVerifierStorage();
 
   const oauth = createClient(config.supabaseUrl(), config.supabaseKey(), {
-    auth: { ...authOptions().auth, storage: verifier.storage },
+    auth: { ...authOptions().auth, persistSession: true, storage: verifier.storage },
   });
 
   const { data, error } = await oauth.auth.signInWithOAuth({
@@ -107,7 +111,7 @@ export async function exchangeCode(
   const verifier = createVerifierStorage(codeVerifier);
 
   const oauth = createClient(config.supabaseUrl(), config.supabaseKey(), {
-    auth: { ...authOptions().auth, storage: verifier.storage },
+    auth: { ...authOptions().auth, persistSession: true, storage: verifier.storage },
   });
 
   const { data, error } = await oauth.auth.exchangeCodeForSession(code, flowId ? { flowId } : undefined);

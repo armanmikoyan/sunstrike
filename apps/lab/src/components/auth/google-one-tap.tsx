@@ -1,55 +1,46 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Script from "next/script";
+import { GOOGLE_ONE_TAP_SCRIPT_SRC } from "./constants";
 import { useSessionUser } from "./hooks";
-import { reloadPage } from "./utils";
-import type { GoogleCredentialResponse, GoogleWindow } from "./types";
-
-const SCRIPT_SRC = "https://accounts.google.com/gsi/client";
+import { navigate, reloadPage, safeNext, startGoogleOneTap, supportsGoogleOneTap } from "./utils";
+import type { GoogleWindow } from "./types";
 
 export function GoogleOneTap() {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const pathname = usePathname();
   const { user, loading } = useSessionUser();
-  const [ready, setReady] = useState(
-    () => typeof window !== "undefined" && Boolean((window as GoogleWindow).google?.accounts?.id),
-  );
   const started = useRef(false);
 
   useEffect(() => {
-    if (!clientId || loading || user || !ready || started.current) return;
+    if (!user) return;
 
-    const id = (window as GoogleWindow).google?.accounts?.id;
-    if (!id) return;
+    started.current = false;
+    (window as GoogleWindow).google?.accounts?.id?.cancel();
+  }, [user]);
+
+  function handleReady() {
+    if (!clientId || started.current || loading || user || !supportsGoogleOneTap()) return;
+
+    const googleId = (window as GoogleWindow).google?.accounts?.id;
+    if (!googleId) return;
 
     started.current = true;
-    id.initialize({
-      client_id: clientId,
-      callback: async (response: GoogleCredentialResponse) => {
-        if (!response.credential) return;
+    startGoogleOneTap(googleId, clientId, handleSuccess);
+  }
 
-        try {
-          const result = await fetch("/api/auth/google", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ credential: response.credential }),
-          });
+  function handleSuccess() {
+    if (pathname !== "/login") {
+      reloadPage();
+      return;
+    }
 
-          if (!result.ok) return;
+    navigate(safeNext(new URLSearchParams(window.location.search).get("next")));
+  }
 
-          reloadPage();
-        } catch {
-          return;
-        }
-      },
-      auto_select: false,
-      cancel_on_tap_outside: true,
-      use_fedcm_for_prompt: true,
-    });
-    id.prompt();
-  }, [clientId, loading, ready, user]);
+  if (!clientId || loading || user) return null;
 
-  if (!clientId) return null;
-
-  return <Script src={SCRIPT_SRC} strategy="afterInteractive" onLoad={() => setReady(true)} />;
+  return <Script src={GOOGLE_ONE_TAP_SCRIPT_SRC} strategy="afterInteractive" onReady={handleReady} />;
 }
