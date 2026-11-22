@@ -3,6 +3,7 @@ import {
   completeOAuthSignIn,
   getSessionUser,
   refreshSession,
+  signInWithGoogleIdToken,
   sendOtpCode,
   signOut,
   startAppleSignIn,
@@ -18,6 +19,7 @@ router.post("/verify", verifyOtpCode);
 router.get("/session", getSessionUser);
 router.post("/refresh", refreshSession);
 router.post("/sign-out", signOut);
+router.post("/google/token", signInWithGoogleIdToken);
 router.post("/google", startGoogleSignIn);
 router.post("/github", startGithubSignIn);
 router.post("/apple", startAppleSignIn);

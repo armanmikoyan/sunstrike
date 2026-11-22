@@ -1,4 +1,4 @@
-import type { ErrorMessageBody } from "./types";
+import type { AuthProvider, ErrorMessageBody, OAuthStartResult, OAuthUrlResponse } from "./types";
 
 export function safeNext(value: string | null | undefined): string {
   if (!value) return "/";
@@ -26,4 +26,32 @@ export async function readMessage(
 
 export function navigate(url: string): void {
   window.location.assign(url);
+}
+
+export function reloadPage(): void {
+  window.location.reload();
+}
+
+export async function startOAuthSignIn(
+  provider: AuthProvider,
+  next: string,
+  fallback: string,
+): Promise<OAuthStartResult> {
+  try {
+    const response = await fetch(`/api/auth/oauth/${provider}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ next }),
+    });
+
+    if (!response.ok) return { ok: false, error: await readMessage(response, fallback) };
+
+    const body = (await response.json()) as OAuthUrlResponse;
+
+    if (typeof body.url !== "string" || !body.url) return { ok: false, error: fallback };
+
+    return { ok: true, url: body.url };
+  } catch {
+    return { ok: false, error: fallback };
+  }
 }

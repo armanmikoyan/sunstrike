@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Providers } from "@/app/providers";
 import { AppShell } from "@/app/shell";
 import { SOCIAL_SRC } from "@/components/brand/constants";
+import { GoogleOneTap } from "@/components/auth/google-one-tap";
 import { CookieConsent } from "@/components/cookie-consent";
 import { INSTRUMENT_SERIF, INTER, SPACE_GROTESK, SPACE_MONO } from "@/app/fonts";
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <Providers>
           <AppShell>{children}</AppShell>
+          <GoogleOneTap />
           <CookieConsent />
         </Providers>
       </body>

@@ -11,6 +11,7 @@ export const identity = {
   getSessionUser: service.getSessionUser,
   refreshSession: service.refreshSession,
   signOut: service.signOut,
+  signInWithGoogleIdToken: service.signInWithGoogleIdToken,
   startOAuthSignIn: service.startOAuthSignIn,
   completeOAuthSignIn: service.completeOAuthSignIn,
 };

@@ -54,6 +54,10 @@ export interface OtpVerifyBody {
   token?: unknown;
 }
 
+export interface GoogleIdTokenBody {
+  credential?: unknown;
+}
+
 export interface RefreshBody {
   refreshToken?: unknown;
 }

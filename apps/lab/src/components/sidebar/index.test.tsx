@@ -131,13 +131,11 @@ describe("sidebar profile menu", () => {
     expect(within(menu).getByRole("menuitem", { name: /Sign out/ })).toBeInTheDocument();
   });
 
-  it("shows a neutral account label without a session", async () => {
+  it("links to login without a session", async () => {
     renderSidebar(true);
-    expect(await screen.findByText("Account")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
-    const menu = await screen.findByRole("menu");
-    expect(within(menu).getByText("Not signed in")).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");
+    expect(screen.queryByRole("button", { name: "Account menu" })).not.toBeInTheDocument();
   });
 
   it("signs out through the BFF and returns to login", async () => {
@@ -152,6 +150,7 @@ describe("sidebar profile menu", () => {
   });
 
   it("shows the same entries from the collapsed rail", async () => {
+    mockSession();
     renderSidebar(false);
     await userEvent.click(screen.getByRole("button", { name: "Account menu" }));
 
@@ -194,6 +193,7 @@ describe("mobile drawer", () => {
   });
 
   it("reveals the account panel inline", async () => {
+    mockSession();
     renderDrawer(true);
     const dialog = await screen.findByRole("dialog");
     await userEvent.click(within(dialog).getByRole("button", { name: "Account menu" }));
@@ -205,6 +205,7 @@ describe("mobile drawer", () => {
   });
 
   it("closes the inline account on escape", async () => {
+    mockSession();
     renderDrawer(true);
     const dialog = await screen.findByRole("dialog");
     await userEvent.click(within(dialog).getByRole("button", { name: "Account menu" }));
@@ -215,6 +216,7 @@ describe("mobile drawer", () => {
   });
 
   it("closes the inline account when the page is tapped elsewhere", async () => {
+    mockSession();
     renderDrawer(true);
     const dialog = await screen.findByRole("dialog");
     await userEvent.click(within(dialog).getByRole("button", { name: "Account menu" }));
@@ -223,6 +225,14 @@ describe("mobile drawer", () => {
     await userEvent.click(document.body);
 
     expect(screen.queryByRole("link", { name: /Balance/ })).not.toBeInTheDocument();
+  });
+
+  it("links to login without a session", async () => {
+    renderDrawer(true);
+    const dialog = await screen.findByRole("dialog");
+
+    expect(await within(dialog).findByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");
+    expect(within(dialog).queryByRole("button", { name: "Account menu" })).not.toBeInTheDocument();
   });
 
   it("does not render when closed", () => {

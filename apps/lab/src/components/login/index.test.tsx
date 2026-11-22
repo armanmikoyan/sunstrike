@@ -143,4 +143,11 @@ describe("login", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("Sign-in could not be completed");
   });
+
+  it("links terms and privacy to their pages", () => {
+    render(<Login />);
+
+    expect(screen.getByRole("link", { name: loginCopy.terms })).toHaveAttribute("href", "/terms");
+    expect(screen.getByRole("link", { name: loginCopy.privacy })).toHaveAttribute("href", "/privacy");
+  });
 });

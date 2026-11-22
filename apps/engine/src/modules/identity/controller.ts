@@ -1,6 +1,14 @@
 import type { Request, Response } from "express";
 import * as service from "./service";
-import type { CallbackBody, OAuthBody, OAuthProvider, OtpRequestBody, OtpVerifyBody, RefreshBody } from "./types";
+import type {
+  CallbackBody,
+  GoogleIdTokenBody,
+  OAuthBody,
+  OAuthProvider,
+  OtpRequestBody,
+  OtpVerifyBody,
+  RefreshBody,
+} from "./types";
 import { badRequest, bearer, unauthorized } from "./utils";
 
 export async function sendOtpCode(request: Request, response: Response) {
@@ -23,6 +31,18 @@ export async function verifyOtpCode(request: Request, response: Response) {
   }
 
   const session = await service.verifyOtpCode(email.trim(), token.trim());
+
+  response.status(200).json(session);
+}
+
+export async function signInWithGoogleIdToken(request: Request, response: Response) {
+  const { credential } = (request.body ?? {}) as GoogleIdTokenBody;
+
+  if (typeof credential !== "string" || !credential) {
+    throw badRequest("A Google credential is required.");
+  }
+
+  const session = await service.signInWithGoogleIdToken(credential);
 
   response.status(200).json(session);
 }

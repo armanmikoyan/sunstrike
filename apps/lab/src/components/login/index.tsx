@@ -7,13 +7,13 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Clapperboard, Maximize } from "lucide-react";
 import { LogoLockup } from "@/components/brand";
 import { VideoWithFallback } from "@/components/video-with-fallback";
-import { navigate, readMessage, safeNext } from "@/components/auth/utils";
+import { navigate, readMessage, safeNext, startOAuthSignIn } from "@/components/auth/utils";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { mediaById } from "@/mocks/media";
 import { loginCopy, loginErrors, loginHeroId, loginProviders, loginThumbnailIds } from "./constants";
-import { ProviderIcon } from "./provider-icon";
-import type { LoginPending, LoginProps, LoginProvider, LoginStep, OAuthUrlResponse } from "./types";
+import { ProviderIcon } from "@/components/auth/provider-icon";
+import type { LoginPending, LoginProps, LoginProvider, LoginStep } from "./types";
 
 const thumbnails = loginThumbnailIds.map((id) => mediaById(id)).filter((item) => item !== undefined);
 
@@ -87,27 +87,14 @@ export function Login({ next, initialError }: LoginProps) {
     setPending(provider);
 
     try {
-      const response = await fetch(`/api/auth/oauth/${provider}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ next: target }),
-      });
+      const result = await startOAuthSignIn(provider, target, loginCopy.unreachable);
 
-      if (!response.ok) {
-        setError(await readMessage(response, loginCopy.unreachable));
+      if (!result.ok) {
+        setError(result.error);
         return;
       }
 
-      const body = (await response.json()) as OAuthUrlResponse;
-
-      if (typeof body.url !== "string" || !body.url) {
-        setError(loginCopy.unreachable);
-        return;
-      }
-
-      navigate(body.url);
-    } catch {
-      setError(loginCopy.unreachable);
+      navigate(result.url);
     } finally {
       setPending(null);
     }
@@ -200,12 +187,12 @@ export function Login({ next, initialError }: LoginProps) {
                   key={provider}
                   type="button"
                   variant="outline"
-                  className="h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
+                  className="relative h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
                   onClick={() => continueWith(provider)}
                   disabled={pending !== null}
                 >
                   <ProviderIcon provider={provider} className="size-3.5" />
-                  {pending === provider ? loginCopy.connecting : loginCopy[provider]}
+                  <span>{pending === provider ? loginCopy.connecting : loginCopy[provider]}</span>
                 </Button>
               ))}
             </div>
@@ -292,11 +279,11 @@ export function Login({ next, initialError }: LoginProps) {
 
             <p className="mt-3 text-left text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
               {loginCopy.termsBefore}
-              <Link href="/help" className="underline underline-offset-2">
+              <Link href="/terms" className="underline underline-offset-2">
                 {loginCopy.terms}
               </Link>
               {loginCopy.termsAnd}
-              <Link href="/help" className="underline underline-offset-2">
+              <Link href="/privacy" className="underline underline-offset-2">
                 {loginCopy.privacy}
               </Link>
               {loginCopy.termsAfter}

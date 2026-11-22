@@ -15,7 +15,7 @@ export const ACCOUNT = {
 export const ACCOUNT_MENU_COPY = {
   account: "Account",
   balance: "Balance",
-  signIn: "Sign in",
+  login: "Log in",
   signOut: "Sign out",
   signedOut: "Not signed in",
 };

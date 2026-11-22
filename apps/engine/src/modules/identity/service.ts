@@ -34,6 +34,13 @@ export async function sendOtpCode(email: string): Promise<void> {
   await supabase.sendOtpCode(email);
 }
 
+export async function signInWithGoogleIdToken(token: string): Promise<AuthSession> {
+  const session = await supabase.signInWithGoogleIdToken(token);
+  const userId = await resolve(session.user.id, session.user.email);
+
+  return { ...session, user: toSessionUser(userId, session.user.email) };
+}
+
 export async function verifyOtpCode(email: string, token: string): Promise<AuthSession> {
   const session = await supabase.verifyOtpCode(email, token);
   const userId = await resolve(session.user.id, session.user.email);

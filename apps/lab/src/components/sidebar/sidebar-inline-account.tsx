@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, Coins, LogOut, Plus, UserRound } from "lucide-react";
+import { ChevronDown, Coins, LogIn, LogOut, Plus, UserRound } from "lucide-react";
 import { cn } from "cn";
 import { useSessionUser, useSignOut } from "@/components/auth/hooks";
 import { ACCOUNT, ACCOUNT_LINKS, ACCOUNT_MENU_COPY, SIDEBAR_COPY } from "./constants";
@@ -15,7 +15,7 @@ import type { SidebarInlineAccountProps } from "./types";
 export function SidebarInlineAccount({ onNavigate }: SidebarInlineAccountProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { user } = useSessionUser();
+  const { user, loading } = useSessionUser();
   const { signOut, pending } = useSignOut();
 
   // A tap away or Escape closes it, matching every other dropdown.
@@ -38,6 +38,26 @@ export function SidebarInlineAccount({ onNavigate }: SidebarInlineAccountProps) 
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
+
+  if (!loading && !user) {
+    return (
+      <Link
+        href="/login"
+        onClick={onNavigate}
+        aria-label={ACCOUNT_MENU_COPY.login}
+        className="flex h-9 w-full items-center gap-2.5 rounded-lg px-2 text-left text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground"
+      >
+        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-foreground ring-1 ring-white/10">
+          <LogIn className="size-3.5" strokeWidth={1.8} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-xs font-medium text-foreground lg:text-[0.6875rem]">
+            {ACCOUNT_MENU_COPY.login}
+          </span>
+        </span>
+      </Link>
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative w-full">

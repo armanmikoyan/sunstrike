@@ -38,6 +38,14 @@ export async function sendOtpCode(email: string): Promise<void> {
   if (error) throwAuthError(error, "Could not send the code");
 }
 
+export async function signInWithGoogleIdToken(token: string): Promise<SupabaseSession> {
+  const { data, error } = await getClient().auth.signInWithIdToken({ provider: "google", token });
+
+  if (error) throwAuthError(error, "Could not sign in with Google");
+
+  return mapSession(data.session);
+}
+
 export async function verifyOtpCode(email: string, token: string): Promise<SupabaseSession> {
   const { data, error } = await getClient().auth.verifyOtp({
     email,
