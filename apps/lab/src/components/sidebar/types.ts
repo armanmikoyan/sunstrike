@@ -10,6 +10,7 @@ export type SidebarItemProps = {
   /** Desktop rail (fixed 200px). The drawer lays items out full width. */
   rail: boolean;
   onNavigate?: () => void;
+  onHover?: (item: HTMLElement) => void;
 };
 
 export type RailTooltipProps = {
@@ -81,4 +82,11 @@ export type MobileSidebarPanelProps = {
   panelRef: RefObject<HTMLDivElement | null>;
   overlayRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
+};
+
+export type SidebarHoverIndicator = {
+  y: number;
+  width: number;
+  visible: boolean;
+  instant: boolean;
 };

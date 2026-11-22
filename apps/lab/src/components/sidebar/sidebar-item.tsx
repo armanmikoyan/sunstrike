@@ -12,6 +12,7 @@ export function SidebarItem({
   expanded,
   rail,
   onNavigate,
+  onHover,
 }: SidebarItemProps) {
   // The trigger stays mounted in both states so the rail can animate the link
   // instead of swapping it for a new element. Tooltips only exist while
@@ -24,12 +25,13 @@ export function SidebarItem({
           href={href}
           aria-label={label}
           onClick={onNavigate}
+          onPointerEnter={(event) => onHover?.(event.currentTarget)}
           className={cn(
             // Width stays 100%; the cap animates from the 40px icon box to the
             // 180px content column (200px rail minus its 10px insets). Capping a
             // full-width box keeps its edge travelling in one direction — a
             // `w-10 → w-full` transition re-reads 100% every frame and bulges.
-            "group relative flex h-9 w-full shrink-0 items-center gap-2.5 self-center overflow-hidden rounded-lg px-2.25 text-muted-foreground transition-[max-width,height,background-color,color] duration-260 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-secondary hover:text-foreground motion-reduce:transition-none",
+            "group relative flex h-9 w-full shrink-0 items-center gap-2.5 self-center overflow-hidden rounded-lg px-2.25 text-muted-foreground transition-[max-width,height,background-color,color] duration-260 ease-[cubic-bezier(0.32,0.72,0,1)] hover:text-foreground motion-reduce:transition-none",
             expanded ? (rail ? "max-w-45" : "max-w-full") : "max-w-9",
             active && "bg-secondary text-foreground",
           )}

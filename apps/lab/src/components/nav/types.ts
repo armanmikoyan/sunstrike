@@ -66,3 +66,18 @@ export type MegaMenuControls = ReturnType<typeof useMegaMenu>;
 export type NavMenuLinksProps = {
   menu: MegaMenuControls;
 };
+
+export type NavHoverIndicator = {
+  x: number;
+  width: number;
+  instant: boolean;
+};
+
+export type MegaMenuHoverIndicator = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  visible: boolean;
+  instant: boolean;
+};
