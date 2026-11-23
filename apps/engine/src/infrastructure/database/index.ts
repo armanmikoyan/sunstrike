@@ -1,14 +1,20 @@
 import { Pool, type PoolClient } from "pg";
 import { config } from "@/infrastructure/config";
+import { logger } from "@/infrastructure/logger";
 import type { Row, Transaction } from "./types";
 
 let pool: Pool | undefined;
 
 function connection(): Pool {
   if (!pool) {
-    pool = new Pool({ connectionString: config.databaseUrl() });
+    pool = new Pool({
+      connectionString: config.databaseUrl(),
+      min: 1,
+      keepAlive: true,
+      connectionTimeoutMillis: 5000,
+    });
     pool.on("error", (error) => {
-      console.error("Database connection failed", error);
+      logger.error({ err: error }, "Idle database client failed");
     });
   }
 
@@ -25,6 +31,18 @@ export type { Row, Transaction } from "./types";
 
 export function query<T = Row>(text: string, values: unknown[] = []): Promise<T[]> {
   return run<T>(connection(), text, values);
+}
+
+/** Create the pool and open its first connection. */
+export async function connect(): Promise<void> {
+  const client = await connection().connect();
+
+  client.release();
+}
+
+/** Round-trip a trivial query so callers can report real connectivity. */
+export async function ping(): Promise<void> {
+  await query("select 1");
 }
 
 function scoped(client: PoolClient): Transaction {

@@ -6,41 +6,55 @@ import type { SessionResponse, SessionState } from "./types";
 
 const SIGNED_OUT_EVENT = "identity:signed-out";
 
+let inFlight: Promise<SessionState> | null = null;
+
+async function fetchSession(): Promise<SessionState> {
+  try {
+    const response = await fetch("/api/auth/session", { cache: "no-store" });
+
+    if (!response.ok) return { user: null, loading: false };
+
+    const body = (await response.json()) as SessionResponse;
+
+    return { user: body.user ?? null, loading: false };
+  } catch {
+    return { user: null, loading: false };
+  }
+}
+
+/**
+ * One request per burst: every component mounting on the same render shares
+ * this promise instead of hitting the BFF separately. It is dropped once it
+ * settles, so a later mount (e.g. after navigation) still revalidates.
+ */
+function loadSession(): Promise<SessionState> {
+  inFlight ??= fetchSession().finally(() => {
+    inFlight = null;
+  });
+
+  return inFlight;
+}
+
 export function useSessionUser(): SessionState {
   const [state, setState] = useState<SessionState>({ user: null, loading: true });
 
   useEffect(() => {
-    const controller = new AbortController();
+    let active = true;
 
-    async function load() {
-      try {
-        const response = await fetch("/api/auth/session", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
+    async function hydrate() {
+      const session = await loadSession();
 
-        if (!response.ok) {
-          if (!controller.signal.aborted) setState({ user: null, loading: false });
-          return;
-        }
-
-        const body = (await response.json()) as SessionResponse;
-
-        if (!controller.signal.aborted) {
-          setState({ user: body.user ?? null, loading: false });
-        }
-      } catch {
-        if (!controller.signal.aborted) setState({ user: null, loading: false });
-      }
+      if (active) setState(session);
     }
+
+    void hydrate();
 
     const signedOut = () => setState({ user: null, loading: false });
 
-    load();
     window.addEventListener(SIGNED_OUT_EVENT, signedOut);
 
     return () => {
-      controller.abort();
+      active = false;
       window.removeEventListener(SIGNED_OUT_EVENT, signedOut);
     };
   }, []);

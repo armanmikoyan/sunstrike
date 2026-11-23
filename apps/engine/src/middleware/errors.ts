@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
+import { logger } from "@/infrastructure/logger";
 import { httpError, messageOf, statusOf } from "./utils";
 
 export const notFound: RequestHandler = (_request, _response, next) => {
@@ -13,7 +14,7 @@ export const errorHandler: ErrorRequestHandler = (error, _request, response, nex
 
   const status = statusOf(error);
 
-  console.error(error);
+  if (status >= 500) logger.error({ err: error, status }, "Request failed");
 
   response.status(status).json({ error: { message: messageOf(error, status), status } });
 };

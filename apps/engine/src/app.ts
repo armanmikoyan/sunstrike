@@ -1,4 +1,5 @@
 import express from "express";
+import { ping } from "@/infrastructure/database";
 import { middleware } from "@/middleware";
 import { errorHandler, notFound } from "@/middleware/errors";
 import billingRouter from "@/modules/billing/router";
@@ -15,8 +16,16 @@ export const app = express();
 
 app.use(middleware);
 
-app.get("/health", (_request, response) => {
-  response.json({ status: "ok" });
+app.get("/health", async (_request, response) => {
+  response.set("Cache-Control", "no-store");
+
+  try {
+    await ping();
+
+    response.json({ status: "ok", database: "connected" });
+  } catch {
+    response.status(503).json({ status: "error", database: "unavailable" });
+  }
 });
 
 app.use("/api/v1/identity", identityRouter);

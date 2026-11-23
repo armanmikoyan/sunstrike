@@ -1,8 +1,21 @@
 import { app } from "./app";
 import { config } from "@/infrastructure/config";
+import { connect } from "@/infrastructure/database";
+import { logger } from "@/infrastructure/logger";
 
-const port = config.port();
+async function main(): Promise<void> {
+  const port = config.port();
 
-app.listen(port, () => {
-  console.log(`Engine listening on http://localhost:${port}`);
-});
+  try {
+    await connect();
+    logger.info("Database connected");
+  } catch (error) {
+    logger.error({ err: error }, "Database connection failed");
+  }
+
+  app.listen(port, () => {
+    logger.info(`Engine listening on http://localhost:${port}`);
+  });
+}
+
+await main();

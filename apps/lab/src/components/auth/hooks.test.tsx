@@ -45,6 +45,32 @@ describe("useSessionUser", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.user).toBeNull();
   });
+
+  it("shares one request between components that mount together", async () => {
+    fetchMock.mockResolvedValueOnce(json({ user }));
+    const first = renderHook(() => useSessionUser());
+    const second = renderHook(() => useSessionUser());
+
+    await waitFor(() => {
+      expect(first.result.current.user).toEqual(user);
+      expect(second.result.current.user).toEqual(user);
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("revalidates for a later mount instead of caching the user", async () => {
+    fetchMock.mockImplementation(async () => json({ user }));
+    const first = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(first.result.current.user).toEqual(user));
+    first.unmount();
+
+    const second = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(second.result.current.user).toEqual(user));
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("useSignOut", () => {
