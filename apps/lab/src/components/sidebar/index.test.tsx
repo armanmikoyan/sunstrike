@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Sidebar } from ".";
@@ -155,12 +155,24 @@ describe("sidebar profile menu", () => {
     expect(await screen.findByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login?next=%2Flibrary");
   });
 
-  it("shows a neutral placeholder while the session is loading", () => {
-    fetchMock.mockImplementationOnce(() => new Promise(() => {}));
+  it("shows a neutral placeholder while the session is loading", async () => {
+    let settle!: (response: Response) => void;
+    fetchMock.mockImplementationOnce(() => new Promise<Response>((resolve) => (settle = resolve)));
     renderSidebar(true);
 
     expect(screen.queryByRole("button", { name: "Account menu" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Log in" })).not.toBeInTheDocument();
+
+    // `loadSession` dedupes requests module-wide, so a promise left hanging
+    // here would starve every later test in this file. Let it settle.
+    await act(async () => {
+      settle(
+        new Response(JSON.stringify({ user: null }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    });
   });
 
   it("signs out through the BFF and stays on a public page", async () => {

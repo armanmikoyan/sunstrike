@@ -1,6 +1,6 @@
 import * as service from "./service";
 
-/** Application profiles, linked to Supabase Auth identities. */
+/** Application profiles, keyed by the Supabase Auth user id. */
 export const users = {
   getById: service.getById,
   provision: service.provision,

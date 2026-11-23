@@ -12,3 +12,12 @@ export type LoginProps = {
   next?: string;
   initialError?: string;
 };
+
+export type CodeInputProps = {
+  value: string;
+  onChange: (value: string) => void;
+  onComplete?: (value: string) => void;
+  labelledBy: string;
+  disabled?: boolean;
+  busy?: boolean;
+};

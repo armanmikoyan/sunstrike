@@ -223,8 +223,19 @@ vi.mock("next/image", async () => {
 vi.mock("motion/react", async () => {
   const ReactModule = await import("react");
 
-  const passthrough = (tag: string) =>
-    ReactModule.forwardRef(function MotionMock(props: Record<string, unknown>, ref: React.Ref<HTMLElement>) {
+  // One component per tag: a fresh identity on every `motion.x` access would
+  // remount the element on each render, dropping focus and local state.
+  const passthroughs = new Map<string, React.ComponentType<Record<string, unknown>>>();
+
+  const passthrough = (tag: string) => {
+    const existing = passthroughs.get(tag);
+
+    if (existing) return existing;
+
+    const component = ReactModule.forwardRef(function MotionMock(
+      props: Record<string, unknown>,
+      ref: React.Ref<HTMLElement>,
+    ) {
       const {
         initial: _initial,
         animate: _animate,
@@ -243,6 +254,11 @@ vi.mock("motion/react", async () => {
 
       return ReactModule.createElement(tag, { ...rest, ref });
     });
+
+    passthroughs.set(tag, component);
+
+    return component;
+  };
 
   const motion = new Proxy(
     {},

@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "An email and code are required." }, { status: 400 });
   }
 
-  const result = await engineRequest<AuthSession>("/api/v1/identity/verify", {
+  const result = await engineRequest<AuthSession>("/api/v1/auth/verify", {
     method: "POST",
     body: { email, token },
   });

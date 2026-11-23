@@ -15,13 +15,13 @@ export async function readSessionTokens(): Promise<SessionTokens> {
 }
 
 export function requestSession(accessToken: string) {
-  return engineRequest<{ user: SessionUser }>("/api/v1/identity/session", {
+  return engineRequest<{ user: SessionUser }>("/api/v1/auth/session", {
     token: accessToken,
   });
 }
 
 export function requestRefresh(refreshToken: string) {
-  return engineRequest<AuthSession>("/api/v1/identity/refresh", {
+  return engineRequest<AuthSession>("/api/v1/auth/refresh", {
     method: "POST",
     body: { refreshToken },
   });

@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A Google credential and nonce are required." }, { status: 400 });
   }
 
-  const result = await engineRequest<AuthSession>("/api/v1/identity/google/token", {
+  const result = await engineRequest<AuthSession>("/api/v1/auth/google/token", {
     method: "POST",
     body: { credential, nonce },
   });

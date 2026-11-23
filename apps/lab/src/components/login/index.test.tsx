@@ -23,12 +23,17 @@ async function enterEmail(email = "arman@chronolab.ai") {
   await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
 }
 
+async function enterCode(code = "123456") {
+  await userEvent.click(await screen.findByLabelText("Digit 1 of 6"));
+  await userEvent.keyboard(code);
+}
+
 describe("login", () => {
   it("starts with the email step", () => {
     render(<Login />);
 
     expect(screen.getByLabelText(loginCopy.emailLabel)).toBeInTheDocument();
-    expect(screen.queryByLabelText(loginCopy.codeLabel)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Digit 1 of 6")).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText("••••••••")).not.toBeInTheDocument();
   });
 
@@ -60,7 +65,7 @@ describe("login", () => {
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith("/api/auth/otp", expect.objectContaining({ method: "POST" })),
     );
-    expect(await screen.findByLabelText(loginCopy.codeLabel)).toBeInTheDocument();
+    expect(await screen.findByLabelText("Digit 1 of 6")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("arman@chronolab.ai");
   });
 
@@ -70,8 +75,7 @@ describe("login", () => {
     render(<Login next="/settings/account" />);
 
     await enterEmail();
-    await userEvent.type(await screen.findByLabelText(loginCopy.codeLabel), "123456");
-    await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.verifyCode) }));
+    await enterCode();
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenLastCalledWith("/api/auth/verify", expect.objectContaining({ method: "POST" })),
@@ -86,19 +90,44 @@ describe("login", () => {
     render(<Login next="https://evil.example" />);
 
     await enterEmail();
-    await userEvent.type(await screen.findByLabelText(loginCopy.codeLabel), "123456");
-    await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.verifyCode) }));
+    await enterCode();
 
     await waitFor(() => expect(routerMock.replace).toHaveBeenCalledWith("/"));
   });
 
   it("shows the engine message when sending a code fails", async () => {
-    fetchMock.mockResolvedValueOnce(json({ error: "Too many attempts." }, 429));
+    fetchMock.mockResolvedValueOnce(json({ error: "Too many attempts." }, 400));
     render(<Login />);
 
     await enterEmail();
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Too many attempts.");
+  });
+
+  it("replaces the Supabase cooldown sentence with friendly copy", async () => {
+    fetchMock.mockResolvedValueOnce(
+      json({ error: "For security purposes, you can only request this after 24 seconds." }, 429),
+    );
+    render(<Login />);
+
+    await enterEmail();
+
+    expect(await screen.findByRole("status")).toHaveTextContent(loginCopy.cooldown.replace("{seconds}", "24"));
+    expect(screen.queryByText(/For security purposes/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) })).toBeDisabled();
+  });
+
+  it("turns a verify rate limit into friendly copy", async () => {
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+    fetchMock.mockResolvedValueOnce(
+      json({ error: "For security purposes, you can only request this after 24 seconds." }, 429),
+    );
+    render(<Login />);
+
+    await enterEmail();
+    await enterCode();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(loginCopy.verifyCooldown.replace("{seconds}", "24"));
   });
 
   it("returns to the email step on request", async () => {
@@ -109,7 +138,7 @@ describe("login", () => {
     await userEvent.click(await screen.findByRole("button", { name: loginCopy.differentEmail }));
 
     expect(screen.getByLabelText(loginCopy.emailLabel)).toBeInTheDocument();
-    expect(screen.queryByLabelText(loginCopy.codeLabel)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Digit 1 of 6")).not.toBeInTheDocument();
   });
 
   it("keeps the clicked provider loading and disables the other actions", async () => {
@@ -130,7 +159,6 @@ describe("login", () => {
     expect(google).toHaveAttribute("aria-busy", "true");
     expect(google).toHaveTextContent(loginCopy.connecting);
     expect(screen.getByRole("button", { name: new RegExp(loginCopy.github) })).toBeDisabled();
-    expect(screen.getByRole("button", { name: new RegExp(loginCopy.apple) })).toBeDisabled();
     expect(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) })).toBeDisabled();
 
     await act(async () => {
@@ -163,16 +191,15 @@ describe("login", () => {
     expect(send).toHaveTextContent(loginCopy.sending);
     expect(screen.getByRole("button", { name: new RegExp(loginCopy.google) })).toBeDisabled();
     expect(screen.getByRole("button", { name: new RegExp(loginCopy.github) })).toBeDisabled();
-    expect(screen.getByRole("button", { name: new RegExp(loginCopy.apple) })).toBeDisabled();
 
     await act(async () => {
       resolveFetch(json({ ok: true }, 202));
     });
 
-    expect(await screen.findByLabelText(loginCopy.codeLabel)).toBeInTheDocument();
+    expect(await screen.findByLabelText("Digit 1 of 6")).toBeInTheDocument();
   });
 
-  it("keeps verify loading after a successful exchange", async () => {
+  it("submits automatically on the sixth digit and stays busy until it resolves", async () => {
     fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
     let resolveFetch!: (response: Response) => void;
     fetchMock.mockImplementationOnce(
@@ -184,15 +211,17 @@ describe("login", () => {
     render(<Login />);
 
     await enterEmail();
-    await userEvent.type(await screen.findByLabelText(loginCopy.codeLabel), "123456");
-    const code = screen.getByLabelText(loginCopy.codeLabel);
-    const verify = screen.getByRole("button", { name: new RegExp(loginCopy.verifyCode) });
-    await userEvent.click(verify);
+    await enterCode();
 
+    const code = screen.getByLabelText("Digit 1 of 6");
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenLastCalledWith("/api/auth/verify", expect.objectContaining({ method: "POST" })),
+    );
+    expect(screen.queryByRole("button", { name: /verify code/i })).not.toBeInTheDocument();
     expect(code).toBeDisabled();
-    expect(verify).toBeDisabled();
-    expect(verify).toHaveAttribute("aria-busy", "true");
-    expect(verify).toHaveTextContent(loginCopy.verifying);
+    expect(screen.getByRole("group", { name: loginCopy.codeLabel })).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByText(loginCopy.verifying)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: loginCopy.differentEmail })).toBeDisabled();
 
     await act(async () => {
@@ -200,8 +229,71 @@ describe("login", () => {
     });
 
     expect(routerMock.replace).toHaveBeenCalledWith("/");
-    expect(verify).toBeDisabled();
-    expect(verify).toHaveTextContent(loginCopy.verifying);
+    expect(code).toBeDisabled();
+  });
+
+  it("waits for all six digits before calling the API", async () => {
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    render(<Login />);
+
+    await enterEmail();
+    await enterCode("12345");
+
+    expect(fetchMock.mock.calls.some(([url]) => url === "/api/auth/verify")).toBe(false);
+
+    await userEvent.keyboard("6");
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenLastCalledWith("/api/auth/verify", expect.objectContaining({ method: "POST" })),
+    );
+  });
+
+  it("counts wrong codes and restarts from the email step after five", async () => {
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      fetchMock.mockResolvedValueOnce(json({ error: "Token has expired or is invalid" }, 403));
+    }
+
+    render(<Login />);
+
+    await enterEmail();
+    await enterCode();
+
+    expect(await screen.findByText(loginCopy.wrongCode.replace("{remaining}", "4"))).toBeInTheDocument();
+
+    const retry = async (digit: string) => {
+      await userEvent.click(screen.getByLabelText("Digit 1 of 6"));
+      await userEvent.keyboard(digit);
+    };
+
+    await retry("9");
+    expect(await screen.findByText(loginCopy.wrongCode.replace("{remaining}", "3"))).toBeInTheDocument();
+
+    await retry("8");
+    expect(await screen.findByText(loginCopy.wrongCode.replace("{remaining}", "2"))).toBeInTheDocument();
+
+    await retry("7");
+    expect(await screen.findByText(loginCopy.wrongCodeLast)).toBeInTheDocument();
+
+    await retry("6");
+    expect(await screen.findByText(loginCopy.tooManyCodes)).toBeInTheDocument();
+    expect(screen.getByLabelText(loginCopy.emailLabel)).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
+  });
+
+  it("does not spend an attempt when the server errors", async () => {
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+    fetchMock.mockResolvedValueOnce(json({ error: "Something broke" }, 500));
+    render(<Login />);
+
+    await enterEmail();
+    await enterCode();
+
+    expect(await screen.findByText(loginCopy.unreachable)).toBeInTheDocument();
+    expect(screen.getByLabelText("Digit 1 of 6")).toBeInTheDocument();
+    expect(screen.queryByText(loginCopy.tooManyCodes)).not.toBeInTheDocument();
   });
 
   it.each(loginProviders)("starts %s sign-in and follows the returned URL", async (provider) => {

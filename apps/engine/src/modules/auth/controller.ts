@@ -99,10 +99,6 @@ export async function startGithubSignIn(request: Request, response: Response) {
   await startOAuth("github", request, response);
 }
 
-export async function startAppleSignIn(request: Request, response: Response) {
-  await startOAuth("apple", request, response);
-}
-
 export async function completeOAuthSignIn(request: Request, response: Response) {
   const { code, codeVerifier, flowId } = (request.body ?? {}) as CallbackBody;
 

@@ -1,4 +1,4 @@
-export type OAuthProvider = "google" | "github" | "apple";
+export type OAuthProvider = "google" | "github";
 
 export type OAuthCookie = {
   codeVerifier: string;

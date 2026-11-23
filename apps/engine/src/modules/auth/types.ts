@@ -1,24 +1,10 @@
-/** A verified authentication subject, before it is mapped to a user. */
+/** A verified authentication subject, before it is resolved to a user. */
 export interface AuthSubject {
   authSubject: string;
   email?: string;
 }
 
-/** A raw `identities` row as returned by Postgres. */
-export interface IdentityRow {
-  id: string;
-  auth_subject: string;
-  user_id: string;
-}
-
-/** The mapping between an authentication subject and an application user. */
-export interface IdentityRecord {
-  id: string;
-  authSubject: string;
-  userId: string;
-}
-
-/** The authenticated identity attached to a request by `identity.requireAuth`. */
+/** The authenticated caller attached to a request by `auth.requireAuth`. */
 export interface AuthContext {
   userId: string;
   authSubject: string;
@@ -43,7 +29,7 @@ export interface OAuthStart {
   flowId: string | null;
 }
 
-export type OAuthProvider = "google" | "github" | "apple";
+export type OAuthProvider = "google" | "github";
 
 export interface OtpRequestBody {
   email?: unknown;

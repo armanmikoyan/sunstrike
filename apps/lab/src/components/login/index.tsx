@@ -11,7 +11,9 @@ import { navigate, readMessage, safeNext, startOAuthSignIn } from "@/components/
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { mediaById } from "@/mocks/media";
-import { loginCopy, loginErrors, loginHeroId, loginProviders, loginThumbnailIds } from "./constants";
+import { loginCopy, loginErrors, loginHeroId, loginProviders, loginThumbnailIds, MAX_CODE_ATTEMPTS } from "./constants";
+import { CodeInput } from "./code-input";
+import { cooldownSeconds } from "./utils";
 import { ProviderIcon } from "@/components/auth/provider-icon";
 import type { LoginPending, LoginProps, LoginProvider, LoginStep } from "./types";
 
@@ -25,9 +27,18 @@ export function Login({ next, initialError }: LoginProps) {
   const [pending, setPending] = useState<LoginPending>(null);
   const [emailValid, setEmailValid] = useState(false);
   const [error, setError] = useState(() => loginErrors[initialError ?? ""] ?? "");
-  const [notice, setNotice] = useState("");
+  const [attempts, setAttempts] = useState(0);
+  const [cooldown, setCooldown] = useState(0);
   const hero = mediaById(loginHeroId);
   const target = safeNext(next);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+
+    const timer = setTimeout(() => setCooldown((left) => left - 1), 1000);
+
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   useEffect(() => {
     if (!initialError) return;
@@ -49,13 +60,20 @@ export function Login({ next, initialError }: LoginProps) {
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          // Supabase's sentence is accurate but reads like a log line. Show a
+          // countdown instead, and keep the send button off until it ends.
+          setCooldown(cooldownSeconds(await readMessage(response, "")));
+          return;
+        }
+
         setError(await readMessage(response, loginCopy.unreachable));
         return;
       }
 
       setStep("code");
       setToken("");
-      setNotice(loginCopy.codeSent.replace("{email}", email));
+      setAttempts(0);
     } catch {
       setError(loginCopy.unreachable);
     } finally {
@@ -63,8 +81,9 @@ export function Login({ next, initialError }: LoginProps) {
     }
   }
 
-  async function verifyCode(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submitCode(code: string) {
+    if (pending !== null) return;
+
     setError("");
     setPending("code");
 
@@ -72,15 +91,45 @@ export function Login({ next, initialError }: LoginProps) {
       const response = await fetch("/api/auth/verify", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, token }),
+        body: JSON.stringify({ email, token: code }),
       });
 
       if (!response.ok) {
-        setError(await readMessage(response, loginCopy.unreachable));
+        const canRetry = response.status < 500 && response.status !== 429;
+
+        if (!canRetry) {
+          setError(
+            response.status === 429
+              ? loginCopy.verifyCooldown.replace("{seconds}", String(cooldownSeconds(await readMessage(response, ""))))
+              : await readMessage(response, loginCopy.unreachable),
+          );
+          setPending(null);
+          return;
+        }
+
+        const used = attempts + 1;
         setPending(null);
+
+        // Out of tries: drop the code step and let them pick a method again.
+        if (used >= MAX_CODE_ATTEMPTS) {
+          setStep("email");
+          setToken("");
+          setAttempts(0);
+          setError(loginCopy.tooManyCodes);
+          return;
+        }
+
+        setAttempts(used);
+        setError(
+          (used === MAX_CODE_ATTEMPTS - 1 ? loginCopy.wrongCodeLast : loginCopy.wrongCode).replace(
+            "{remaining}",
+            String(MAX_CODE_ATTEMPTS - used),
+          ),
+        );
         return;
       }
 
+      setAttempts(0);
       router.replace(target);
       router.refresh();
     } catch {
@@ -112,7 +161,7 @@ export function Login({ next, initialError }: LoginProps) {
   function useDifferentEmail() {
     setStep("email");
     setToken("");
-    setNotice("");
+    setAttempts(0);
     setError("");
   }
 
@@ -196,17 +245,25 @@ export function Login({ next, initialError }: LoginProps) {
                   key={provider}
                   type="button"
                   variant="outline"
-                  className="relative h-10 w-full rounded-lg border-white/9 bg-white/1.5 text-foreground hover:bg-white/5"
+                  className="relative h-10 w-full rounded-lg border-white/9 bg-white/1.5 px-4 text-foreground hover:bg-white/5"
                   onClick={() => continueWith(provider)}
                   disabled={pending !== null}
                   aria-busy={pending === provider}
                 >
-                  {pending === provider ? (
-                    <LoaderCircle className="size-3.5 animate-spin motion-reduce:animate-none" />
-                  ) : (
-                    <ProviderIcon provider={provider} className="size-3.5" />
-                  )}
-                  <span>{pending === provider ? loginCopy.connecting : loginCopy[provider]}</span>
+                  {/* Centred pair: the icon travels with its label, so each
+                      button's content reads as one balanced unit. */}
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="grid place-items-center">
+                      {pending === provider ? (
+                        <LoaderCircle className="size-3.5 animate-spin motion-reduce:animate-none" />
+                      ) : (
+                        <ProviderIcon provider={provider} className="size-3.5" />
+                      )}
+                    </span>
+                    <span className="min-w-0 truncate">
+                      {pending === provider ? loginCopy.connecting : loginCopy[provider]}
+                    </span>
+                  </span>
                 </Button>
               ))}
             </div>
@@ -243,7 +300,7 @@ export function Login({ next, initialError }: LoginProps) {
                   type="submit"
                   size="cta"
                   className="mt-2 w-full font-semibold"
-                  disabled={!emailValid || pending !== null}
+                  disabled={!emailValid || pending !== null || cooldown > 0}
                   aria-busy={pending === "email"}
                 >
                   {pending === "email" ? loginCopy.sending : loginCopy.sendCode}
@@ -255,38 +312,32 @@ export function Login({ next, initialError }: LoginProps) {
                 </Button>
               </form>
             ) : (
-              <form onSubmit={verifyCode} className="space-y-3">
-                <p className="leading-relaxed text-muted-foreground">{loginCopy.codeSent.replace("{email}", email)}</p>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void submitCode(token);
+                }}
+                className="space-y-3"
+              >
+                <p role="status" className="leading-relaxed text-muted-foreground">
+                  {loginCopy.codeSent.replace("{email}", email)}
+                </p>
                 <div>
-                  <label htmlFor="code" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
+                  <span id="code-label" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
                     {loginCopy.codeLabel}
-                  </label>
-                  <Input
-                    id="code"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    placeholder={loginCopy.codePlaceholder}
+                  </span>
+                  <CodeInput
                     value={token}
-                    onChange={(event) => setToken(event.target.value)}
-                    required
+                    onChange={setToken}
+                    onComplete={submitCode}
+                    labelledBy="code-label"
                     disabled={pending !== null}
-                    className="mt-1.5 h-10 rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
+                    busy={pending === "code"}
                   />
+                  <span className="sr-only" aria-live="polite">
+                    {pending === "code" ? loginCopy.verifying : ""}
+                  </span>
                 </div>
-                <Button
-                  type="submit"
-                  size="cta"
-                  className="w-full font-semibold"
-                  disabled={pending !== null}
-                  aria-busy={pending === "code"}
-                >
-                  {pending === "code" ? loginCopy.verifying : loginCopy.verifyCode}
-                  {pending === "code" ? (
-                    <LoaderCircle className="size-3.5 animate-spin motion-reduce:animate-none" />
-                  ) : (
-                    <ArrowRight className="size-3.5" />
-                  )}
-                </Button>
                 <Button
                   type="button"
                   variant="ghost"
@@ -304,9 +355,9 @@ export function Login({ next, initialError }: LoginProps) {
                 <p role="alert" className="text-xs text-red-400 lg:text-[0.6875rem]">
                   {error}
                 </p>
-              ) : notice ? (
+              ) : step === "email" && cooldown > 0 ? (
                 <p role="status" className="text-xs text-muted-foreground lg:text-[0.6875rem]">
-                  {notice}
+                  {loginCopy.cooldown.replace("{seconds}", String(cooldown))}
                 </p>
               ) : null}
             </div>

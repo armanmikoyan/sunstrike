@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type AuthProvider = "google" | "github" | "apple";
+export type AuthProvider = "google" | "github";
 
 export type SessionUser = {
   id: string;

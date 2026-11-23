@@ -1,6 +1,5 @@
 import * as supabase from "@/infrastructure/supabase";
 import { users } from "@/modules/users";
-import * as repository from "./repository";
 import type { AuthSession, AuthSubject, OAuthProvider, OAuthStart, SessionUser } from "./types";
 import { toSessionUser } from "./utils";
 
@@ -13,21 +12,23 @@ export async function verify(token: string): Promise<AuthSubject | null> {
   return { authSubject: user.id, email: user.email };
 }
 
+/**
+ * The Supabase Auth subject is the application user id, so resolving a
+ * caller is just ensuring their profile exists. Email is refreshed only when
+ * it actually changed, keeping authenticated reads write-free.
+ */
 export async function resolve(authSubject: string, email?: string): Promise<string> {
-  const existing = await repository.findBySubject(authSubject);
+  const existing = await users.getById(authSubject);
 
   if (existing) {
-    await users.syncEmail(existing.userId, email);
+    if (email && existing.email !== email) await users.syncEmail(existing.id, email);
 
-    return existing.userId;
+    return existing.id;
   }
 
-  const user = await users.provision({ id: authSubject, email });
-  await repository.insert(authSubject, user.id);
+  const created = await users.provision({ id: authSubject, email });
 
-  const created = await repository.findBySubject(authSubject);
-
-  return created?.userId ?? user.id;
+  return created.id;
 }
 
 export async function sendOtpCode(email: string): Promise<void> {

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { SessionResponse, SessionState } from "./types";
 
-const SIGNED_OUT_EVENT = "identity:signed-out";
+const SIGNED_OUT_EVENT = "auth:signed-out";
 
 let inFlight: Promise<SessionState> | null = null;
 

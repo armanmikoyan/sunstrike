@@ -2,11 +2,11 @@ import express from "express";
 import { ping } from "@/infrastructure/database";
 import { middleware } from "@/middleware";
 import { errorHandler, notFound } from "@/middleware/errors";
+import { auth } from "@/modules/auth";
+import authRouter from "@/modules/auth/router";
 import billingRouter from "@/modules/billing/router";
 import catalogRouter from "@/modules/catalog/router";
 import generationRouter from "@/modules/generation/router";
-import { identity } from "@/modules/identity";
-import identityRouter from "@/modules/identity/router";
 import mediaRouter from "@/modules/media/router";
 import notificationsRouter from "@/modules/notifications/router";
 import templatesRouter from "@/modules/templates/router";
@@ -28,14 +28,14 @@ app.get("/health", async (_request, response) => {
   }
 });
 
-app.use("/api/v1/identity", identityRouter);
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/billing", billingRouter);
 app.use("/api/v1/catalog", catalogRouter);
 app.use("/api/v1/generation", generationRouter);
 app.use("/api/v1/media", mediaRouter);
 app.use("/api/v1/notifications", notificationsRouter);
 app.use("/api/v1/templates", templatesRouter);
-app.use("/api/v1/users", identity.requireAuth, usersRouter);
+app.use("/api/v1/users", auth.requireAuth, usersRouter);
 
 app.use(notFound);
 app.use(errorHandler);

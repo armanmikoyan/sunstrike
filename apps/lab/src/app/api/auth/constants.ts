@@ -1,4 +1,4 @@
-export const AUTH_COOKIE_PREFIX = "identity";
+export const AUTH_COOKIE_PREFIX = "auth";
 
 export const SESSION_COOKIE = `${AUTH_COOKIE_PREFIX}.session`;
 export const REFRESH_COOKIE = `${AUTH_COOKIE_PREFIX}.refresh`;

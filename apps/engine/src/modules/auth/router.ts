@@ -6,7 +6,6 @@ import {
   signInWithGoogleIdToken,
   sendOtpCode,
   signOut,
-  startAppleSignIn,
   startGithubSignIn,
   startGoogleSignIn,
   verifyOtpCode,
@@ -22,7 +21,6 @@ router.post("/sign-out", signOut);
 router.post("/google/token", signInWithGoogleIdToken);
 router.post("/google", startGoogleSignIn);
 router.post("/github", startGithubSignIn);
-router.post("/apple", startAppleSignIn);
 router.post("/callback", completeOAuthSignIn);
 
 export default router;

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   if (error || !oauth) return redirectToLogin(request, "callback", oauth?.next);
   if (!code) return redirectToLogin(request, "callback", oauth.next);
 
-  const result = await engineRequest<AuthSession>("/api/v1/identity/callback", {
+  const result = await engineRequest<AuthSession>("/api/v1/auth/callback", {
     method: "POST",
     body: {
       code,

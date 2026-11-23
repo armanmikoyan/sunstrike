@@ -13,7 +13,7 @@ export async function startOAuth(request: NextRequest, provider: OAuthProvider) 
   const next = safeNext(body?.next);
   const redirectTo = `${request.nextUrl.origin}/api/auth/callback`;
 
-  const result = await engineRequest<OAuthStart>(`/api/v1/identity/${provider}`, {
+  const result = await engineRequest<OAuthStart>(`/api/v1/auth/${provider}`, {
     method: "POST",
     body: { redirectTo },
   });

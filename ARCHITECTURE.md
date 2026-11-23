@@ -36,6 +36,7 @@ Each file has one job, and the table below says which.
 | `service.ts`    | Business logic only: the module's rules and decisions           |
 | `repository.ts` | Database only: read and write the module's own tables           |
 | `types.ts`      | The shapes that cross a boundary                                |
+| `constants.ts`  | Fixed values: names, mappings and limits the module shares      |
 | `utils.ts`      | Pure helpers only: shape, format or check, no state, no I/O     |
 | `middleware.ts` | Module-level request middleware, where the module has it        |
 | `worker.ts`     | Background jobs, where the module has them                      |
@@ -48,7 +49,7 @@ the controller, service and repository.
 Global middleware — security headers, CORS, compression, body parsing and
 logging — lives in `src/middleware`. Middleware that belongs
 to one module lives in that module's `middleware.ts`. When another module needs
-it, expose it on the module's public object, as `identity.requireAuth` is.
+it, expose it on the module's public object, as `auth.requireAuth` is.
 
 ### Module rules
 

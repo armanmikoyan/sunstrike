@@ -29,6 +29,20 @@ The demo UI browses without configuration; sign-in needs the engine and its
 Supabase project. Supabase lives only in the engine: the browser never sees its
 URL or key.
 
+### Database
+
+The engine owns the schema. Migrations live in
+`apps/engine/src/infrastructure/supabase/migrations` and run against
+`DATABASE_URL` from `apps/engine/.env`.
+
+```bash
+npm run db:migrate    # apply pending migrations
+```
+
+Applied files are recorded in `public.schema_migrations`, so `db:migrate` is
+safe to re-run. Migrations are forward-only: add a new file rather than editing
+one that has already been applied.
+
 Scripts run from the repo root and delegate to the workspace. `typecheck`
 covers both apps; lint, tests and e2e run in `apps/lab`.
 

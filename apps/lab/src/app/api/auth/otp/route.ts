@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "An email is required." }, { status: 400 });
   }
 
-  const result = await engineRequest<OtpAccepted>("/api/v1/identity/otp", {
+  const result = await engineRequest<OtpAccepted>("/api/v1/auth/otp", {
     method: "POST",
     body: { email },
   });

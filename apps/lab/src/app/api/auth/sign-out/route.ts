@@ -7,7 +7,7 @@ export async function POST() {
   const { accessToken } = await readSessionTokens();
 
   if (accessToken) {
-    await engineRequest("/api/v1/identity/sign-out", {
+    await engineRequest("/api/v1/auth/sign-out", {
       method: "POST",
       token: accessToken,
     });

@@ -11,7 +11,7 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   legal, on `src/mocks`.
 - Design tokens, primitives in `src/ui`, motion primitives and shared control
   sizing.
-- **Auth UI.** Email OTP and Google, GitHub and Apple sign-in through the lab BFF,
+- **Auth UI.** Email OTP and Google/GitHub sign-in through the lab BFF,
   session refresh, a session-aware account menu and the `/settings` gate.
 
 ### Next
@@ -30,12 +30,13 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   stubs.
 - Configuration through `infrastructure/config`; the build passes with and
   without env.
-- Auth schema: `users` and `identities` migrations with RLS scoped to
-  `auth.uid()`.
-- Identity and users: bearer verification, lazy provisioning and
+- Database migrations: one baseline SQL file, a `schema_migrations` ledger and
+  the `db:migrate` script.
+- Auth schema: `users` migration with RLS scoped to `auth.uid()`.
+- Auth and users: bearer verification, lazy provisioning and
   `GET /api/v1/users/me`.
-- Identity API: email OTP, session, refresh, sign-out and Google, GitHub and Apple
-  OAuth on the identity module; Supabase stays in `infrastructure/supabase`.
+- Auth API: email OTP, session, refresh, sign-out and Google and GitHub OAuth on
+  the auth module; Supabase stays in `infrastructure/supabase`.
 
 ### Next
 

@@ -9,12 +9,16 @@ function connection(): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: config.databaseUrl(),
-      min: 1,
+      // The Supabase pooler reaps idle sessions on its own schedule. Holding a
+      // minimum connection open means the pooler eventually resets it under us,
+      // so let the pool retire idle clients first and reconnect on demand.
+      min: 0,
+      idleTimeoutMillis: 30_000,
       keepAlive: true,
       connectionTimeoutMillis: 5000,
     });
     pool.on("error", (error) => {
-      logger.error({ err: error }, "Idle database client failed");
+      logger.warn({ err: error }, "Idle database connection was dropped");
     });
   }
 

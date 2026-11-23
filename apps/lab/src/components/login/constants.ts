@@ -2,7 +2,12 @@ import type { LoginErrors, LoginProvider } from "./types";
 
 export const loginThumbnailIds = ["02", "16", "11"];
 
-export const loginProviders: LoginProvider[] = ["google", "github", "apple"];
+export const CODE_LENGTH = 6;
+
+/** Wrong codes allowed before the sign-in restarts from the email step. */
+export const MAX_CODE_ATTEMPTS = 5;
+
+export const loginProviders: LoginProvider[] = ["google", "github"];
 
 export const loginHeroId = "09";
 
@@ -23,18 +28,20 @@ export const loginCopy = {
   emailLabel: "Email",
   emailPlaceholder: "you@studio.com",
   codeLabel: "Code",
-  codePlaceholder: "123456",
   sendCode: "Send code",
-  verifyCode: "Verify code",
   sending: "Sending…",
+  cooldown: "Please wait {seconds}s before requesting another code.",
+  verifyCooldown: "Too many attempts. Try again in {seconds}s.",
   verifying: "Verifying…",
   connecting: "Connecting…",
   differentEmail: "Use a different email",
   codeSent: "We sent a code to {email}.",
+  wrongCode: "That code is incorrect. {remaining} attempts left.",
+  wrongCodeLast: "That code is incorrect. 1 attempt left.",
+  tooManyCodes: "Too many incorrect codes. Choose how you want to sign in.",
   or: "or",
   google: "Continue with Google",
   github: "Continue with GitHub",
-  apple: "Continue with Apple",
   termsBefore: "By continuing you agree to our ",
   terms: "Terms",
   termsAnd: " and ",

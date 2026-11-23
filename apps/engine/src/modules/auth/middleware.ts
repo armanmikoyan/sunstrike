@@ -4,7 +4,7 @@ import { bearer, unauthorized } from "./utils";
 
 /**
  * Read the bearer token, validate the Supabase session, resolve its subject to
- * an application user, and attach the identity for controllers.
+ * an application user, and attach the caller to the request for controllers.
  */
 export const requireAuth: RequestHandler = async (request, _response, next) => {
   try {
