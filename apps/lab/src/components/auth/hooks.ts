@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGNING_OUT_EVENT } from "./constants";
 import type { SessionResponse, SessionState } from "./types";
-
-const SIGNED_OUT_EVENT = "auth:signed-out";
 
 let inFlight: Promise<SessionState> | null = null;
 
@@ -50,11 +49,14 @@ export function useSessionUser(): SessionState {
     void hydrate();
 
     const signedOut = () => setState({ user: null, loading: false });
+    const signedIn = () => void hydrate();
 
+    window.addEventListener(SIGNED_IN_EVENT, signedIn);
     window.addEventListener(SIGNED_OUT_EVENT, signedOut);
 
     return () => {
       active = false;
+      window.removeEventListener(SIGNED_IN_EVENT, signedIn);
       window.removeEventListener(SIGNED_OUT_EVENT, signedOut);
     };
   }, []);
@@ -67,6 +69,7 @@ export function useSignOut() {
 
   const signOut = useCallback(async () => {
     setPending(true);
+    window.dispatchEvent(new Event(SIGNING_OUT_EVENT));
 
     try {
       await fetch("/api/auth/sign-out", { method: "POST" });

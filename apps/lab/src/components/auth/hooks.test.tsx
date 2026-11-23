@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { fetchMock, routerMock, setPathname } from "~/vitest.setup";
+import { SIGNED_IN_EVENT } from "./constants";
 import { useLoginHref, useRequireAuth, useSessionUser, useSignOut } from "./hooks";
 
 function json(body: unknown, status = 200) {
@@ -70,6 +71,19 @@ describe("useSessionUser", () => {
 
     await waitFor(() => expect(second.result.current.user).toEqual(user));
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("revalidates when another sign-in flow completes", async () => {
+    const { result } = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.user).toBeNull();
+
+    fetchMock.mockResolvedValueOnce(json({ user }));
+
+    act(() => window.dispatchEvent(new Event(SIGNED_IN_EVENT)));
+
+    await waitFor(() => expect(result.current.user).toEqual(user));
   });
 });
 

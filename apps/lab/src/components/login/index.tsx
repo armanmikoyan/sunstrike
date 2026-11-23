@@ -1,17 +1,27 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Clapperboard, LoaderCircle, Maximize } from "lucide-react";
 import { LogoLockup } from "@/components/brand";
+import { cn } from "cn";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import { navigate, readMessage, safeNext, startOAuthSignIn } from "@/components/auth/utils";
+import { SIGNED_IN_EVENT } from "@/components/auth/constants";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { mediaById } from "@/mocks/media";
-import { loginCopy, loginErrors, loginHeroId, loginProviders, loginThumbnailIds, MAX_CODE_ATTEMPTS } from "./constants";
+import {
+  loginCopy,
+  loginErrors,
+  loginHeroId,
+  loginProviders,
+  loginThumbnailIds,
+  MAX_CODE_ATTEMPTS,
+  SENDING_PHASE_MS,
+} from "./constants";
 import { CodeInput } from "./code-input";
 import { cooldownSeconds } from "./utils";
 import { ProviderIcon } from "@/components/auth/provider-icon";
@@ -28,7 +38,9 @@ export function Login({ next, initialError }: LoginProps) {
   const [emailValid, setEmailValid] = useState(false);
   const [error, setError] = useState(() => loginErrors[initialError ?? ""] ?? "");
   const [attempts, setAttempts] = useState(0);
+  const [refocus, setRefocus] = useState(0);
   const [cooldown, setCooldown] = useState(0);
+  const sendAttempt = useRef(0);
   const hero = mediaById(loginHeroId);
   const target = safeNext(next);
 
@@ -41,49 +53,83 @@ export function Login({ next, initialError }: LoginProps) {
   }, [cooldown]);
 
   useEffect(() => {
+    if (pending !== "email") return;
+
+    // Keep the sending state visible for a beat instead of flipping the screen
+    // instantly. The request settles in the background; a failure cancels this
+    // phase and rolls back to the email form.
+    const timer = setTimeout(() => {
+      setPending(null);
+      setStep("code");
+      setToken("");
+      setAttempts(0);
+    }, SENDING_PHASE_MS);
+
+    return () => clearTimeout(timer);
+  }, [pending]);
+
+  useEffect(() => {
     if (!initialError) return;
 
     const loginPath = next ? `/login?next=${encodeURIComponent(target)}` : "/login";
     router.replace(loginPath, { scroll: false });
   }, [initialError, next, router, target]);
 
-  async function sendCode(event: FormEvent<HTMLFormElement>) {
+  function sendCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (pending !== null) return;
+
     setError("");
     setPending("email");
 
+    const attempt = ++sendAttempt.current;
+
+    void sendCodeInBackground(email, attempt);
+  }
+
+  async function sendCodeInBackground(address: string, attempt: number) {
     try {
       const response = await fetch("/api/auth/otp", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: address }),
       });
 
-      if (!response.ok) {
-        if (response.status === 429) {
-          // Supabase's sentence is accurate but reads like a log line. Show a
-          // countdown instead, and keep the send button off until it ends.
-          setCooldown(cooldownSeconds(await readMessage(response, "")));
-          return;
-        }
+      if (attempt !== sendAttempt.current) return;
 
-        setError(await readMessage(response, loginCopy.unreachable));
+      if (response.ok) return;
+
+      setPending(null);
+      setStep("email");
+      setToken("");
+      setAttempts(0);
+
+      if (response.status === 429) {
+        // Supabase's sentence is accurate but reads like a log line. Show a
+        // countdown instead, and keep the send button off until it ends.
+        setCooldown(cooldownSeconds(await readMessage(response, "")));
         return;
       }
 
-      setStep("code");
+      setError(await readMessage(response, loginCopy.unreachable));
+    } catch {
+      if (attempt !== sendAttempt.current) return;
+
+      setPending(null);
+      setStep("email");
       setToken("");
       setAttempts(0);
-    } catch {
       setError(loginCopy.unreachable);
-    } finally {
-      setPending(null);
     }
   }
 
   async function submitCode(code: string) {
     if (pending !== null) return;
 
+    // Once a code is being checked, a late send failure should not pull the
+    // screen back; verify has its own result to show.
+    sendAttempt.current += 1;
     setError("");
     setPending("code");
 
@@ -120,6 +166,7 @@ export function Login({ next, initialError }: LoginProps) {
         }
 
         setAttempts(used);
+        setRefocus((value) => value + 1);
         setError(
           (used === MAX_CODE_ATTEMPTS - 1 ? loginCopy.wrongCodeLast : loginCopy.wrongCode).replace(
             "{remaining}",
@@ -130,6 +177,7 @@ export function Login({ next, initialError }: LoginProps) {
       }
 
       setAttempts(0);
+      window.dispatchEvent(new Event(SIGNED_IN_EVENT));
       router.replace(target);
       router.refresh();
     } catch {
@@ -159,6 +207,7 @@ export function Login({ next, initialError }: LoginProps) {
   }
 
   function useDifferentEmail() {
+    sendAttempt.current += 1;
     setStep("email");
     setToken("");
     setAttempts(0);
@@ -236,16 +285,16 @@ export function Login({ next, initialError }: LoginProps) {
         </div>
 
         <div className="flex flex-1 items-center justify-center px-5 py-10">
-          <div className="w-full max-w-85 text-sm lg:text-xs">
+          <div className="w-full max-w-md rounded-2xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.012))] px-6 py-9 text-sm shadow-[0_2rem_4rem_-2.5rem_rgba(0,0,0,0.75)] lg:text-[0.8125rem]">
             <h2 className="text-[1.75rem] font-medium tracking-[-0.05em]">{loginCopy.title}</h2>
 
-            <div className="mt-6 grid gap-2">
+            <div className="mt-7 grid gap-2">
               {loginProviders.map((provider) => (
                 <Button
                   key={provider}
                   type="button"
                   variant="outline"
-                  className="relative h-10 w-full rounded-lg border-white/9 bg-white/1.5 px-4 text-foreground hover:bg-white/5"
+                  className="relative h-10 w-full rounded-lg border-white/9 bg-white/1.5 px-4 text-sm font-normal text-foreground hover:bg-white/5 lg:text-[0.8125rem]"
                   onClick={() => continueWith(provider)}
                   disabled={pending !== null}
                   aria-busy={pending === provider}
@@ -268,15 +317,26 @@ export function Login({ next, initialError }: LoginProps) {
               ))}
             </div>
 
-            <div className="my-4 flex items-center gap-3">
+            <div className="my-5 flex items-center gap-3">
               <span className="h-px flex-1 bg-border" />
-              <span className="text-xs lg:text-[0.6875rem] text-muted-foreground">{loginCopy.or}</span>
+              <span className="text-xs text-muted-foreground">{loginCopy.or}</span>
               <span className="h-px flex-1 bg-border" />
             </div>
 
-            {step === "email" ? (
-              <form onSubmit={sendCode}>
-                <label htmlFor="email" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
+            {/* Both steps are built to the same height: the email form's
+                label + input + button match the code form's sent line +
+                label + boxes + action row. They also share one grid cell, so
+                font rounding cannot shift the centred column either. The idle
+                form stays laid out but is invisible, inert and hidden from
+                assistive tech. */}
+            <div className="grid">
+              <form
+                onSubmit={sendCode}
+                aria-hidden={step !== "email"}
+                inert={step !== "email"}
+                className={cn("col-start-1 row-start-1", step !== "email" && "invisible")}
+              >
+                <label htmlFor="email" className="text-xs font-normal text-foreground/70">
                   {loginCopy.emailLabel}
                 </label>
                 <Input
@@ -294,12 +354,12 @@ export function Login({ next, initialError }: LoginProps) {
                   }}
                   required
                   disabled={pending !== null}
-                  className="mt-1.5 h-10 w-full rounded-lg border-white/8 bg-white/3.5 placeholder:text-muted-foreground"
+                  className="mt-1.5 h-11 w-full rounded-lg border-white/8 bg-white/3.5 text-sm placeholder:text-muted-foreground lg:text-[0.8125rem]"
                 />
                 <Button
                   type="submit"
                   size="cta"
-                  className="mt-2 w-full font-semibold"
+                  className="mt-2 h-11 w-full text-sm font-normal lg:text-[0.8125rem]"
                   disabled={!emailValid || pending !== null || cooldown > 0}
                   aria-busy={pending === "email"}
                 >
@@ -311,19 +371,18 @@ export function Login({ next, initialError }: LoginProps) {
                   )}
                 </Button>
               </form>
-            ) : (
+
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
                   void submitCode(token);
                 }}
-                className="space-y-3"
+                aria-hidden={step !== "code"}
+                inert={step !== "code"}
+                className={cn("col-start-1 row-start-1", step !== "code" && "invisible")}
               >
-                <p role="status" className="leading-relaxed text-muted-foreground">
-                  {loginCopy.codeSent.replace("{email}", email)}
-                </p>
                 <div>
-                  <span id="code-label" className="text-xs lg:text-[0.6875rem] font-medium text-foreground/80">
+                  <span id="code-label" className="text-xs font-normal text-foreground/70">
                     {loginCopy.codeLabel}
                   </span>
                   <CodeInput
@@ -333,46 +392,78 @@ export function Login({ next, initialError }: LoginProps) {
                     labelledBy="code-label"
                     disabled={pending !== null}
                     busy={pending === "code"}
+                    active={step === "code"}
+                    refocus={refocus}
                   />
-                  <span className="sr-only" aria-live="polite">
-                    {pending === "code" ? loginCopy.verifying : ""}
+                </div>
+                <p
+                  role="status"
+                  title={email}
+                  className="mt-3 truncate text-xs leading-4 text-muted-foreground lg:text-[0.8125rem]"
+                >
+                  {loginCopy.codeSentBefore}
+                  {email}
+                  {loginCopy.codeSentAfter}
+                </p>
+                {/* One row: the escape hatch on the left, under the first
+                    box, with the verify hint pushed to the right. Both step
+                    forms share one grid cell, so their heights never move the
+                    column around when the step swaps. */}
+                <div className="mt-2 flex min-h-4 items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={useDifferentEmail}
+                    disabled={pending !== null}
+                    className="shrink-0 text-xs leading-4 text-brand-secondary underline-offset-2 lg:text-[0.8125rem] transition-colors hover:text-brand-tertiary hover:underline disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    {loginCopy.differentEmail}
+                  </button>
+                  <span
+                    aria-live="polite"
+                    className="ml-auto flex min-w-0 items-center gap-1.5 text-xs leading-4 text-brand-secondary lg:text-[0.8125rem]"
+                  >
+                    {pending === "code" ? (
+                      <>
+                        <LoaderCircle className="size-3 animate-spin motion-reduce:animate-none" />
+                        {loginCopy.verifying}
+                      </>
+                    ) : null}
                   </span>
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={useDifferentEmail}
-                  disabled={pending !== null}
-                >
-                  {loginCopy.differentEmail}
-                </Button>
               </form>
-            )}
-
-            <div aria-live="polite" className="mt-2 min-h-4">
-              {error ? (
-                <p role="alert" className="text-xs text-red-400 lg:text-[0.6875rem]">
-                  {error}
-                </p>
-              ) : step === "email" && cooldown > 0 ? (
-                <p role="status" className="text-xs text-muted-foreground lg:text-[0.6875rem]">
-                  {loginCopy.cooldown.replace("{seconds}", String(cooldown))}
-                </p>
-              ) : null}
             </div>
 
-            <p className="mt-3 text-left text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
-              {loginCopy.termsBefore}
-              <Link href="/terms" className="underline underline-offset-2">
-                {loginCopy.terms}
-              </Link>
-              {loginCopy.termsAnd}
-              <Link href="/privacy" className="underline underline-offset-2">
-                {loginCopy.privacy}
-              </Link>
-              {loginCopy.termsAfter}
-            </p>
+            {/* The consent line sits directly under the step. The feedback
+                slot keeps one line of height at all times, so a cooldown or
+                error never pushes the centred column around; an idle form
+                shows no text there. */}
+            <div className="mt-4">
+              <div aria-live="polite" className="min-h-5 text-xs leading-relaxed">
+                {error ? (
+                  <p role="alert" className="text-red-400">
+                    {error}
+                  </p>
+                ) : step === "email" && cooldown > 0 ? (
+                  <p role="status" className="text-muted-foreground">
+                    {loginCopy.cooldownBefore}
+                    <span className="tabular-nums text-brand-secondary">{cooldown}s</span>
+                    {loginCopy.cooldownAfter}
+                  </p>
+                ) : null}
+              </div>
+
+              <p className="mt-1 text-left text-xs leading-relaxed text-muted-foreground">
+                {loginCopy.termsBefore}
+                <Link href="/terms" className="underline underline-offset-2">
+                  {loginCopy.terms}
+                </Link>
+                {loginCopy.termsAnd}
+                <Link href="/privacy" className="underline underline-offset-2">
+                  {loginCopy.privacy}
+                </Link>
+                {loginCopy.termsAfter}
+              </p>
+            </div>
           </div>
         </div>
 

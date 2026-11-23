@@ -19,12 +19,12 @@ function json(body: unknown, status = 200) {
 }
 
 async function enterEmail(email = "arman@chronolab.ai") {
-  await userEvent.type(screen.getByLabelText(loginCopy.emailLabel), email);
+  await userEvent.type(screen.getByRole("textbox", { name: loginCopy.emailLabel }), email);
   await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
 }
 
 async function enterCode(code = "123456") {
-  await userEvent.click(await screen.findByLabelText("Digit 1 of 6"));
+  await userEvent.click(await screen.findByRole("textbox", { name: "Digit 1 of 6" }, { timeout: 2000 }));
   await userEvent.keyboard(code);
 }
 
@@ -32,14 +32,30 @@ describe("login", () => {
   it("starts with the email step", () => {
     render(<Login />);
 
-    expect(screen.getByLabelText(loginCopy.emailLabel)).toBeInTheDocument();
-    expect(screen.queryByLabelText("Digit 1 of 6")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText("••••••••")).not.toBeInTheDocument();
+  });
+
+  it("keeps both steps mounted so the column height never changes", async () => {
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+    render(<Login />);
+
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: loginCopy.codeLabel, hidden: true })).toBeInTheDocument();
+
+    await enterEmail();
+    await screen.findByRole("textbox", { name: "Digit 1 of 6" }, { timeout: 2000 });
+
+    // The email form stays in the DOM for its height, but leaves the
+    // accessibility tree and the tab order.
+    expect(screen.queryByRole("textbox", { name: loginCopy.emailLabel })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel, hidden: true })).toBeInTheDocument();
   });
 
   it("disables send code until the email is valid", async () => {
     render(<Login />);
-    const email = screen.getByLabelText(loginCopy.emailLabel);
+    const email = screen.getByRole("textbox", { name: loginCopy.emailLabel });
     const sendCode = () => screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) });
 
     expect(sendCode()).toBeDisabled();
@@ -65,7 +81,7 @@ describe("login", () => {
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith("/api/auth/otp", expect.objectContaining({ method: "POST" })),
     );
-    expect(await screen.findByLabelText("Digit 1 of 6")).toBeInTheDocument();
+    expect(await screen.findByRole("textbox", { name: "Digit 1 of 6" }, { timeout: 2000 })).toHaveFocus();
     expect(screen.getByRole("status")).toHaveTextContent("arman@chronolab.ai");
   });
 
@@ -102,6 +118,8 @@ describe("login", () => {
     await enterEmail();
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Too many attempts.");
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
   });
 
   it("replaces the Supabase cooldown sentence with friendly copy", async () => {
@@ -112,9 +130,10 @@ describe("login", () => {
 
     await enterEmail();
 
-    expect(await screen.findByRole("status")).toHaveTextContent(loginCopy.cooldown.replace("{seconds}", "24"));
+    expect(await screen.findByRole("status")).toHaveTextContent("Please wait 24s before requesting another code.");
     expect(screen.queryByText(/For security purposes/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
   });
 
   it("turns a verify rate limit into friendly copy", async () => {
@@ -137,8 +156,8 @@ describe("login", () => {
     await enterEmail();
     await userEvent.click(await screen.findByRole("button", { name: loginCopy.differentEmail }));
 
-    expect(screen.getByLabelText(loginCopy.emailLabel)).toBeInTheDocument();
-    expect(screen.queryByLabelText("Digit 1 of 6")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
   });
 
   it("keeps the clicked provider loading and disables the other actions", async () => {
@@ -154,7 +173,7 @@ describe("login", () => {
     const google = screen.getByRole("button", { name: new RegExp(loginCopy.google) });
     await userEvent.click(google);
 
-    expect(screen.getByLabelText(loginCopy.emailLabel)).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeDisabled();
     expect(google).toBeDisabled();
     expect(google).toHaveAttribute("aria-busy", "true");
     expect(google).toHaveTextContent(loginCopy.connecting);
@@ -170,7 +189,7 @@ describe("login", () => {
     expect(google).toHaveTextContent(loginCopy.connecting);
   });
 
-  it("keeps send code loading and disables the other actions", async () => {
+  it("keeps the sending state briefly, then reveals the code step before the request finishes", async () => {
     let resolveFetch!: (response: Response) => void;
     fetchMock.mockImplementationOnce(
       () =>
@@ -180,23 +199,48 @@ describe("login", () => {
     );
     render(<Login />);
 
-    await userEvent.type(screen.getByLabelText(loginCopy.emailLabel), "arman@chronolab.ai");
-    const email = screen.getByLabelText(loginCopy.emailLabel);
-    const send = screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) });
-    await userEvent.click(send);
+    await userEvent.type(screen.getByRole("textbox", { name: loginCopy.emailLabel }), "arman@chronolab.ai");
+    await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
 
-    expect(email).toBeDisabled();
-    expect(send).toBeDisabled();
-    expect(send).toHaveAttribute("aria-busy", "true");
-    expect(send).toHaveTextContent(loginCopy.sending);
+    const sending = screen.getByRole("button", { name: loginCopy.sending });
+    expect(sending).toBeDisabled();
+    expect(sending).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeDisabled();
     expect(screen.getByRole("button", { name: new RegExp(loginCopy.google) })).toBeDisabled();
-    expect(screen.getByRole("button", { name: new RegExp(loginCopy.github) })).toBeDisabled();
+    expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+    // The mail request is still unresolved when the phase ends.
+    expect(await screen.findByRole("textbox", { name: "Digit 1 of 6" }, { timeout: 2000 })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: loginCopy.sending })).not.toBeInTheDocument();
 
     await act(async () => {
       resolveFetch(json({ ok: true }, 202));
     });
 
-    expect(await screen.findByLabelText("Digit 1 of 6")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Digit 1 of 6" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("ignores a failed send after the user returns to the email step", async () => {
+    let resolveFetch!: (response: Response) => void;
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+    render(<Login />);
+
+    await enterEmail();
+    await userEvent.click(await screen.findByRole("button", { name: loginCopy.differentEmail }, { timeout: 2000 }));
+
+    await act(async () => {
+      resolveFetch(json({ error: "Too many attempts." }, 400));
+    });
+
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("submits automatically on the sixth digit and stays busy until it resolves", async () => {
@@ -213,7 +257,7 @@ describe("login", () => {
     await enterEmail();
     await enterCode();
 
-    const code = screen.getByLabelText("Digit 1 of 6");
+    const code = screen.getByRole("textbox", { name: "Digit 1 of 6" });
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenLastCalledWith("/api/auth/verify", expect.objectContaining({ method: "POST" })),
@@ -263,8 +307,11 @@ describe("login", () => {
 
     expect(await screen.findByText(loginCopy.wrongCode.replace("{remaining}", "4"))).toBeInTheDocument();
 
+    // The caret lands on the last box so trimming starts where the code ends.
+    expect(screen.getByRole("textbox", { name: "Digit 6 of 6" })).toHaveFocus();
+
     const retry = async (digit: string) => {
-      await userEvent.click(screen.getByLabelText("Digit 1 of 6"));
+      await userEvent.click(screen.getByRole("textbox", { name: "Digit 1 of 6" }));
       await userEvent.keyboard(digit);
     };
 
@@ -279,7 +326,7 @@ describe("login", () => {
 
     await retry("6");
     expect(await screen.findByText(loginCopy.tooManyCodes)).toBeInTheDocument();
-    expect(screen.getByLabelText(loginCopy.emailLabel)).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
   });
 
@@ -292,7 +339,7 @@ describe("login", () => {
     await enterCode();
 
     expect(await screen.findByText(loginCopy.unreachable)).toBeInTheDocument();
-    expect(screen.getByLabelText("Digit 1 of 6")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Digit 1 of 6" })).toBeInTheDocument();
     expect(screen.queryByText(loginCopy.tooManyCodes)).not.toBeInTheDocument();
   });
 

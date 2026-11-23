@@ -4,6 +4,7 @@ import { Providers } from "@/app/providers";
 import { AppShell } from "@/app/shell";
 import { SOCIAL_SRC } from "@/components/brand/constants";
 import { GoogleOneTap } from "@/components/auth/google-one-tap";
+import { SignOutOverlay } from "@/components/auth/sign-out-overlay";
 import { CookieConsent } from "@/components/cookie-consent";
 import { INSTRUMENT_SERIF, INTER, SPACE_GROTESK, SPACE_MONO } from "@/app/fonts";
 import "./globals.css";
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <AppShell>{children}</AppShell>
           <GoogleOneTap />
+          <SignOutOverlay />
           <CookieConsent />
         </Providers>
       </body>

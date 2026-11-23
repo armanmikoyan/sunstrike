@@ -20,4 +20,8 @@ export type CodeInputProps = {
   labelledBy: string;
   disabled?: boolean;
   busy?: boolean;
+  /** Drives the staggered entrance; false leaves the boxes hidden. */
+  active?: boolean;
+  /** Increment to move the caret to the last box (after a wrong code). */
+  refocus?: number;
 };

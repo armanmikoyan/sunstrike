@@ -1,15 +1,39 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
 import { motion, useReducedMotion, type Transition } from "motion/react";
-import { CODE_LENGTH } from "./constants";
+import { cn } from "cn";
+import { CODE_BOX_STAGGER_MS, CODE_LENGTH } from "./constants";
 import type { CodeInputProps } from "./types";
 
-const POP: Transition = { type: "spring", stiffness: 460, damping: 28, mass: 0.7 };
+/**
+ * A box arrives from below with a soft spring: enough travel to read as
+ * motion, enough damping to settle without wobbling. The stagger turns the six
+ * into a left-to-right ripple instead of one block fading in.
+ */
+const ENTRANCE: Transition = { type: "spring", stiffness: 240, damping: 22, mass: 0.9 };
+
+/** Digit and state changes: quick, with a hint of overshoot. */
+const DIGIT: Transition = { type: "spring", stiffness: 460, damping: 28, mass: 0.7 };
+
+/** Each box waits a little longer than the one before it, then springs in. */
+const HIDDEN_BOX = { opacity: 0, y: 16, scale: 0.84 };
+const SHOWN_BOX = { opacity: 1, y: 0, scale: 1 };
+
+function entrance(index: number, active: boolean, reduceMotion: boolean | null): Transition {
+  if (reduceMotion || !active) return { duration: 0 };
+
+  return { ...ENTRANCE, delay: (index * CODE_BOX_STAGGER_MS) / 1000 };
+}
+
+/** A violet ring that expands away as each box lands — a quiet ignition. */
+function flare(index: number): Transition {
+  return { duration: 0.6, ease: "easeOut", delay: (index * CODE_BOX_STAGGER_MS) / 1000 + 0.08 };
+}
 
 const EMPTY_TONE = {
-  borderColor: "rgba(255, 255, 255, 0.08)",
-  backgroundColor: "rgba(255, 255, 255, 0.035)",
+  borderColor: "rgba(167, 139, 250, 0.24)",
+  backgroundColor: "rgba(139, 92, 246, 0.06)",
   boxShadow: "0 0 0 rgba(139, 92, 246, 0)",
 };
 
@@ -20,9 +44,9 @@ const FILLED_TONE = {
 };
 
 const FOCUSED_TONE = {
-  borderColor: "rgba(255, 255, 255, 0.38)",
-  backgroundColor: "rgba(255, 255, 255, 0.06)",
-  boxShadow: "0 0 0 rgba(139, 92, 246, 0)",
+  borderColor: "rgba(196, 181, 253, 0.85)",
+  backgroundColor: "rgba(139, 92, 246, 0.12)",
+  boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.18)",
 };
 
 const BUSY_TONE = {
@@ -36,18 +60,54 @@ const BUSY_TONE = {
  * retreats, the arrow keys move, and a pasted code fills from the focused box.
  * Each filled box lifts and glows; the last digit submits the form itself.
  */
-export function CodeInput({ value, onChange, onComplete, labelledBy, disabled, busy }: CodeInputProps) {
+export function CodeInput({
+  value,
+  onChange,
+  onComplete,
+  labelledBy,
+  disabled,
+  busy,
+  active = true,
+  refocus,
+}: CodeInputProps) {
   const boxes = useRef<Array<HTMLInputElement | null>>([]);
   const [focused, setFocused] = useState<number | null>(null);
   const reduceMotion = useReducedMotion();
 
   const digits = Array.from({ length: CODE_LENGTH }, (_, index) => value[index] ?? "");
 
+  // Landing on the code step should not make the user click a box first: the
+  // first box takes the caret (and opens the keypad on mobile).
+  useEffect(() => {
+    if (!active) return;
+
+    focusBox(0);
+  }, [active]);
+
+  // A rejected code keeps its digits on purpose: park the caret on the last
+  // box so Backspace starts trimming right away.
+  useEffect(() => {
+    if (!refocus) return;
+
+    focusBox(CODE_LENGTH - 1);
+  }, [refocus]);
+
   function focusBox(index: number) {
     const box = boxes.current[Math.max(0, Math.min(index, CODE_LENGTH - 1))];
 
-    box?.focus();
-    box?.select();
+    if (!box) return;
+
+    box.focus();
+    collapseCaret(box);
+  }
+
+  /**
+   * A selected digit paints a grey block over the accent box, which reads as
+   * an empty state. Keep the caret collapsed at the end instead: the glyph
+   * marks the focus and typing over a digit still replaces it.
+   */
+  function collapseCaret(box: HTMLInputElement) {
+    box.setSelectionRange(box.value.length, box.value.length);
   }
 
   function commit(next: string, focusIndex: number) {
@@ -75,6 +135,15 @@ export function CodeInput({ value, onChange, onComplete, labelledBy, disabled, b
   }
 
   function handleKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>) {
+    // A full box refuses the insert before `onChange` can replace it, so a
+    // collapsed caret on a filled box would swallow the keystroke.
+    if (/^\d$/.test(event.key) && digits[index]) {
+      event.preventDefault();
+      commit(value.slice(0, index) + event.key + value.slice(index + 1), index + 1);
+
+      return;
+    }
+
     if (event.key === "Backspace") {
       event.preventDefault();
 
@@ -119,34 +188,61 @@ export function CodeInput({ value, onChange, onComplete, labelledBy, disabled, b
       className="mt-1.5 grid grid-cols-6 gap-1.5 lg:gap-2"
     >
       {digits.map((digit, index) => (
-        <motion.input
+        <motion.div
           key={index}
-          ref={(element) => {
-            boxes.current[index] = element;
-          }}
-          type="text"
-          value={digit}
-          maxLength={1}
-          inputMode="numeric"
-          autoComplete={index === 0 ? "one-time-code" : "off"}
-          aria-label={`Digit ${index + 1} of ${CODE_LENGTH}`}
-          disabled={disabled}
-          onChange={(event) => handleChange(index, event)}
-          onKeyDown={(event) => handleKeyDown(index, event)}
-          onPaste={(event) => handlePaste(index, event)}
-          onFocus={(event) => {
-            event.currentTarget.select();
-            setFocused(index);
-          }}
-          onBlur={() => setFocused(null)}
-          animate={{
-            scale: digit ? 1.06 : 1,
-            y: digit ? -1 : 0,
-            ...(busy ? BUSY_TONE : focused === index ? FOCUSED_TONE : digit ? FILLED_TONE : EMPTY_TONE),
-          }}
-          transition={reduceMotion ? { duration: 0 } : POP}
-          className="h-11 w-full min-w-0 rounded-lg border text-center text-base font-medium text-foreground tabular-nums outline-none disabled:pointer-events-none disabled:opacity-50 lg:text-sm"
-        />
+          initial={HIDDEN_BOX}
+          animate={active ? SHOWN_BOX : HIDDEN_BOX}
+          transition={entrance(index, active, reduceMotion)}
+          className="relative"
+        >
+          <motion.input
+            ref={(element) => {
+              boxes.current[index] = element;
+            }}
+            type="text"
+            value={digit}
+            maxLength={1}
+            inputMode="numeric"
+            autoComplete={index === 0 ? "one-time-code" : "off"}
+            aria-label={`Digit ${index + 1} of ${CODE_LENGTH}`}
+            disabled={disabled}
+            onChange={(event) => handleChange(index, event)}
+            onKeyDown={(event) => handleKeyDown(index, event)}
+            onPaste={(event) => handlePaste(index, event)}
+            onFocus={(event) => {
+              collapseCaret(event.currentTarget);
+              setFocused(index);
+            }}
+            onBlur={() => setFocused(null)}
+            animate={{
+              scale: digit ? 1.06 : 1,
+              y: digit ? -1 : 0,
+              ...(busy ? BUSY_TONE : focused === index ? FOCUSED_TONE : digit ? FILLED_TONE : EMPTY_TONE),
+            }}
+            transition={reduceMotion ? { duration: 0 } : DIGIT}
+            className="aspect-square w-full min-w-0 rounded-lg border text-center text-base font-normal text-foreground caret-transparent tabular-nums outline-none disabled:pointer-events-none disabled:opacity-50 lg:text-base"
+          />
+          {active && !reduceMotion ? (
+            <motion.span
+              aria-hidden="true"
+              initial={{ opacity: 0.7, scale: 0.96 }}
+              animate={{ opacity: 0, scale: 1.12 }}
+              transition={flare(index)}
+              className="pointer-events-none absolute inset-0 rounded-lg border border-brand-secondary/70"
+            />
+          ) : null}
+          {focused === index ? (
+            <span
+              aria-hidden="true"
+              className={cn(
+                "pointer-events-none absolute top-1/2 -translate-y-1/2 select-none text-xl leading-none text-brand-secondary",
+                digit ? "left-1/2 translate-x-2" : "left-1/2 -translate-x-1/2",
+              )}
+            >
+              |
+            </span>
+          ) : null}
+        </motion.div>
       ))}
     </div>
   );
