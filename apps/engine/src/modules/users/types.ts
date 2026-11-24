@@ -2,6 +2,7 @@
 export interface UserRow {
   id: string;
   email: string | null;
+  avatar_url: string | null;
   created_at: string;
 }
 
@@ -9,6 +10,7 @@ export interface UserRow {
 export interface UserProfile {
   id: string;
   email: string | null;
+  avatarUrl: string | null;
   createdAt: string;
 }
 
@@ -16,4 +18,5 @@ export interface UserProfile {
 export interface ProvisionUserInput {
   id: string;
   email?: string;
+  avatarUrl?: string;
 }

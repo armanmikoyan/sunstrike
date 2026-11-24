@@ -36,9 +36,9 @@ function renderDrawer(open = true) {
 
 const railNavLinks = () => within(screen.getByRole("navigation", { name: "Studio" })).getAllByRole("link");
 
-function mockSession(email = "arman@chronolab.ai") {
+function mockSession(email = "arman@chronolab.ai", avatarUrl: string | null = null) {
   fetchMock.mockResolvedValueOnce(
-    new Response(JSON.stringify({ user: { id: "user-1", email } }), {
+    new Response(JSON.stringify({ user: { id: "user-1", email, avatarUrl } }), {
       status: 200,
       headers: { "content-type": "application/json" },
     }),
@@ -129,6 +129,27 @@ describe("sidebar profile menu", () => {
 
     expect(within(menu).getByRole("menuitem", { name: "Settings" })).toHaveAttribute("href", "/settings/account");
     expect(within(menu).getByRole("menuitem", { name: /Sign out/ })).toBeInTheDocument();
+  });
+
+  it("shows the stored avatar instead of the placeholder mark", async () => {
+    const face = "https://avatars.githubusercontent.com/u/1?v=4";
+    mockSession("arman@chronolab.ai", face);
+    renderSidebar(true);
+
+    const trigger = await screen.findByRole("button", { name: "Account menu" });
+
+    expect(trigger.querySelector("img")).toHaveAttribute("src", face);
+    expect(trigger.querySelector("svg.lucide-user-round")).not.toBeInTheDocument();
+  });
+
+  it("falls back to the gradient mark for an email-code account", async () => {
+    mockSession();
+    renderSidebar(true);
+
+    const trigger = await screen.findByRole("button", { name: "Account menu" });
+
+    expect(trigger.querySelector("img")).not.toBeInTheDocument();
+    expect(trigger.querySelector("svg.lucide-user-round")).toBeInTheDocument();
   });
 
   it("opens the profile on hover without a row highlight", async () => {

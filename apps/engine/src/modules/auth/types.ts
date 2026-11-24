@@ -2,18 +2,23 @@
 export interface AuthSubject {
   authSubject: string;
   email?: string;
+  avatarUrl?: string;
 }
 
-/** The authenticated caller attached to a request by `auth.requireAuth`. */
+/**
+ * The authenticated caller attached to a request by `auth.requireAuth`. The
+ * Supabase Auth subject is the application user id, so the resolved id is the
+ * only identity a controller needs; the profile itself is read when wanted.
+ */
 export interface AuthContext {
   userId: string;
   authSubject: string;
-  email?: string;
 }
 
 export interface SessionUser {
   id: string;
   email: string | null;
+  avatarUrl: string | null;
 }
 
 export interface AuthSession {

@@ -1,34 +1,47 @@
 import * as supabase from "@/infrastructure/supabase";
 import { users } from "@/modules/users";
 import type { AuthSession, AuthSubject, OAuthProvider, OAuthStart, SessionUser } from "./types";
-import { toSessionUser } from "./utils";
+import { toAuthSubject, toSessionUser } from "./utils";
 
 /** Validate a bearer token and return the subject it belongs to. */
 export async function verify(token: string): Promise<AuthSubject | null> {
   const user = await supabase.verifyAccessToken(token);
 
-  if (!user) return null;
-
-  return { authSubject: user.id, email: user.email };
+  return user ? toAuthSubject(user) : null;
 }
 
 /**
- * The Supabase Auth subject is the application user id, so resolving a
- * caller is just ensuring their profile exists. Email is refreshed only when
- * it actually changed, keeping authenticated reads write-free.
+ * Make sure the identity that owns this token has a profile row, and keep it in
+ * step with the provider while we are there. The row is the application's copy
+ * of identity: `email` mirrors Supabase, written only when it actually changed
+ * so authenticated reads stay write-free; `avatarUrl` is a first-wins snapshot,
+ * so switching providers never swaps the picture.
+ *
+ * Callers get the stored profile back rather than the claims, so a request
+ * never works from a copy of the row that may already be stale.
  */
-export async function resolve(authSubject: string, email?: string): Promise<string> {
-  const existing = await users.getById(authSubject);
+export async function ensureUser(subject: AuthSubject): Promise<SessionUser> {
+  const existing = await users.getById(subject.authSubject);
 
-  if (existing) {
-    if (email && existing.email !== email) await users.syncEmail(existing.id, email);
+  if (!existing) {
+    const created = await users.provision({
+      id: subject.authSubject,
+      email: subject.email,
+      avatarUrl: subject.avatarUrl,
+    });
 
-    return existing.id;
+    return toSessionUser(created.id, created.email ?? undefined, created.avatarUrl);
   }
 
-  const created = await users.provision({ id: authSubject, email });
+  if (subject.email && existing.email !== subject.email) await users.syncEmail(existing.id, subject.email);
 
-  return created.id;
+  if (subject.avatarUrl && !existing.avatarUrl) await users.syncAvatar(existing.id, subject.avatarUrl);
+
+  return toSessionUser(
+    existing.id,
+    subject.email ?? existing.email ?? undefined,
+    existing.avatarUrl ?? subject.avatarUrl,
+  );
 }
 
 export async function sendOtpCode(email: string): Promise<void> {
@@ -37,33 +50,29 @@ export async function sendOtpCode(email: string): Promise<void> {
 
 export async function signInWithGoogleIdToken(token: string, nonce: string): Promise<AuthSession> {
   const session = await supabase.signInWithGoogleIdToken(token, nonce);
-  const userId = await resolve(session.user.id, session.user.email);
+  const user = await ensureUser(toAuthSubject(session.user));
 
-  return { ...session, user: toSessionUser(userId, session.user.email) };
+  return { ...session, user };
 }
 
 export async function verifyOtpCode(email: string, token: string): Promise<AuthSession> {
   const session = await supabase.verifyOtpCode(email, token);
-  const userId = await resolve(session.user.id, session.user.email);
+  const user = await ensureUser(toAuthSubject(session.user));
 
-  return { ...session, user: toSessionUser(userId, session.user.email) };
+  return { ...session, user };
 }
 
 export async function getSessionUser(accessToken: string): Promise<SessionUser | null> {
   const user = await supabase.verifyAccessToken(accessToken);
 
-  if (!user) return null;
-
-  const userId = await resolve(user.id, user.email);
-
-  return toSessionUser(userId, user.email);
+  return user ? ensureUser(toAuthSubject(user)) : null;
 }
 
 export async function refreshSession(refreshToken: string): Promise<AuthSession> {
   const session = await supabase.refreshSession(refreshToken);
-  const userId = await resolve(session.user.id, session.user.email);
+  const user = await ensureUser(toAuthSubject(session.user));
 
-  return { ...session, user: toSessionUser(userId, session.user.email) };
+  return { ...session, user };
 }
 
 export async function signOut(accessToken: string): Promise<void> {
@@ -80,7 +89,7 @@ export async function completeOAuthSignIn(
   flowId?: string | null,
 ): Promise<AuthSession> {
   const session = await supabase.exchangeCode(code, codeVerifier, flowId);
-  const userId = await resolve(session.user.id, session.user.email);
+  const user = await ensureUser(toAuthSubject(session.user));
 
-  return { ...session, user: toSessionUser(userId, session.user.email) };
+  return { ...session, user };
 }

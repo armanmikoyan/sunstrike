@@ -120,7 +120,7 @@ export function SidebarInlineAccount({ onNavigate }: SidebarInlineAccountProps) 
         onClick={() => setOpen((value) => !value)}
         className="flex h-9 w-full items-center gap-2.5 rounded-lg px-2 text-left text-muted-foreground outline-none transition-colors hover:text-foreground"
       >
-        <AccountAvatar />
+        <AccountAvatar avatarUrl={user?.avatarUrl} />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-xs font-medium text-foreground lg:text-[0.6875rem]">
             {user?.email ?? ACCOUNT_MENU_COPY.account}

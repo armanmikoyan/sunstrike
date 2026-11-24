@@ -1,59 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
-import { motion, useReducedMotion, type Transition } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
-import { CODE_BOX_STAGGER_MS, CODE_LENGTH } from "./constants";
+import {
+  CODE_BOX_HIDDEN,
+  CODE_BOX_SHOWN,
+  CODE_BUSY_TONE,
+  CODE_DIGIT,
+  CODE_EMPTY_TONE,
+  CODE_FILLED_TONE,
+  CODE_FOCUSED_TONE,
+  CODE_LENGTH,
+} from "./constants";
 import type { CodeInputProps } from "./types";
-
-/**
- * A box arrives from below with a soft spring: enough travel to read as
- * motion, enough damping to settle without wobbling. The stagger turns the six
- * into a left-to-right ripple instead of one block fading in.
- */
-const ENTRANCE: Transition = { type: "spring", stiffness: 240, damping: 22, mass: 0.9 };
-
-/** Digit and state changes: quick, with a hint of overshoot. */
-const DIGIT: Transition = { type: "spring", stiffness: 460, damping: 28, mass: 0.7 };
-
-/** Each box waits a little longer than the one before it, then springs in. */
-const HIDDEN_BOX = { opacity: 0, y: 16, scale: 0.84 };
-const SHOWN_BOX = { opacity: 1, y: 0, scale: 1 };
-
-function entrance(index: number, active: boolean, reduceMotion: boolean | null): Transition {
-  if (reduceMotion || !active) return { duration: 0 };
-
-  return { ...ENTRANCE, delay: (index * CODE_BOX_STAGGER_MS) / 1000 };
-}
-
-/** A violet ring that expands away as each box lands — a quiet ignition. */
-function flare(index: number): Transition {
-  return { duration: 0.6, ease: "easeOut", delay: (index * CODE_BOX_STAGGER_MS) / 1000 + 0.08 };
-}
-
-const EMPTY_TONE = {
-  borderColor: "rgba(167, 139, 250, 0.24)",
-  backgroundColor: "rgba(139, 92, 246, 0.06)",
-  boxShadow: "0 0 0 rgba(139, 92, 246, 0)",
-};
-
-const FILLED_TONE = {
-  borderColor: "rgba(139, 92, 246, 0.6)",
-  backgroundColor: "rgba(139, 92, 246, 0.13)",
-  boxShadow: "0 0 18px rgba(139, 92, 246, 0.18)",
-};
-
-const FOCUSED_TONE = {
-  borderColor: "rgba(196, 181, 253, 0.85)",
-  backgroundColor: "rgba(139, 92, 246, 0.12)",
-  boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.18)",
-};
-
-const BUSY_TONE = {
-  borderColor: "rgba(167, 139, 250, 0.85)",
-  backgroundColor: "rgba(139, 92, 246, 0.2)",
-  boxShadow: "0 0 22px rgba(139, 92, 246, 0.3)",
-};
+import { collapseCaret, entranceTransition, flareTransition } from "./utils";
 
 /**
  * Six single-digit boxes that behave like one field: typing advances, Backspace
@@ -69,8 +30,10 @@ export function CodeInput({
   busy,
   active = true,
   refocus,
+  restart,
 }: CodeInputProps) {
   const boxes = useRef<Array<HTMLInputElement | null>>([]);
+  const handledRestart = useRef(restart ?? 0);
   const [focused, setFocused] = useState<number | null>(null);
   const reduceMotion = useReducedMotion();
 
@@ -92,6 +55,19 @@ export function CodeInput({
     focusBox(CODE_LENGTH - 1);
   }, [refocus]);
 
+  // A fresh code arrives empty, so the caret belongs on the first box again.
+  // The boxes are disabled while the resend is in flight, and a disabled input
+  // cannot take focus, so wait for them to come back before moving it.
+  useEffect(() => {
+    const next = restart ?? 0;
+
+    if (next === handledRestart.current) return;
+    if (disabled) return;
+
+    handledRestart.current = next;
+    focusBox(0);
+  }, [restart, disabled]);
+
   function focusBox(index: number) {
     const box = boxes.current[Math.max(0, Math.min(index, CODE_LENGTH - 1))];
 
@@ -99,15 +75,6 @@ export function CodeInput({
 
     box.focus();
     collapseCaret(box);
-  }
-
-  /**
-   * A selected digit paints a grey block over the accent box, which reads as
-   * an empty state. Keep the caret collapsed at the end instead: the glyph
-   * marks the focus and typing over a digit still replaces it.
-   */
-  function collapseCaret(box: HTMLInputElement) {
-    box.setSelectionRange(box.value.length, box.value.length);
   }
 
   function commit(next: string, focusIndex: number) {
@@ -190,9 +157,9 @@ export function CodeInput({
       {digits.map((digit, index) => (
         <motion.div
           key={index}
-          initial={HIDDEN_BOX}
-          animate={active ? SHOWN_BOX : HIDDEN_BOX}
-          transition={entrance(index, active, reduceMotion)}
+          initial={CODE_BOX_HIDDEN}
+          animate={active ? CODE_BOX_SHOWN : CODE_BOX_HIDDEN}
+          transition={entranceTransition(index, active, reduceMotion)}
           className="relative"
         >
           <motion.input
@@ -217,9 +184,15 @@ export function CodeInput({
             animate={{
               scale: digit ? 1.06 : 1,
               y: digit ? -1 : 0,
-              ...(busy ? BUSY_TONE : focused === index ? FOCUSED_TONE : digit ? FILLED_TONE : EMPTY_TONE),
+              ...(busy
+                ? CODE_BUSY_TONE
+                : focused === index
+                  ? CODE_FOCUSED_TONE
+                  : digit
+                    ? CODE_FILLED_TONE
+                    : CODE_EMPTY_TONE),
             }}
-            transition={reduceMotion ? { duration: 0 } : DIGIT}
+            transition={reduceMotion ? { duration: 0 } : CODE_DIGIT}
             className="aspect-square w-full min-w-0 rounded-lg border text-center text-base font-normal text-foreground caret-transparent tabular-nums outline-none disabled:pointer-events-none disabled:opacity-50 lg:text-base"
           />
           {active && !reduceMotion ? (
@@ -227,7 +200,7 @@ export function CodeInput({
               aria-hidden="true"
               initial={{ opacity: 0.7, scale: 0.96 }}
               animate={{ opacity: 0, scale: 1.12 }}
-              transition={flare(index)}
+              transition={flareTransition(index)}
               className="pointer-events-none absolute inset-0 rounded-lg border border-brand-secondary/70"
             />
           ) : null}
@@ -235,7 +208,7 @@ export function CodeInput({
             <span
               aria-hidden="true"
               className={cn(
-                "pointer-events-none absolute top-1/2 -translate-y-1/2 select-none text-xl leading-none text-brand-secondary",
+                "caret-blink pointer-events-none absolute top-1/2 -translate-y-1/2 select-none text-xl leading-none text-brand-secondary",
                 digit ? "left-1/2 translate-x-2" : "left-1/2 -translate-x-1/2",
               )}
             >

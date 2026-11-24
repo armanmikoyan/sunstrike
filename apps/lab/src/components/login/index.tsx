@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Clapperboard, LoaderCircle, Maximize } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import { LogoLockup } from "@/components/brand";
 import { cn } from "cn";
 import { VideoWithFallback } from "@/components/video-with-fallback";
@@ -18,16 +19,17 @@ import {
   loginErrors,
   loginHeroId,
   loginProviders,
-  loginThumbnailIds,
+  loginThumbnails,
   MAX_CODE_ATTEMPTS,
+  RESEND_COOLDOWN_SECONDS,
   SENDING_PHASE_MS,
+  SENDS_BEFORE_WAIT,
+  STEP_SWAP,
 } from "./constants";
 import { CodeInput } from "./code-input";
-import { cooldownSeconds } from "./utils";
+import { cooldownSeconds, isEmailQuotaError } from "./utils";
 import { ProviderIcon } from "@/components/auth/provider-icon";
 import type { LoginPending, LoginProps, LoginProvider, LoginStep } from "./types";
-
-const thumbnails = loginThumbnailIds.map((id) => mediaById(id)).filter((item) => item !== undefined);
 
 export function Login({ next, initialError }: LoginProps) {
   const router = useRouter();
@@ -39,18 +41,71 @@ export function Login({ next, initialError }: LoginProps) {
   const [error, setError] = useState(() => loginErrors[initialError ?? ""] ?? "");
   const [attempts, setAttempts] = useState(0);
   const [refocus, setRefocus] = useState(0);
+  const [restart, setRestart] = useState(0);
+  const [resending, setResending] = useState(false);
+  const [sends, setSends] = useState(0);
   const [cooldown, setCooldown] = useState(0);
-  const sendAttempt = useRef(0);
+  /** The wait was imposed by the server's 429, not by our own burst. */
+  const [limitedByServer, setLimitedByServer] = useState(false);
+  /** The project-wide email budget refused us; retrying adds nothing. */
+  const [emailBlocked, setEmailBlocked] = useState(false);
+  const requestAttempt = useRef(0);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const previousStep = useRef<LoginStep>("email");
+  const reduceMotion = useReducedMotion();
   const hero = mediaById(loginHeroId);
   const target = safeNext(next);
+  const swap = reduceMotion ? { duration: 0 } : STEP_SWAP;
 
   useEffect(() => {
     if (cooldown <= 0) return;
 
-    const timer = setTimeout(() => setCooldown((left) => left - 1), 1000);
+    const timer = setTimeout(() => {
+      const remaining = cooldown - 1;
+
+      setCooldown(remaining);
+
+      // The wait closes a burst: when it elapses, the full allowance returns.
+      if (remaining === 0) {
+        setSends(0);
+        setLimitedByServer(false);
+      }
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [cooldown]);
+
+  // One sending beat for both buttons: the tap is acknowledged at once, the
+  // busy label lasts SENDING_PHASE_MS, and the request settles behind it. A
+  // failure ends the beat early and rolls the screen back.
+  useEffect(() => {
+    if (pending !== "email" && !resending) return;
+
+    const timer = setTimeout(() => {
+      if (pending === "email") {
+        setPending(null);
+        setStep("code");
+      } else {
+        setResending(false);
+      }
+    }, SENDING_PHASE_MS);
+
+    return () => clearTimeout(timer);
+  }, [pending, resending]);
+
+  // Coming back to the email step should put the caret in the field, with the
+  // address selected so typing replaces it. It cannot run in the click handler:
+  // the form is still inert at that point, so focus would be dropped.
+  useEffect(() => {
+    const returning = previousStep.current === "code" && step === "email";
+
+    previousStep.current = step;
+
+    if (!returning) return;
+
+    emailInput.current?.focus();
+    emailInput.current?.select();
+  }, [step]);
 
   useEffect(() => {
     if (pending !== "email") return;
@@ -78,58 +133,101 @@ export function Login({ next, initialError }: LoginProps) {
   function sendCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (pending !== null) return;
-
-    setError("");
-    setPending("email");
-
-    const attempt = ++sendAttempt.current;
-
-    void sendCodeInBackground(email, attempt);
+    void requestCode("send");
   }
 
-  async function sendCodeInBackground(address: string, attempt: number) {
+  /**
+   * One request for a code, shared by the email form and the resend button.
+   * The tap is answered at once: the burst counter advances, the boxes empty,
+   * and the last request of the burst starts the wait. The response settles in
+   * the background, so a slow server never stretches the busy label; a failure
+   * rolls the counter and the wait back.
+   */
+  async function requestCode(kind: "send" | "resend") {
+    if (pending !== null || resending || cooldown > 0 || emailBlocked) return;
+
+    const attempt = ++requestAttempt.current;
+    const request = sends + 1;
+
+    setError("");
+    setLimitedByServer(false);
+
+    if (kind === "send") {
+      setPending("email");
+    } else {
+      setResending(true);
+      setRestart((value) => value + 1);
+    }
+
+    setToken("");
+    setAttempts(0);
+    setSends(request);
+    setCooldown(request >= SENDS_BEFORE_WAIT ? RESEND_COOLDOWN_SECONDS : 0);
+
     try {
       const response = await fetch("/api/auth/otp", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email: address }),
+        body: JSON.stringify({ email }),
       });
 
-      if (attempt !== sendAttempt.current) return;
+      // A later request owns the screen now: its outcome is the one that counts.
+      if (attempt !== requestAttempt.current) return;
 
       if (response.ok) return;
 
-      setPending(null);
-      setStep("email");
-      setToken("");
-      setAttempts(0);
+      setSends(sends);
+
+      if (kind === "send") {
+        setPending(null);
+        setStep("email");
+      } else {
+        setResending(false);
+      }
 
       if (response.status === 429) {
+        const message = await readMessage(response, "");
+
+        if (isEmailQuotaError(message)) {
+          setCooldown(0);
+          setEmailBlocked(true);
+          setError(loginCopy.emailLimit);
+          return;
+        }
+
         // Supabase's sentence is accurate but reads like a log line. Show a
-        // countdown instead, and keep the send button off until it ends.
-        setCooldown(cooldownSeconds(await readMessage(response, "")));
+        // countdown instead, and keep the button off until it ends. The wait
+        // is the server's, so say so: our burst promised this tap was free.
+        setCooldown(cooldownSeconds(message));
+        setLimitedByServer(true);
         return;
       }
 
+      setCooldown(0);
       setError(await readMessage(response, loginCopy.unreachable));
     } catch {
-      if (attempt !== sendAttempt.current) return;
+      if (attempt !== requestAttempt.current) return;
 
-      setPending(null);
-      setStep("email");
-      setToken("");
-      setAttempts(0);
+      setSends(sends);
+
+      if (kind === "send") {
+        setPending(null);
+        setStep("email");
+      } else {
+        setResending(false);
+      }
+
+      setCooldown(0);
       setError(loginCopy.unreachable);
     }
   }
 
   async function submitCode(code: string) {
-    if (pending !== null) return;
+    if (pending !== null || resending) return;
 
     // Once a code is being checked, a late send failure should not pull the
     // screen back; verify has its own result to show.
-    sendAttempt.current += 1;
+    requestAttempt.current += 1;
     setError("");
     setPending("code");
 
@@ -207,7 +305,7 @@ export function Login({ next, initialError }: LoginProps) {
   }
 
   function useDifferentEmail() {
-    sendAttempt.current += 1;
+    requestAttempt.current += 1;
     setStep("email");
     setToken("");
     setAttempts(0);
@@ -243,7 +341,7 @@ export function Login({ next, initialError }: LoginProps) {
             </p>
 
             <div className="mt-7 flex items-end gap-2">
-              {thumbnails.map((item, index) => (
+              {loginThumbnails.map((item, index) => (
                 <div
                   key={item.id}
                   className="relative overflow-hidden rounded-lg border border-white/15 bg-secondary"
@@ -327,29 +425,50 @@ export function Login({ next, initialError }: LoginProps) {
                 label + input + button match the code form's sent line +
                 label + boxes + action row. They also share one grid cell, so
                 font rounding cannot shift the centred column either. The idle
-                form stays laid out but is invisible, inert and hidden from
-                assistive tech. */}
+                form stays laid out, but is faded out, inert and hidden from
+                assistive tech: swapping steps is a short crossfade, never a
+                static replacement. */}
             <div className="grid">
-              <form
+              <motion.form
                 onSubmit={sendCode}
                 aria-hidden={step !== "email"}
                 inert={step !== "email"}
-                className={cn("col-start-1 row-start-1", step !== "email" && "invisible")}
+                animate={{ opacity: step === "email" ? 1 : 0, x: step === "email" ? 0 : 14 }}
+                transition={swap}
+                className={cn("col-start-1 row-start-1", step !== "email" && "pointer-events-none")}
               >
                 <label htmlFor="email" className="text-xs font-normal text-foreground/70">
                   {loginCopy.emailLabel}
                 </label>
                 <Input
+                  ref={emailInput}
                   id="email"
                   type="email"
                   autoComplete="email"
                   placeholder={loginCopy.emailPlaceholder}
                   value={email}
                   onChange={(event) => {
-                    setEmail(event.target.value);
+                    const nextEmail = event.target.value;
+
+                    setEmail(nextEmail);
+
+                    // The wait belongs to the address that was sent to; a new
+                    // one is allowed to ask immediately. The email budget is
+                    // project-wide, so editing is the only way out of that
+                    // error — it clears with the address, not on a timer.
+                    if (cooldown > 0) setCooldown(0);
+                    if (limitedByServer) setLimitedByServer(false);
+
+                    if (emailBlocked) {
+                      setEmailBlocked(false);
+
+                      if (error === loginCopy.emailLimit) setError("");
+                    }
+
+                    setSends(0);
+
                     setEmailValid(
-                      event.currentTarget.validity.valid &&
-                        event.currentTarget.value.lastIndexOf(".") > event.currentTarget.value.lastIndexOf("@"),
+                      event.currentTarget.validity.valid && nextEmail.lastIndexOf(".") > nextEmail.lastIndexOf("@"),
                     );
                   }}
                   required
@@ -360,7 +479,7 @@ export function Login({ next, initialError }: LoginProps) {
                   type="submit"
                   size="cta"
                   className="mt-2 h-11 w-full text-sm font-normal lg:text-[0.8125rem]"
-                  disabled={!emailValid || pending !== null || cooldown > 0}
+                  disabled={!emailValid || pending !== null || cooldown > 0 || emailBlocked}
                   aria-busy={pending === "email"}
                 >
                   {pending === "email" ? loginCopy.sending : loginCopy.sendCode}
@@ -370,16 +489,18 @@ export function Login({ next, initialError }: LoginProps) {
                     <ArrowRight className="size-3.5" />
                   )}
                 </Button>
-              </form>
+              </motion.form>
 
-              <form
+              <motion.form
                 onSubmit={(event) => {
                   event.preventDefault();
                   void submitCode(token);
                 }}
                 aria-hidden={step !== "code"}
                 inert={step !== "code"}
-                className={cn("col-start-1 row-start-1", step !== "code" && "invisible")}
+                animate={{ opacity: step === "code" ? 1 : 0, x: step === "code" ? 0 : -14 }}
+                transition={swap}
+                className={cn("col-start-1 row-start-1", step !== "code" && "pointer-events-none")}
               >
                 <div>
                   <span id="code-label" className="text-xs font-normal text-foreground/70">
@@ -390,10 +511,11 @@ export function Login({ next, initialError }: LoginProps) {
                     onChange={setToken}
                     onComplete={submitCode}
                     labelledBy="code-label"
-                    disabled={pending !== null}
+                    disabled={pending !== null || resending}
                     busy={pending === "code"}
                     active={step === "code"}
                     refocus={refocus}
+                    restart={restart}
                   />
                 </div>
                 <p
@@ -403,47 +525,60 @@ export function Login({ next, initialError }: LoginProps) {
                 >
                   {loginCopy.codeSentBefore}
                   {email}
-                  {loginCopy.codeSentAfter}
                 </p>
                 {/* One row: the escape hatch on the left, under the first
-                    box, with the verify hint pushed to the right. Both step
-                    forms share one grid cell, so their heights never move the
-                    column around when the step swaps. */}
+                    box, with the verify state or the resend button pushed to
+                    the right. Both step forms share one grid cell, so their
+                    heights never move the column around when the step swaps. */}
                 <div className="mt-2 flex min-h-4 items-center gap-3">
                   <button
                     type="button"
                     onClick={useDifferentEmail}
-                    disabled={pending !== null}
+                    disabled={pending !== null || resending}
                     className="shrink-0 text-xs leading-4 text-brand-secondary underline-offset-2 lg:text-[0.8125rem] transition-colors hover:text-brand-tertiary hover:underline disabled:pointer-events-none disabled:opacity-50"
                   >
                     {loginCopy.differentEmail}
                   </button>
-                  <span
-                    aria-live="polite"
-                    className="ml-auto flex min-w-0 items-center gap-1.5 text-xs leading-4 text-brand-secondary lg:text-[0.8125rem]"
-                  >
+                  <span className="ml-auto flex min-w-0 items-center gap-1.5 text-xs leading-4 text-brand-secondary lg:text-[0.8125rem]">
                     {pending === "code" ? (
-                      <>
+                      <span aria-live="polite" className="flex items-center gap-1.5">
                         <LoaderCircle className="size-3 animate-spin motion-reduce:animate-none" />
                         {loginCopy.verifying}
-                      </>
-                    ) : null}
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => void requestCode("resend")}
+                        disabled={cooldown > 0 || resending || pending !== null || emailBlocked}
+                        aria-busy={resending}
+                        className="flex shrink-0 items-center gap-1.5 underline-offset-2 transition-colors hover:text-brand-tertiary hover:underline disabled:pointer-events-none disabled:no-underline disabled:opacity-60"
+                      >
+                        {resending ? <LoaderCircle className="size-3 animate-spin motion-reduce:animate-none" /> : null}
+                        {resending
+                          ? loginCopy.sending
+                          : cooldown > 0
+                            ? loginCopy.resendIn.replace("{seconds}", String(cooldown))
+                            : loginCopy.resendCode}
+                      </button>
+                    )}
                   </span>
                 </div>
-              </form>
+              </motion.form>
             </div>
 
             {/* The consent line sits directly under the step. The feedback
                 slot keeps one line of height at all times, so a cooldown or
                 error never pushes the centred column around; an idle form
-                shows no text there. */}
+                shows no text there. Our own burst keeps the countdown in the
+                button alone, but a wait imposed by the server is explained
+                here, on either step. */}
             <div className="mt-4">
               <div aria-live="polite" className="min-h-5 text-xs leading-relaxed">
                 {error ? (
                   <p role="alert" className="text-red-400">
                     {error}
                   </p>
-                ) : step === "email" && cooldown > 0 ? (
+                ) : pending === null && !resending && cooldown > 0 && (step === "email" || limitedByServer) ? (
                   <p role="status" className="text-muted-foreground">
                     {loginCopy.cooldownBefore}
                     <span className="tabular-nums text-brand-secondary">{cooldown}s</span>

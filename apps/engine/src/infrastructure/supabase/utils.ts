@@ -16,6 +16,15 @@ export function throwAuthError(error: { message?: string; status?: number } | nu
   throw Object.assign(new Error(error?.message ?? fallback), { status: error?.status ?? 401 });
 }
 
+export function avatarFromMetadata(metadata: unknown): string | undefined {
+  if (!metadata || typeof metadata !== "object") return undefined;
+
+  const record = metadata as Record<string, unknown>;
+  const value = record.avatar_url ?? record.picture;
+
+  return typeof value === "string" && value ? value : undefined;
+}
+
 export function mapSession(session: Session | null): SupabaseSession {
   if (!session) throwAuthError(null, "No session");
 
@@ -23,16 +32,14 @@ export function mapSession(session: Session | null): SupabaseSession {
     accessToken: session.access_token,
     refreshToken: session.refresh_token,
     expiresAt: session.expires_at ?? 0,
-    user: { id: session.user.id, email: session.user.email ?? undefined },
+    user: {
+      id: session.user.id,
+      email: session.user.email ?? undefined,
+      avatarUrl: avatarFromMetadata(session.user.user_metadata),
+    },
   };
 }
 
-/**
- * PKCE keeps the code verifier in the client's storage. This adapter holds it
- * in a local variable so a stateless server can start and finish a flow: the
- * start call returns the verifier, the caller stores it, and the callback
- * hands it back.
- */
 export function createVerifierStorage(initial = "") {
   let value = initial;
 

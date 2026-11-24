@@ -140,6 +140,28 @@ describe("code input", () => {
     expect(last.selectionEnd).toBe(1);
   });
 
+  it("moves the caret to the first box when restart changes", () => {
+    function Step({ restart }: { restart: number }) {
+      const [value, setValue] = useState("123");
+
+      return (
+        <>
+          <span id="code-label">Code</span>
+          <CodeInput value={value} onChange={setValue} labelledBy="code-label" restart={restart} />
+        </>
+      );
+    }
+
+    const { rerender } = render(<Step restart={0} />);
+
+    boxes()[2]?.focus();
+    expect(boxes()[2]).toHaveFocus();
+
+    rerender(<Step restart={1} />);
+
+    expect(boxes()[0]).toHaveFocus();
+  });
+
   it("replaces a filled box when a digit is typed over it", async () => {
     const user = userEvent.setup();
 

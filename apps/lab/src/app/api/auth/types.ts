@@ -5,6 +5,7 @@ export type OtpAccepted = {
 export type SessionUser = {
   id: string;
   email: string | null;
+  avatarUrl: string | null;
 };
 
 export type AuthSession = {

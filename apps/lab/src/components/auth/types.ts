@@ -5,6 +5,7 @@ export type AuthProvider = "google" | "github";
 export type SessionUser = {
   id: string;
   email: string | null;
+  avatarUrl: string | null;
 };
 
 export type SessionState = {

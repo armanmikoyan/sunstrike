@@ -23,10 +23,15 @@ export type AccountMenuProps = {
   side: "top" | "right";
   align: "start" | "end";
   email: string | null;
+  avatarUrl?: string | null;
   onSignOut: () => void;
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
   pending?: boolean;
+};
+
+export type AccountAvatarProps = {
+  avatarUrl?: string | null;
 };
 
 export type SidebarProps = Pick<SidebarToggleProps, "expanded" | "onToggle">;

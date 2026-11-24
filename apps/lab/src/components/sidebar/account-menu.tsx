@@ -2,12 +2,14 @@ import Link from "next/link";
 import { Coins, LogOut, Plus } from "lucide-react";
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/ui/dropdown-menu";
 import { ACCOUNT, ACCOUNT_LINKS, ACCOUNT_MENU_COPY } from "./constants";
+import { AccountAvatar } from "./account-avatar";
 import type { AccountMenuProps } from "./types";
 
 export function AccountMenu({
   side,
   align,
   email,
+  avatarUrl,
   onSignOut,
   onPointerEnter,
   onPointerLeave,
@@ -22,9 +24,14 @@ export function AccountMenu({
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
-      <DropdownMenuLabel className="h-9">
-        <span className="block font-medium text-foreground">{ACCOUNT_MENU_COPY.account}</span>
-        <span className="mt-0.5 block font-normal text-muted-foreground">{email ?? ACCOUNT_MENU_COPY.signedOut}</span>
+      <DropdownMenuLabel className="flex h-auto items-center gap-2.5 py-1.5">
+        <AccountAvatar avatarUrl={avatarUrl} />
+        <span className="min-w-0">
+          <span className="block truncate font-medium text-foreground">{ACCOUNT_MENU_COPY.account}</span>
+          <span className="mt-0.5 block truncate font-normal text-muted-foreground">
+            {email ?? ACCOUNT_MENU_COPY.signedOut}
+          </span>
+        </span>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild>

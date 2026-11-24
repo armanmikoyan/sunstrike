@@ -5,6 +5,7 @@ export const users = {
   getById: service.getById,
   provision: service.provision,
   syncEmail: service.syncEmail,
+  syncAvatar: service.syncAvatar,
   getCurrentUser: service.getCurrentUser,
 };
 

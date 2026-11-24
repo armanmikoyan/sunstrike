@@ -1,10 +1,10 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchMock, routerMock } from "~/vitest.setup";
 import { navigate } from "@/components/auth/utils";
 import { Login } from ".";
-import { loginCopy, loginProviders } from "./constants";
+import { loginCopy, loginProviders, RESEND_COOLDOWN_SECONDS, SENDING_PHASE_MS } from "./constants";
 
 vi.mock("@/components/auth/utils", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/components/auth/utils")>();
@@ -29,6 +29,10 @@ async function enterCode(code = "123456") {
 }
 
 describe("login", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("starts with the email step", () => {
     render(<Login />);
 
@@ -136,6 +140,29 @@ describe("login", () => {
     expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
   });
 
+  it("reports the project-wide email cap without a false countdown", async () => {
+    fetchMock.mockResolvedValueOnce(json({ error: "email rate limit exceeded" }, 429));
+    render(<Login />);
+
+    await enterEmail();
+
+    const email = screen.getByRole("textbox", { name: loginCopy.emailLabel });
+    const sendCode = () => screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) });
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(loginCopy.emailLimit);
+    expect(screen.queryByText(loginCopy.cooldownBefore)).not.toBeInTheDocument();
+
+    // Retrying the same address would spend another request and fail the same
+    // way: the button stays off until the address itself changes.
+    expect(sendCode()).toBeDisabled();
+
+    await userEvent.clear(email);
+    await userEvent.type(email, "other@chronolab.ai");
+
+    expect(sendCode()).toBeEnabled();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("turns a verify rate limit into friendly copy", async () => {
     fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
     fetchMock.mockResolvedValueOnce(
@@ -156,8 +183,151 @@ describe("login", () => {
     await enterEmail();
     await userEvent.click(await screen.findByRole("button", { name: loginCopy.differentEmail }));
 
-    expect(screen.getByRole("textbox", { name: loginCopy.emailLabel })).toBeInTheDocument();
+    const email = screen.getByRole("textbox", { name: loginCopy.emailLabel });
+
+    expect(email).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: loginCopy.codeLabel })).not.toBeInTheDocument();
+
+    // The caret lands in the field with the old address selected, so typing
+    // replaces it instead of appending to it.
+    await waitFor(() => expect(email).toHaveFocus());
+    expect(email).toHaveValue("arman@chronolab.ai");
+  });
+
+  it("allows three sends before holding the resend for the wait", async () => {
+    vi.useFakeTimers();
+
+    fetchMock.mockResolvedValue(json({ ok: true }, 202));
+
+    render(<Login />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: loginCopy.emailLabel }), {
+      target: { value: "arman@chronolab.ai" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
+
+    // Let the sending beat finish and the code step appear.
+    act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
+
+    const first = () => screen.getByRole("textbox", { name: "Digit 1 of 6" });
+    const resend = () => screen.getByRole("button", { name: /Resend/ });
+
+    expect(first()).toHaveFocus();
+
+    // The first send does not start the wait: the resend is available at once.
+    expect(resend()).toBeEnabled();
+    expect(resend()).toHaveTextContent(loginCopy.resendCode);
+
+    // Second send.
+    fireEvent.change(first(), { target: { value: "1" } });
+    fireEvent.click(resend());
+    act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
+    await act(async () => {});
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(first()).toHaveValue("");
+    expect(resend()).toBeEnabled();
+    expect(resend()).toHaveTextContent(loginCopy.resendCode);
+
+    // Third send starts the wait.
+    fireEvent.click(resend());
+    act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
+    await act(async () => {});
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(resend()).toBeDisabled();
+    expect(resend()).toHaveTextContent(loginCopy.resendIn.replace("{seconds}", String(RESEND_COOLDOWN_SECONDS)));
+
+    // Our own wait stays in the button: no explanation line competes with it.
+    expect(screen.queryByText(/before requesting another code/)).not.toBeInTheDocument();
+
+    for (let second = 0; second < RESEND_COOLDOWN_SECONDS; second += 1) {
+      act(() => vi.advanceTimersByTime(1000));
+    }
+
+    // The burst's allowance is whole again.
+    expect(resend()).toBeEnabled();
+    expect(resend()).toHaveTextContent(loginCopy.resendCode);
+  });
+
+  it("explains a wait imposed by the server on the code step", async () => {
+    vi.useFakeTimers();
+
+    fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
+    fetchMock.mockResolvedValueOnce(
+      json({ error: "For security purposes, you can only request this after 24 seconds." }, 429),
+    );
+
+    render(<Login />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: loginCopy.emailLabel }), {
+      target: { value: "arman@chronolab.ai" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
+    act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
+
+    fireEvent.click(screen.getByRole("button", { name: loginCopy.resendCode }));
+    await act(async () => {});
+    await act(async () => {});
+
+    // The burst said this tap was free, so the refusal has to explain the
+    // jump: the server's window replaces ours and the line says why.
+    expect(screen.getByText(/before requesting another code/)).toHaveTextContent(
+      "Please wait 24s before requesting another code.",
+    );
+    expect(screen.getByRole("button", { name: loginCopy.resendIn.replace("{seconds}", "24") })).toBeDisabled();
+    expect(screen.queryByText(/For security purposes/)).not.toBeInTheDocument();
+  });
+
+  it("empties the boxes as soon as resend is tapped, before the reply", async () => {
+    vi.useFakeTimers();
+
+    fetchMock.mockResolvedValue(json({ ok: true }, 202));
+
+    render(<Login />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: loginCopy.emailLabel }), {
+      target: { value: "arman@chronolab.ai" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
+    act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
+
+    const first = () => screen.getByRole("textbox", { name: "Digit 1 of 6" });
+
+    fireEvent.change(first(), { target: { value: "1" } });
+
+    let reply!: (response: Response) => void;
+
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          reply = resolve;
+        }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: loginCopy.resendCode }));
+
+    // The tap is acknowledged at once: the old digits are gone and the button
+    // is already busy, while the request is still open.
+    expect(first()).toHaveValue("");
+    expect(screen.getByRole("button", { name: loginCopy.sending })).toBeDisabled();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    // The busy beat ends on its own clock, not the reply's: after the same
+    // pause as the first send, the button is usable again even though the
+    // request has not answered yet.
+    act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
+
+    expect(screen.getByRole("button", { name: loginCopy.resendCode })).toBeEnabled();
+    expect(first()).toHaveFocus();
+
+    await act(async () => {
+      reply(json({ ok: true }, 202));
+    });
+
+    // The first resend leaves the burst open: no wait, caret at the start.
+    expect(screen.getByRole("button", { name: loginCopy.resendCode })).toBeEnabled();
+    expect(first()).toHaveFocus();
   });
 
   it("keeps the clicked provider loading and disables the other actions", async () => {

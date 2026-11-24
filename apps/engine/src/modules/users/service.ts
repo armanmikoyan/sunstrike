@@ -16,6 +16,16 @@ export async function syncEmail(id: string, email?: string): Promise<void> {
   await repository.syncEmail(id, email);
 }
 
+/**
+ * Fill in the avatar only while the profile has none. A person who signed in
+ * with GitHub and later with Google keeps the GitHub face.
+ */
+export async function syncAvatar(id: string, avatarUrl?: string): Promise<void> {
+  if (!avatarUrl) return;
+
+  await repository.syncAvatar(id, avatarUrl);
+}
+
 export async function getCurrentUser(userId: string): Promise<UserProfile> {
   const user = await repository.getById(userId);
 

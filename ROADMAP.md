@@ -11,8 +11,11 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   legal, on `src/mocks`.
 - Design tokens, primitives in `src/ui`, motion primitives and shared control
   sizing.
-- **Auth UI.** Email OTP and Google/GitHub sign-in through the lab BFF,
-  session refresh, a session-aware account menu and the `/settings` gate.
+- **Auth UI.** Google and GitHub sign-in plus email OTP: six auto-submitting
+  boxes, an optimistic resend with three sends before a 30s wait, the server's
+  own wait and the project email cap shown as copy instead of a fake clock, a
+  blinking caret and a reduced-motion path. Session refresh, a session-aware
+  account menu with the provider avatar, and the `/settings` gate.
 
 ### Next
 
@@ -33,10 +36,22 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 - Database migrations: one baseline SQL file, a `schema_migrations` ledger and
   the `db:migrate` script.
 - Auth schema: `users` migration with RLS scoped to `auth.uid()`.
-- Auth and users: bearer verification, lazy provisioning and
-  `GET /api/v1/users/me`.
+- Auth and users: bearer verification, lazy provisioning, `GET /api/v1/users/me`
+  and a sticky provider avatar — stored by the first identity that offers one,
+  never swapped by a later provider.
 - Auth API: email OTP, session, refresh, sign-out and Google and GitHub OAuth on
-  the auth module; Supabase stays in `infrastructure/supabase`.
+  the auth module; Supabase stays in `infrastructure/supabase`. Email templates
+  send `{{ .Token }}` at a 6-digit OTP length, matching the login boxes.
+
+### Blocked
+
+- **Email rate limits.** Supabase owns the mailer and its limits do not fit the
+  login: the built-in provider allows 2 emails per hour for the whole project,
+  and the default 60s per-address window blocks the three-send burst. Needs
+  custom SMTP or a Send Email hook, **Rate limit for sending emails** at 30 or
+  more, and **Minimum interval per user** at 0–1s. Until then the later sends of
+  a burst return 429, and the login shows the server's countdown or the
+  email-limit copy.
 
 ### Next
 

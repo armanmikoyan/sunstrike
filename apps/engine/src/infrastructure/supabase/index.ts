@@ -1,7 +1,7 @@
 import { createClient, type Provider, type SupabaseClient } from "@supabase/supabase-js";
 import { config } from "@/infrastructure/config";
 import type { OAuthStart, SupabaseSession, SupabaseUser } from "./types";
-import { authOptions, createVerifierStorage, mapSession, throwAuthError } from "./utils";
+import { authOptions, avatarFromMetadata, createVerifierStorage, mapSession, throwAuthError } from "./utils";
 
 export type { OAuthStart, SupabaseSession, SupabaseUser } from "./types";
 
@@ -26,7 +26,9 @@ export async function verifyAccessToken(accessToken: string): Promise<SupabaseUs
 
   if (!data) return null;
 
-  return { id: data.claims.sub, email: data.claims.email };
+  const metadata = (data.claims as { user_metadata?: unknown }).user_metadata;
+
+  return { id: data.claims.sub, email: data.claims.email, avatarUrl: avatarFromMetadata(metadata) };
 }
 
 export async function sendOtpCode(email: string): Promise<void> {

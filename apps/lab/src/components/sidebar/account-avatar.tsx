@@ -2,9 +2,32 @@
 
 import { useId } from "react";
 import { UserRound } from "lucide-react";
+import type { AccountAvatarProps } from "./types";
 
-export function AccountAvatar() {
+/**
+ * The signed-in face. It is the avatar stored on the profile — chosen by the
+ * first provider that supplied one — with the gradient mark as the fallback for
+ * email-code accounts and while the session is still loading.
+ */
+export function AccountAvatar({ avatarUrl }: AccountAvatarProps) {
   const gradientId = useId();
+
+  if (avatarUrl) {
+    return (
+      <span className="size-7 shrink-0 overflow-hidden rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(167,139,250,0.18),0_0_12px_rgba(167,139,250,0.22)]">
+        {/* eslint-disable-next-line @next/next/no-img-element -- remote provider avatar, no loader needed */}
+        <img
+          src={avatarUrl}
+          alt=""
+          width={28}
+          height={28}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          className="size-full object-cover"
+        />
+      </span>
+    );
+  }
 
   return (
     <span className="grid size-7 shrink-0 place-items-center rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(167,139,250,0.18),0_0_12px_rgba(167,139,250,0.22)]">

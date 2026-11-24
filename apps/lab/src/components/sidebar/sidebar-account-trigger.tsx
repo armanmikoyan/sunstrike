@@ -84,7 +84,7 @@ export function SidebarAccountTrigger({ expanded, showToggle }: SidebarAccountTr
           onPointerEnter={openMenu}
           onPointerLeave={closeSoon}
         >
-          <AccountAvatar />
+          <AccountAvatar avatarUrl={user?.avatarUrl} />
           <span
             className={cn(
               "min-w-0 flex-1 transition-opacity duration-200 motion-reduce:transition-none",
@@ -101,6 +101,7 @@ export function SidebarAccountTrigger({ expanded, showToggle }: SidebarAccountTr
         side={expanded ? "top" : "right"}
         align={expanded ? "start" : "end"}
         email={user?.email ?? null}
+        avatarUrl={user?.avatarUrl ?? null}
         onSignOut={signOut}
         onPointerEnter={cancelClose}
         onPointerLeave={closeSoon}

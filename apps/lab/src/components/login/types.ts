@@ -24,4 +24,6 @@ export type CodeInputProps = {
   active?: boolean;
   /** Increment to move the caret to the last box (after a wrong code). */
   refocus?: number;
+  /** Increment to send the caret back to the first box (after a resend). */
+  restart?: number;
 };

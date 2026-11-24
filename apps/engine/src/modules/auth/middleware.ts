@@ -1,10 +1,10 @@
 import type { RequestHandler } from "express";
-import { resolve, verify } from "./service";
+import { ensureUser, verify } from "./service";
 import { bearer, unauthorized } from "./utils";
 
 /**
- * Read the bearer token, validate the Supabase session, resolve its subject to
- * an application user, and attach the caller to the request for controllers.
+ * Read the bearer token, validate the Supabase session, ensure its subject has
+ * a profile row, and attach that profile's id to the request for controllers.
  */
 export const requireAuth: RequestHandler = async (request, _response, next) => {
   try {
@@ -22,12 +22,11 @@ export const requireAuth: RequestHandler = async (request, _response, next) => {
       return;
     }
 
-    const userId = await resolve(subject.authSubject, subject.email);
+    const profile = await ensureUser(subject);
 
     request.auth = {
-      userId,
+      userId: profile.id,
       authSubject: subject.authSubject,
-      email: subject.email,
     };
 
     next();
