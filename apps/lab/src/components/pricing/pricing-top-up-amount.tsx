@@ -7,7 +7,6 @@ import { QuantityButton } from "./pricing-quantity-button";
 import { SegmentedSlider } from "./segmented-slider";
 import type { PricingTopUpAmountProps } from "./types";
 
-/** The live amount, its steppers and the segmented track below them. */
 export function PricingTopUpAmount({ amount, onAmountChange }: PricingTopUpAmountProps) {
   const changeAmount = (direction: -1 | 1) => {
     onAmountChange(

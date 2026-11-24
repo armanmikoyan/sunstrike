@@ -5,7 +5,6 @@ export function isChoice(value: string | null): value is ConsentChoice {
   return value === "all" || value === "essential";
 }
 
-/** Reads the saved choice. Storage can throw in private modes, so guard it. */
 export function readConsent(): ConsentChoice | null {
   if (typeof window === "undefined") return null;
   try {

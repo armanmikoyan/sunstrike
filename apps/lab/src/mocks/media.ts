@@ -259,3 +259,12 @@ export const mediaItems: MediaItem[] = items.map((item, index) => {
 });
 
 export const mediaById = (id: string) => mediaItems.find((item) => item.id === id);
+
+/** The items for `ids`, in order; unknown ids are skipped. */
+export function mediaByIds(ids: readonly string[]): MediaItem[] {
+  return ids.map(mediaById).filter((item): item is MediaItem => item !== undefined);
+}
+
+export const assetItems = mediaByIds(["01", "02", "04", "05", "06", "07", "10", "11", "13", "15", "17", "18"]);
+
+export const favoriteItems = mediaByIds(["02", "07", "09", "10", "14", "16", "17", "11"]);

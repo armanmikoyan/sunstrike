@@ -1,4 +1,4 @@
-import type { ElementType, ReactElement, RefObject } from "react";
+import type { ElementType, ReactElement, ReactNode, RefObject } from "react";
 
 export type SidebarItemProps = {
   label: string;
@@ -7,7 +7,6 @@ export type SidebarItemProps = {
   iconClassName?: string;
   active: boolean;
   expanded: boolean;
-  /** Desktop rail (fixed 200px). The drawer lays items out full width. */
   rail: boolean;
   onNavigate?: () => void;
   onHover?: (item: HTMLElement) => void;
@@ -32,6 +31,12 @@ export type AccountMenuProps = {
 
 export type AccountAvatarProps = {
   avatarUrl?: string | null;
+  variant?: "user" | "loading" | "login";
+};
+
+export type AccountRowLabelProps = {
+  children: ReactNode;
+  visible?: boolean;
 };
 
 export type SidebarProps = Pick<SidebarToggleProps, "expanded" | "onToggle">;
@@ -39,7 +44,6 @@ export type SidebarProps = Pick<SidebarToggleProps, "expanded" | "onToggle">;
 export type SidebarBodyProps = SidebarProps & {
   showToggle?: boolean;
   onNavigate?: () => void;
-  /** Drawer only: the account pane expands inline over the footer links. */
   inlineAccount?: boolean;
 };
 
@@ -81,17 +85,16 @@ export type SidebarInlineAccountProps = {
   onNavigate?: () => void;
 };
 
+export type SidebarInlinePaneProps = {
+  pending: boolean;
+  onNavigate?: () => void;
+  onSignOut: () => void;
+};
+
 export type SidebarAccountTriggerProps = SidebarExpandedState;
 
 export type MobileSidebarPanelProps = {
   panelRef: RefObject<HTMLDivElement | null>;
   overlayRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
-};
-
-export type SidebarHoverIndicator = {
-  y: number;
-  width: number;
-  visible: boolean;
-  instant: boolean;
 };

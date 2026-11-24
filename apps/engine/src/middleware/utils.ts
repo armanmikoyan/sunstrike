@@ -1,7 +1,3 @@
-export function httpError(status: number, message: string) {
-  return Object.assign(new Error(message), { status });
-}
-
 export function statusOf(error: unknown): number {
   if (typeof error === "object" && error !== null && "status" in error) {
     const status = Number((error as { status: unknown }).status);

@@ -1,6 +1,6 @@
+import type { OAuthProvider } from "@/app/api/auth/oauth/types";
 import { GOOGLE_ONE_TAP_OPTIONS } from "./constants";
 import type {
-  AuthProvider,
   ErrorMessageBody,
   GoogleAccountsId,
   GoogleCredentialResponse,
@@ -8,13 +8,6 @@ import type {
   OAuthStartResult,
   OAuthUrlResponse,
 } from "./types";
-
-export function safeNext(value: string | null | undefined): string {
-  if (!value) return "/";
-  if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return "/";
-
-  return value;
-}
 
 export async function readMessage(
   response: Response,
@@ -42,7 +35,7 @@ export function reloadPage(): void {
 }
 
 export async function startOAuthSignIn(
-  provider: AuthProvider,
+  provider: OAuthProvider,
   next: string,
   fallback: string,
 ): Promise<OAuthStartResult> {

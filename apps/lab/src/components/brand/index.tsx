@@ -12,14 +12,6 @@ import {
 } from "./constants";
 import type { ChronosphereProps, LogoLockupProps } from "./types";
 
-/**
- * The rotating chronosphere. The still poster holds the slot until the violet
- * orb script upgrades the element, when WebGL is unavailable, and while the
- * visitor prefers reduced motion.
- *
- * `duration` is seconds per revolution. Slower reads calmer at nav size, where
- * a quick spin looks like a flicker rather than a rotation.
- */
 export function Chronosphere({ className, duration = 18 }: ChronosphereProps) {
   return (
     <span aria-hidden="true" className={cn("relative grid shrink-0 place-items-center", className)}>

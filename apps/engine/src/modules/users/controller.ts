@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
+import { unauthorized } from "@/shared/utils";
 import * as service from "./service";
-import { unauthorized } from "./utils";
 
 export async function getCurrentUser(request: Request, response: Response) {
   const auth = request.auth;

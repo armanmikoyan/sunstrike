@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-/** 02 Core entities — `users`. */
 export type User = {
   id: string;
   email: string;
@@ -8,6 +7,10 @@ export type User = {
 };
 
 export type SettingsTab = "account" | "notifications" | "billing" | "usage";
+
+export type SettingsProps = {
+  children: ReactNode;
+};
 
 export type FieldProps = {
   label: string;

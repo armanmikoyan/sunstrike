@@ -1,4 +1,5 @@
 import { Bell } from "lucide-react";
+import { PaneHeader } from "@/components/pane-header";
 import { NOTIFICATION_TYPE_LABELS } from "@/components/nav/constants";
 import { notifications } from "@/mocks/notifications";
 import { cn } from "cn";
@@ -12,12 +13,7 @@ export function SettingsNotificationsPane() {
 
   return (
     <div>
-      <div className="border-b border-white/6 px-5 py-4">
-        <h2 className="text-sm lg:text-xs font-medium">{SETTINGS_COPY.notifications.title}</h2>
-        <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
-          {SETTINGS_COPY.notifications.description}
-        </p>
-      </div>
+      <PaneHeader title={SETTINGS_COPY.notifications.title} description={SETTINGS_COPY.notifications.description} />
       <div className="p-5">
         {notifications.length === 0 ? (
           <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{SETTINGS_COPY.notifications.empty}</p>

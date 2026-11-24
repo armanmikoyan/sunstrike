@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Coins, LogOut, Plus } from "lucide-react";
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/ui/dropdown-menu";
-import { ACCOUNT, ACCOUNT_LINKS, ACCOUNT_MENU_COPY } from "./constants";
+import { formatUSD } from "@/components/pricing/utils";
+import { balance } from "@/mocks/billing";
+import { ACCOUNT_LINKS, ACCOUNT_MENU_COPY } from "./constants";
 import { AccountAvatar } from "./account-avatar";
 import type { AccountMenuProps } from "./types";
 
@@ -38,7 +40,7 @@ export function AccountMenu({
         <Link href="/settings/billing">
           <Coins className="size-4 text-muted-foreground" />
           <span className="flex-1">{ACCOUNT_MENU_COPY.balance}</span>
-          <span className="tabular-nums font-normal text-foreground">{ACCOUNT.balance}</span>
+          <span className="tabular-nums font-normal text-foreground">{formatUSD(balance)}</span>
           <Plus className="size-3.5 text-muted-foreground" />
         </Link>
       </DropdownMenuItem>

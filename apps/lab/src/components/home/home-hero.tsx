@@ -1,7 +1,6 @@
 import { PromptComposer } from "@/components/prompt-composer";
 import { VideoWall } from "@/components/video-wall";
 
-/** Full-bleed wall with the prompt bar resting on its bottom edge. */
 export function HomeHero() {
   return (
     <section className="relative h-[calc(100svh-3rem)] min-h-130 overflow-hidden">

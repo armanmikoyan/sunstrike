@@ -1,9 +1,10 @@
 import { cn } from "cn";
 import { IconBox } from "@/ui/icon-box";
+import { TRANSACTION_ICONS } from "./constants";
 import type { UsageTransactionRowProps } from "./types";
 
 export function UsageTransactionRow({ transaction }: UsageTransactionRowProps) {
-  const Icon = transaction.icon;
+  const Icon = TRANSACTION_ICONS[transaction.kind];
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/1.5">

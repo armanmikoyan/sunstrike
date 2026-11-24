@@ -1,6 +1,5 @@
 import type { StudioFieldProps } from "./types";
 
-/** Label plus control, with the spacing every control row shares. */
 export function StudioField({ label, children }: StudioFieldProps) {
   return (
     <div className="mt-5">

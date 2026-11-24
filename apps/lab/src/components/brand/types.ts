@@ -5,7 +5,6 @@ export type VioletOrbProps = {
 
 export type ChronosphereProps = {
   className?: string;
-  /** Seconds per revolution. */
   duration?: number;
 };
 
@@ -14,6 +13,5 @@ export type LogoLockupProps = {
   imageClassName?: string;
   href?: string;
   compact?: boolean;
-  /** Kept in the layout for a reveal transition but out of reach. */
   inactive?: boolean;
 };

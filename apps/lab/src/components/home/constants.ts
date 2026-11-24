@@ -1,6 +1,4 @@
-import { mediaById } from "@/mocks/media";
-
-export const FEATURED_IDS = ["02", "09", "14", "17"];
+import { mediaByIds } from "@/mocks/media";
 
 export const PRICING_POINTS = ["No subscription", "Balance never expires", "Cost shown up front"];
 
@@ -42,4 +40,4 @@ export const HOME_COPY = {
   },
 };
 
-export const FEATURED = FEATURED_IDS.map((id) => mediaById(id)).filter((item) => item !== undefined);
+export const FEATURED = mediaByIds(["02", "09", "14", "17"]);

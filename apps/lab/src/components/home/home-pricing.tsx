@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { MosaicTile } from "@/components/ratio-mosaic/mosaic-tile";
 import { Button } from "@/ui/button";
+import { CheckList } from "@/ui/check-list";
 import { HOME_COPY, PRICING_MOSAIC_TILES, PRICING_POINTS } from "./constants";
 
-/** The live pricing panel: offer on the left, recent results below. */
 export function HomePricing() {
   return (
     <section className="w-full px-5 py-16">
@@ -20,17 +20,7 @@ export function HomePricing() {
               <p className="mt-3 max-w-120 text-sm lg:text-xs leading-relaxed text-muted-foreground">
                 {HOME_COPY.pricing.description}
               </p>
-              <div className="mt-5 flex flex-wrap gap-4">
-                {PRICING_POINTS.map((item) => (
-                  <span
-                    key={item}
-                    className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-muted-foreground"
-                  >
-                    <Check className="size-3.5 text-muted-foreground" />
-                    {item}
-                  </span>
-                ))}
-              </div>
+              <CheckList items={PRICING_POINTS} className="mt-5" />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Button asChild size="cta">
@@ -39,11 +29,7 @@ export function HomePricing() {
                   <ArrowRight className="size-3.5" />
                 </Link>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/4"
-              >
+              <Button asChild variant="line" size="cta">
                 <Link href="/settings/billing">{HOME_COPY.pricing.secondaryAction}</Link>
               </Button>
             </div>

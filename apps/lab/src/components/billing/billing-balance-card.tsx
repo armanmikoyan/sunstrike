@@ -1,4 +1,6 @@
 import { Coins } from "lucide-react";
+import { formatUSD } from "@/components/pricing/utils";
+import { balance } from "@/mocks/billing";
 import { BILLING_COPY } from "./constants";
 
 export function BillingBalanceCard() {
@@ -15,7 +17,7 @@ export function BillingBalanceCard() {
           </span>
         </div>
         <span className="tabular-nums font-normal mt-4 block text-[2rem] leading-none tracking-[-0.03em]">
-          {BILLING_COPY.balance.value}
+          {formatUSD(balance)}
         </span>
         <div className="mt-3 flex items-center justify-between text-xs lg:text-[0.6875rem]">
           <span className="text-muted-foreground">{BILLING_COPY.balance.currency}</span>

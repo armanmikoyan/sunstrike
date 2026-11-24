@@ -2,7 +2,8 @@
 
 import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { SearchInput } from "@/ui/search-input";
-import { EXPLORE_TOOLBAR_COPY, KIND_OPTIONS } from "./constants";
+import { MEDIA_FILTER_OPTIONS } from "@/components/media-card/constants";
+import { EXPLORE_TOOLBAR_COPY } from "./constants";
 import type { ExploreGalleryProps } from "./types";
 
 export function ExploreToolbar({ gallery: { kind, setKind, query, setQuery } }: ExploreGalleryProps) {
@@ -12,7 +13,7 @@ export function ExploreToolbar({ gallery: { kind, setKind, query, setQuery } }: 
         <SegmentedTabs
           value={kind}
           onValueChange={setKind}
-          options={KIND_OPTIONS}
+          options={MEDIA_FILTER_OPTIONS}
           ariaLabel={EXPLORE_TOOLBAR_COPY.filterLabel}
         />
 

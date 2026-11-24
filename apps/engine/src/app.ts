@@ -1,5 +1,6 @@
 import express from "express";
 import { ping } from "@/infrastructure/database";
+import { logger } from "@/infrastructure/logger";
 import { middleware } from "@/middleware";
 import { errorHandler, notFound } from "@/middleware/errors";
 import { auth } from "@/modules/auth";
@@ -9,6 +10,7 @@ import catalogRouter from "@/modules/catalog/router";
 import generationRouter from "@/modules/generation/router";
 import mediaRouter from "@/modules/media/router";
 import notificationsRouter from "@/modules/notifications/router";
+import pricingRouter from "@/modules/pricing/router";
 import templatesRouter from "@/modules/templates/router";
 import usersRouter from "@/modules/users/router";
 
@@ -23,7 +25,8 @@ app.get("/health", async (_request, response) => {
     await ping();
 
     response.json({ status: "ok", database: "connected" });
-  } catch {
+  } catch (error) {
+    logger.warn({ err: error }, "Health check could not reach the database");
     response.status(503).json({ status: "error", database: "unavailable" });
   }
 });
@@ -34,6 +37,7 @@ app.use("/api/v1/catalog", catalogRouter);
 app.use("/api/v1/generation", generationRouter);
 app.use("/api/v1/media", mediaRouter);
 app.use("/api/v1/notifications", notificationsRouter);
+app.use("/api/v1/pricing", pricingRouter);
 app.use("/api/v1/templates", templatesRouter);
 app.use("/api/v1/users", auth.requireAuth, usersRouter);
 

@@ -1,7 +1,6 @@
 import type { GenerationMode } from "@/components/studio/types";
-import { takesFrom } from "./utils";
+import { mediaByIds } from "@/mocks/media";
 
-/** UI descriptors for the ratios a model may advertise. */
 export const ASPECT_RATIOS = [
   { value: "16:9", label: "Landscape", shape: "h-2.25 w-4" },
   { value: "9:16", label: "Portrait", shape: "h-4 w-2.25" },
@@ -11,14 +10,10 @@ export const ASPECT_RATIOS = [
   { value: "21:9", label: "Cinema", shape: "h-1.75 w-4.5" },
 ];
 
-/** Fallback duration list; the selected model's capabilities win. */
 export const DURATIONS = ["4s", "5s", "6s", "8s", "12s"];
 
-const VIDEO_TAKE_IDS = ["09", "07", "14", "16"];
-const IMAGE_TAKE_IDS = ["05", "10", "17", "18"];
-
-export const VIDEO_TAKES = takesFrom(VIDEO_TAKE_IDS);
-export const IMAGE_TAKES = takesFrom(IMAGE_TAKE_IDS);
+export const VIDEO_TAKES = mediaByIds(["09", "07", "14", "16"]);
+export const IMAGE_TAKES = mediaByIds(["05", "10", "17", "18"]);
 
 export const STARTER_PROMPTS: Record<GenerationMode, string> = {
   video:
@@ -97,16 +92,6 @@ export const STUDIO_COPY = {
   },
 };
 
-/**
- * Aspect and width classes are written out in full so Tailwind can see them.
- * The frame animates between them with a CSS transition rather than a JS style.
- *
- * Every ratio is capped by the viewport height so the whole frame plus its info
- * row fits without scrolling. The cap uses a smaller offset below `lg`, where
- * the studio is stacked and the frame scrolls to the top of the page, and a
- * larger offset at `lg`, where the nav, studio header and preview chrome sit
- * above a height-locked panel.
- */
 export const STUDIO_FRAME_CLASSES: Record<string, string> = {
   "16:9":
     "aspect-video max-w-[min(47.5rem,calc((100dvh_-_9.5rem)_*_1.7778))] lg:max-w-[min(47.5rem,calc((100dvh_-_16rem)_*_1.7778))]",
@@ -121,5 +106,4 @@ export const STUDIO_FRAME_CLASSES: Record<string, string> = {
     "aspect-21/9 max-w-[min(61.25rem,calc((100dvh_-_9.5rem)_*_2.3333))] lg:max-w-[min(61.25rem,calc((100dvh_-_16rem)_*_2.3333))]",
 };
 
-/** Sentinel row for "no template"; it never reaches the state as an id. */
 export const TEMPLATE_NONE = "none";

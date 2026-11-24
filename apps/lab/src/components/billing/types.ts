@@ -1,6 +1,14 @@
-import type { BILLING_TRANSACTIONS } from "./constants";
+export type UsageTransactionKind = "video" | "image" | "top-up" | "refund";
 
-export type UsageTransaction = (typeof BILLING_TRANSACTIONS)[number];
+export type UsageTransaction = {
+  id: string;
+  kind: UsageTransactionKind;
+  title: string;
+  detail: string;
+  date: string;
+  amount: string;
+  status: string;
+};
 
 export type UsageTransactionRowProps = {
   transaction: UsageTransaction;

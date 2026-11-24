@@ -8,7 +8,6 @@ import { STUDIO_COPY, STUDIO_FRAME_CLASSES } from "./constants";
 import { StudioPreviewPlayback } from "./studio-preview-playback";
 import type { StudioScopedProps } from "./types";
 
-/** The framed media surface: the take itself plus its badges and transport. */
 export function StudioPreviewStage({
   studio,
   studio: { active, aspect, duration, isVideo, resolution, selectedModel },

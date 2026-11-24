@@ -24,6 +24,20 @@ business domain. A module owns one area of behaviour, the data behind it, and
 the public interface other modules use to reach it. `app.ts` builds the app and
 mounts every module, `main.ts` serves HTTP, and `worker.ts` runs background jobs.
 
+### Modules
+
+| Module          | Owns                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------- |
+| `auth`          | Supabase session and API-token verification, sign-in flows, `requireAuth`               |
+| `users`         | Application user profiles and account details                                           |
+| `catalog`       | Models, capabilities, `active` enable/disable, Runware mappings and synced costs, Redis |
+| `pricing`       | Selling prices (`model_prices`), markups, discounts, public rates and stateless quotes  |
+| `billing`       | Balances, top-ups (Lemon Squeezy), reserve/capture/release, refunds; no pricing deps    |
+| `generation`    | Validate via `catalog`, quote via `pricing`, snapshot price, reserve via `billing`, run |
+| `media`         | Uploaded assets, short-lived signed Storage URLs, registered generation outputs         |
+| `templates`     | Curated source templates and their customisation options                                |
+| `notifications` | Terminal job updates, unread list and read state                                        |
+
 ### Module files
 
 Each file has one job, and the table below says which.
@@ -81,7 +95,10 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
   Cross-module consistency comes from compensation or events, never from a
   transaction that spans boundaries.
 - **Keep the shared kernel small.** Cross-cutting technical code lives in
-  `infrastructure` and `middleware`; domain helpers stay inside their module.
+  `infrastructure`, `middleware` and `shared`; domain helpers stay inside
+  their module. `shared/types.ts` and `shared/utils.ts` hold the types and
+  helpers every module uses, such as the HTTP errors; `middleware` holds only
+  request middleware and its own helpers.
 - Dependencies stay acyclic and point one way.
 
 ### Infrastructure
@@ -129,6 +146,8 @@ feature component and its logic, and nothing else.
 | `src/ui`                   | Generic, product-agnostic primitives: one file per component, types and class strings inline                                         |
 | `src/components/<feature>` | Anything with product copy, domain types, data, composition or feature state. A part reused inside one feature stays in that feature |
 | `src/motion`               | Reusable animation primitives and transitions, each in its own folder                                                                |
+| `src/hooks`                | Generic, product-agnostic React hooks, one file per hook                                                                             |
+| `src/mocks`                | Demo data shown until the engine serves it; components read it from here instead of defining their own                               |
 
 - The same UI in two places is one shared component configured by props.
 - The primitive owns height, radius and text scale; call sites override layout

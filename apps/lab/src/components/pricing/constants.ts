@@ -23,26 +23,11 @@ export const PRICING_CARD_COPY = {
   paymentNote: "One-time payment · No subscription",
 };
 
-/** Image price breaks, shown as the slider legend. */
+/** Image price breaks, in ascending order: a tier's unit price applies from its `start`. */
 export const IMAGE_TIERS = [
-  {
-    label: "1–9",
-    price: "$0.07",
-    start: 1,
-    active: (quantity: number) => quantity < 10,
-  },
-  {
-    label: "10–49",
-    price: "$0.06",
-    start: 10,
-    active: (quantity: number) => quantity >= 10 && quantity < 50,
-  },
-  {
-    label: "50–500",
-    price: "$0.05",
-    start: 50,
-    active: (quantity: number) => quantity >= 50,
-  },
+  { label: "1–9", start: 1, unit: 0.07 },
+  { label: "10–49", start: 10, unit: 0.06 },
+  { label: "50–500", start: 50, unit: 0.05 },
 ];
 
 export const PRICING_POINTS = ["No monthly fee", "Balance never expires", "Commercial use"];

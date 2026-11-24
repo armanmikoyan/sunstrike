@@ -75,13 +75,15 @@ export async function refreshSession(refreshToken: string): Promise<SupabaseSess
 export async function signOut(accessToken: string): Promise<void> {
   const base = config.supabaseUrl().replace(/\/$/, "");
 
-  await fetch(`${base}/auth/v1/logout`, {
+  const response = await fetch(`${base}/auth/v1/logout`, {
     method: "POST",
     headers: {
       apikey: config.supabaseKey(),
       authorization: `Bearer ${accessToken}`,
     },
   });
+
+  if (!response.ok) throwAuthError({ status: response.status }, "Could not sign out");
 }
 
 export async function startOAuth(provider: Provider, redirectTo: string): Promise<OAuthStart> {

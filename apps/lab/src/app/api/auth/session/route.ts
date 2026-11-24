@@ -4,7 +4,7 @@ import {
   readSessionTokens,
   requestRefresh,
   requestSession,
-  setSessionCookies,
+  sessionResponse,
 } from "@/app/api/auth/session";
 import { errorResponse } from "@/app/api/_engine";
 
@@ -34,8 +34,5 @@ export async function GET() {
     return refreshed.status === 401 ? noSession() : errorResponse(refreshed);
   }
 
-  const response = NextResponse.json({ user: refreshed.data.user });
-  setSessionCookies(response, refreshed.data);
-
-  return response;
+  return sessionResponse(refreshed.data);
 }

@@ -1,20 +1,29 @@
 "use client";
 
 import { useId } from "react";
-import { UserRound } from "lucide-react";
+import { LogIn, UserRound } from "lucide-react";
+import { cn } from "cn";
+import { AVATAR_FRAME_CLASS, AVATAR_PLACEHOLDER_CLASS } from "./constants";
 import type { AccountAvatarProps } from "./types";
 
-/**
- * The signed-in face. It is the avatar stored on the profile — chosen by the
- * first provider that supplied one — with the gradient mark as the fallback for
- * email-code accounts and while the session is still loading.
- */
-export function AccountAvatar({ avatarUrl }: AccountAvatarProps) {
+export function AccountAvatar({ avatarUrl, variant = "user" }: AccountAvatarProps) {
   const gradientId = useId();
+
+  if (variant === "loading") {
+    return <span className={cn(AVATAR_PLACEHOLDER_CLASS, "animate-pulse motion-reduce:animate-none")} />;
+  }
+
+  if (variant === "login") {
+    return (
+      <span className={cn(AVATAR_PLACEHOLDER_CLASS, "grid place-items-center text-foreground")}>
+        <LogIn className="size-3.5" strokeWidth={1.8} />
+      </span>
+    );
+  }
 
   if (avatarUrl) {
     return (
-      <span className="size-7 shrink-0 overflow-hidden rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(167,139,250,0.18),0_0_12px_rgba(167,139,250,0.22)]">
+      <span className={cn(AVATAR_FRAME_CLASS, "overflow-hidden")}>
         {/* eslint-disable-next-line @next/next/no-img-element -- remote provider avatar, no loader needed */}
         <img
           src={avatarUrl}
@@ -30,7 +39,7 @@ export function AccountAvatar({ avatarUrl }: AccountAvatarProps) {
   }
 
   return (
-    <span className="grid size-7 shrink-0 place-items-center rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(167,139,250,0.18),0_0_12px_rgba(167,139,250,0.22)]">
+    <span className={cn(AVATAR_FRAME_CLASS, "grid place-items-center")}>
       <svg aria-hidden className="absolute size-0">
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">

@@ -1,16 +1,10 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
-import { CONSENT_EVENT, CONSENT_STORAGE_KEY } from "./constants";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { CONSENT_EVENT, CONSENT_STORAGE_KEY, EXIT_DURATION, REDUCED_MOTION_QUERY } from "./constants";
 import type { ConsentChoice } from "./types";
 import { readConsent, subscribeConsent } from "./utils";
 
-/**
- * The consent state behind the banner. The store reads storage directly, so
- * the markup matches on the server and the banner appears only once the
- * browser can answer. Both snapshots are primitives, which keeps their
- * identity stable between reads.
- */
 export function useCookieConsent() {
   const choice = useSyncExternalStore(subscribeConsent, readConsent, () => null);
   const ready = useSyncExternalStore(
@@ -18,15 +12,35 @@ export function useCookieConsent() {
     () => true,
     () => false,
   );
+  const [leaving, setLeaving] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timer.current !== null) window.clearTimeout(timer.current);
+    },
+    [],
+  );
 
   const decide = useCallback((next: ConsentChoice) => {
     try {
       window.localStorage.setItem(CONSENT_STORAGE_KEY, next);
-    } catch {
-      // The choice still applies to this session when storage is blocked.
-    }
+    } catch {}
     window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: { choice: next } }));
   }, []);
 
-  return { choice, ready, decide, open: ready && choice === null };
+  const choose = useCallback(
+    (next: ConsentChoice) => {
+      if (leaving) return;
+      if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+        decide(next);
+        return;
+      }
+      setLeaving(true);
+      timer.current = window.setTimeout(() => decide(next), EXIT_DURATION);
+    },
+    [decide, leaving],
+  );
+
+  return { choice, ready, decide, choose, leaving, open: ready && choice === null };
 }

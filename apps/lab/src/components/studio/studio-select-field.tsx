@@ -12,7 +12,6 @@ import {
 import { StudioField } from "./studio-field";
 import type { StudioSelectFieldProps } from "./types";
 
-/** The dropdown every single-value control uses. Options may carry a hint row. */
 export function StudioSelectField({ label, value, options, onChange }: StudioSelectFieldProps) {
   const selected = options.find((option) => option.value === value) ?? options[0];
 

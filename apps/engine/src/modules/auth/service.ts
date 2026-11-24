@@ -1,3 +1,4 @@
+import { logger } from "@/infrastructure/logger";
 import * as supabase from "@/infrastructure/supabase";
 import { users } from "@/modules/users";
 import type { AuthSession, AuthSubject, OAuthProvider, OAuthStart, SessionUser } from "./types";
@@ -75,8 +76,11 @@ export async function refreshSession(refreshToken: string): Promise<AuthSession>
   return { ...session, user };
 }
 
+/** Sign-out never fails the caller: the lab clears its cookies either way. */
 export async function signOut(accessToken: string): Promise<void> {
-  await supabase.signOut(accessToken).catch(() => {});
+  await supabase.signOut(accessToken).catch((error: unknown) => {
+    logger.warn({ err: error }, "Supabase sign-out failed");
+  });
 }
 
 export async function startOAuthSignIn(provider: OAuthProvider, redirectTo: string): Promise<OAuthStart> {

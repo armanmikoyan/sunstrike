@@ -8,14 +8,6 @@ export function bearer(request: Request): string | null {
   return scheme?.toLowerCase() === "bearer" && token ? token : null;
 }
 
-export function badRequest(message: string) {
-  return Object.assign(new Error(message), { status: 400 });
-}
-
-export function unauthorized() {
-  return Object.assign(new Error("Unauthorized"), { status: 401 });
-}
-
 export function toSessionUser(id: string, email?: string, avatarUrl?: string | null): SessionUser {
   return { id, email: email ?? null, avatarUrl: avatarUrl ?? null };
 }

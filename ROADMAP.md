@@ -61,19 +61,31 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Catalog and media
 
-- **Models and templates.** Eight seeded models; `/models` returns active rows;
-  `/templates` returns options; Redis cache with TTL and invalidation.
+- **Models and templates.** Seeded models with `active` enable/disable,
+  capabilities, Runware mappings and synced upstream costs; `/models` returns
+  active rows; `/templates` returns options; Redis cache with TTL and
+  invalidation.
 - **Uploads.** `POST /assets/uploads` returns a signed Supabase Storage upload
   URL; `/complete` records the kind.
 - **Assets.** `GET /assets/{id}` returns metadata and a short-lived URL; a
   foreign id returns 404.
 
+#### Pricing
+
+- **Selling rates.** `model_prices` owns selling prices, markups, margins,
+  volume tiers and discounts per model; `GET /pricing/rates` returns active
+  selling rates without exposing upstream provider costs.
+- **Quotes.** `POST /pricing/quotes` reads model metadata and costs from
+  Catalog and returns a stateless quote for model, settings and template;
+  invalid settings are rejected; preview quotes are derived, never stored.
+
 #### Billing
 
-- **Balance.** `GET /balance` derives available and reserved from the ledger.
+- **Balance.** `GET /balance` derives available and reserved from the ledger;
+  no pricing dependencies.
 - **Top-ups.** Lemon Squeezy checkout URL; a verified webhook credits once.
-- **Reserve and settle.** A failed job restores the exact amount; a succeeded
-  job charges once.
+- **Reserve and settle.** Reserve an exact amount before execution; capture on
+  success; release on failure so the exact amount is restored.
 - **Idempotency.** `Idempotency-Key` on generation and top-up replays the
   original result.
 - **History.** Every balance change appears in the ledger, newest first.
@@ -82,12 +94,11 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Generations
 
-- **Quotes.** `POST /generation-quotes` prices model, settings and template;
-  invalid settings are rejected; a quote is derived, never stored.
 - **Capability validation.** One rule shared by studio and engine; rejects an
-  unsupported ratio, resolution, duration or audio.
-- **Create.** Validates, reserves, inserts `queued`, enqueues and returns 202 in
-  under 1s.
+  unsupported ratio, resolution, duration or audio via Catalog.
+- **Create.** Validates via Catalog, gets a quote from Pricing and persists the
+  accepted quote snapshot on the job (never repriced), reserves via Billing,
+  inserts `queued`, enqueues and returns 202 in under 1s.
 - **List and read.** Cursor history and one generation scoped to the user; a
   foreign id returns 404.
 - **Edit and personalise.** `kind = edit` applies template options through the
@@ -97,8 +108,8 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 - **Queue.** Postgres queue with leases and retries; no Redis until load
   requires it; killing the worker mid-job reclaims the job.
-- **Providers.** One adapter per provider; a fake and a sandbox provider both
-  produce a terminal generation.
+- **Providers.** Runware adapter plus a fake/sandbox provider behind one
+  provider interface; both produce a terminal generation.
 - **Terminal states.** `succeeded` writes the output and settles; `failed`
   writes the code and releases.
 - **Recovery.** Boot reclaims expired leases; no accepted job is lost.

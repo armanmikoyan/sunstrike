@@ -3,7 +3,6 @@ import { ArrowUpRight, Play } from "lucide-react";
 import { MEDIA_CARD_COPY } from "./constants";
 import type { MediaCardOverlayProps } from "./types";
 
-/** Hover actions over the media plus the always-visible title row. */
 export function MediaCardOverlay({ item, showMeta }: MediaCardOverlayProps) {
   return (
     <div className="absolute inset-x-0 bottom-0">

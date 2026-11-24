@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { GOOGLE_ONE_TAP_SCRIPT_SRC } from "./constants";
 import { useSessionUser } from "./hooks";
-import { navigate, reloadPage, safeNext, startGoogleOneTap, supportsGoogleOneTap } from "./utils";
+import { safeNext } from "@/app/api/auth/utils";
+import { navigate, reloadPage, startGoogleOneTap, supportsGoogleOneTap } from "./utils";
 import type { GoogleWindow } from "./types";
 
 export function GoogleOneTap() {

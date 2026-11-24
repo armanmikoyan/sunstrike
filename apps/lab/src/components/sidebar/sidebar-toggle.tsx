@@ -7,7 +7,6 @@ import { cn } from "cn";
 import { SIDEBAR_COPY } from "./constants";
 import type { SidebarToggleProps } from "./types";
 
-/** Rail header: the collapse control and the lockup that follows it. */
 export function SidebarToggle({ expanded, showToggle, onToggle }: SidebarToggleProps) {
   const label = expanded ? SIDEBAR_COPY.collapse : SIDEBAR_COPY.expand;
 

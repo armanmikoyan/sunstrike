@@ -22,4 +22,5 @@ export const config = {
       .filter(Boolean),
   port: () => Number(process.env.PORT ?? 4000),
   isProduction: () => process.env.NODE_ENV === "production",
+  logLevel: () => process.env.LOG_LEVEL ?? (config.isProduction() ? "info" : "debug"),
 };

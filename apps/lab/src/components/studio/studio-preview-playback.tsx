@@ -4,7 +4,6 @@ import { Maximize, Pause, Volume2 } from "lucide-react";
 import { STUDIO_COPY } from "./constants";
 import type { StudioScopedProps } from "./types";
 
-/** Scrubber and transport row laid over the bottom of the media frame. */
 export function StudioPreviewPlayback({ studio: { active, audio, duration, isVideo } }: StudioScopedProps) {
   return (
     <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">

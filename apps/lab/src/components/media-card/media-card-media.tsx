@@ -3,7 +3,6 @@ import { MediaKindBadge } from "@/ui/media-kind-badge";
 import { VideoWithFallback } from "@/components/video-with-fallback";
 import type { MediaCardMediaProps } from "./types";
 
-/** The still or clip itself, with the shared grade and kind badge. */
 export function MediaCardMedia({ item, priority }: MediaCardMediaProps) {
   return (
     <>

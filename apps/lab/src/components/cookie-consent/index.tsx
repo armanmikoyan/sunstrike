@@ -2,42 +2,13 @@
 
 import { Cookie } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "cn";
 import { Button } from "@/ui/button";
-import { COOKIE_CONSENT_COPY, EXIT_DURATION, REDUCED_MOTION_QUERY } from "./constants";
-import type { ConsentChoice } from "./types";
+import { COOKIE_CONSENT_COPY } from "./constants";
 import { useCookieConsent } from "./hooks";
 
-/**
- * A single consent surface for the whole site. It sits above the page but
- * below the mobile drawer and portalled menus, and only appears after
- * hydration so the server and client markup match.
- */
 export function CookieConsent() {
-  const { open, decide } = useCookieConsent();
-  const [leaving, setLeaving] = useState(false);
-  const timer = useRef<number | null>(null);
-
-  useEffect(
-    () => () => {
-      if (timer.current !== null) window.clearTimeout(timer.current);
-    },
-    [],
-  );
-
-  const choose = useCallback(
-    (choice: ConsentChoice) => {
-      if (leaving) return;
-      if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
-        decide(choice);
-        return;
-      }
-      setLeaving(true);
-      timer.current = window.setTimeout(() => decide(choice), EXIT_DURATION);
-    },
-    [decide, leaving],
-  );
+  const { open, leaving, choose } = useCookieConsent();
 
   if (!open) return null;
 
@@ -59,9 +30,7 @@ export function CookieConsent() {
           <Cookie className="size-4" />
         </span>
         <div className="min-w-0">
-          <p className="text-sm font-medium tracking-[-0.02em]">
-            {COOKIE_CONSENT_COPY.title}
-          </p>
+          <p className="text-sm font-medium tracking-[-0.02em]">{COOKIE_CONSENT_COPY.title}</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground lg:text-[0.6875rem]">
             {COOKIE_CONSENT_COPY.description}
           </p>
@@ -69,11 +38,7 @@ export function CookieConsent() {
       </div>
 
       <div className="grid grid-cols-2 gap-2 px-4">
-        <Button
-          variant="outline"
-          onClick={() => choose("essential")}
-          className="h-9 w-full rounded-lg border-white/9 bg-white/1.5 text-xs text-muted-foreground hover:bg-white/4.5 hover:text-foreground lg:text-[0.6875rem]"
-        >
+        <Button variant="subtle" size="lg" onClick={() => choose("essential")} className="w-full">
           {COOKIE_CONSENT_COPY.essential}
         </Button>
         <Button onClick={() => choose("all")} className="h-9 w-full rounded-lg px-3 text-xs lg:text-[0.6875rem]">

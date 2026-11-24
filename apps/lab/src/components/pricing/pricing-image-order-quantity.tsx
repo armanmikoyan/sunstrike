@@ -7,7 +7,6 @@ import { MAX_IMAGES, MIN_IMAGES } from "@/components/pricing/constants";
 import { PRICING_CARD_COPY } from "./constants";
 import type { ImageOrderProps } from "./types";
 
-/** Order header, live count, steppers and the 3D quantity drum. */
 export function PricingImageOrderQuantity({ quote, onQuantityChange }: ImageOrderProps) {
   return (
     <>

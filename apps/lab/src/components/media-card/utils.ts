@@ -1,4 +1,4 @@
-import type { MediaItem } from "./types";
+import type { MediaFilter, MediaItem, MediaSearchField } from "./types";
 
 export function mixMediaByKind(items: readonly MediaItem[]): MediaItem[] {
   const videos = items.filter((item) => item.kind === "video");
@@ -11,4 +11,19 @@ export function mixMediaByKind(items: readonly MediaItem[]): MediaItem[] {
   }
 
   return mixed;
+}
+
+export function filterMedia(
+  items: readonly MediaItem[],
+  filter: MediaFilter,
+  query = "",
+  fields: readonly MediaSearchField[] = [],
+): MediaItem[] {
+  const normalized = query.trim().toLowerCase();
+
+  return items.filter(
+    (item) =>
+      (filter === "all" || item.kind === filter) &&
+      (!normalized || fields.some((field) => item[field].toLowerCase().includes(normalized))),
+  );
 }

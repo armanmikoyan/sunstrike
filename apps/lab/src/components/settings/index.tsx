@@ -2,9 +2,9 @@ import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/ui/page-shell";
 import { SETTINGS_COPY } from "./constants";
 import { SettingsNav } from "./settings-nav";
-import type { ReactNode } from "react";
+import type { SettingsProps } from "./types";
 
-export function Settings({ children }: { children: ReactNode }) {
+export function Settings({ children }: SettingsProps) {
   return (
     <PageShell>
       <PageHeader eyebrow={SETTINGS_COPY.eyebrow} title={SETTINGS_COPY.title} description={SETTINGS_COPY.description} />

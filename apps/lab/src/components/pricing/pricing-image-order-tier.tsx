@@ -4,7 +4,6 @@ import { cn } from "cn";
 import { PRICING_CARD_COPY } from "./constants";
 import type { ImageOrderTierProps } from "./types";
 
-/** One price break; its start value sets the order quantity. */
 export function PricingImageOrderTier({ label, price, active, onSelect }: ImageOrderTierProps) {
   return (
     <button

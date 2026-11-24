@@ -5,7 +5,6 @@ import { mediaById } from "@/mocks/media";
 import { cn } from "cn";
 import type { MegaMenuPreviewsProps } from "./types";
 
-/** Editorial stills that make the menu feel like the library. */
 export function MegaMenuPreviews({ previews, onClose }: MegaMenuPreviewsProps) {
   return (
     <div className="hidden p-3 lg:block">

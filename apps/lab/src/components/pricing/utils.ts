@@ -1,10 +1,18 @@
 import type { GenerationKind, ModelRate } from "./types";
-import { MAX_IMAGES, MIN_IMAGES } from "./constants";
+import { IMAGE_TIERS, MAX_IMAGES, MIN_IMAGES } from "./constants";
+
+export function getImageTier(quantity: number) {
+  let tier = IMAGE_TIERS[0];
+
+  for (const candidate of IMAGE_TIERS) {
+    if (quantity >= candidate.start) tier = candidate;
+  }
+
+  return tier;
+}
 
 export function getImageUnitPrice(quantity: number) {
-  if (quantity >= 50) return 0.05;
-  if (quantity >= 10) return 0.06;
-  return 0.07;
+  return getImageTier(quantity).unit;
 }
 
 export function clampImageQuantity(quantity: number) {
@@ -15,7 +23,7 @@ export function getImageQuote(quantity: number) {
   const count = clampImageQuantity(quantity);
   const unit = getImageUnitPrice(count);
   const total = Math.round(count * unit * 100) / 100;
-  const base = count * 0.07;
+  const base = count * IMAGE_TIERS[0].unit;
   const savings = Math.round((base - total) * 100) / 100;
   const percent = base > 0 ? Math.round((savings / base) * 100) : 0;
 
@@ -46,7 +54,6 @@ export function formatUSD(value: number) {
   }).format(value);
 }
 
-/** Keeps a per-second rate legible: $0.085, $0.10, $0.072. */
 export function formatUSDRate(value: number) {
   const fractionDigits = Math.round(value * 1000) % 10 === 0 ? 2 : 3;
 

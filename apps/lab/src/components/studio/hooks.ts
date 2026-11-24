@@ -20,19 +20,6 @@ import {
   templateIdAtom,
 } from "./state";
 
-/**
- * `useAtom` for the generation state that more than one route shares.
- *
- * Next keeps the previous route's tree mounted while another route is on
- * screen, and jotai holds on to the value it read for the last update it saw.
- * A write made from the other route — the studio resets the mode when it
- * opens — never reaches that cached value, so the home prompt bar keeps
- * rendering its old mode. Every tab click then writes the value it already
- * has, nothing changes, and the switch looks dead.
- *
- * Reading the store during render and reading it once more when the
- * subscription is (re)attached keeps the composer in step with the store.
- */
 export function useSharedState<Value, Args extends unknown[], Result>(atom: WritableAtom<Value, Args, Result>) {
   const store = useStore();
   const [, resync] = useReducer((version: number) => version + 1, 0);
@@ -47,7 +34,35 @@ export function useSharedState<Value, Args extends unknown[], Result>(atom: Writ
   return [store.get(atom), setValue] as const;
 }
 
-/** All generative state for one studio page, kept out of the view tree. */
+export function useSelectedModel(mode: GenerationMode) {
+  const [model] = useSharedState(selectedModelAtom);
+  const [aspect, setAspect] = useSharedState(aspectRatioAtom);
+  const [duration, setDuration] = useSharedState(durationAtom);
+  const [resolution, setResolution] = useSharedState(resolutionAtom);
+  const [audio, setAudio] = useSharedState(audioAtom);
+
+  const activeModels = modelOptions[mode];
+  const selectedModel = activeModels.find((item) => item.displayName === model) ?? activeModels[0];
+
+  useEffect(() => {
+    const caps = selectedModel.capabilities;
+    if (!caps.aspectRatios.includes(aspect)) {
+      setAspect(caps.aspectRatios[0]);
+    }
+    if (caps.durations.length > 0 && !caps.durations.includes(duration)) {
+      setDuration(caps.durations[0]);
+    }
+    if (!caps.resolutions.includes(resolution)) {
+      setResolution(caps.resolutions[0]);
+    }
+    if (!caps.audio && audio) {
+      setAudio(false);
+    }
+  }, [selectedModel, aspect, duration, resolution, audio, setAspect, setDuration, setResolution, setAudio]);
+
+  return { activeModels, selectedModel };
+}
+
 export function useStudio(initialMode: GenerationMode) {
   const [, setMode] = useSharedState(modeAtom);
   const [prompt, setPrompt] = useSharedState(promptAtom);
@@ -68,26 +83,7 @@ export function useStudio(initialMode: GenerationMode) {
     setModel(STUDIO_MODELS[initialMode].create);
   }, [initialMode, setMode, setModel]);
 
-  const activeModels = modelOptions[initialMode];
-  const selectedModel = activeModels.find((item) => item.displayName === model) ?? activeModels[0];
-
-  // Keep every control inside the capabilities the selected model advertises.
-  useEffect(() => {
-    const caps = selectedModel.capabilities;
-    if (!caps.aspectRatios.includes(aspect)) {
-      setAspect(caps.aspectRatios[0]);
-    }
-    if (caps.durations.length > 0 && !caps.durations.includes(duration)) {
-      setDuration(caps.durations[0]);
-    }
-    if (!caps.resolutions.includes(resolution)) {
-      setResolution(caps.resolutions[0]);
-    }
-    if (!caps.audio && audio) {
-      setAudio(false);
-    }
-  }, [selectedModel, aspect, duration, resolution, audio, setAspect, setDuration, setResolution, setAudio]);
-
+  const { activeModels, selectedModel } = useSelectedModel(initialMode);
   const cost = getGenerationCost(initialMode, selectedModel, duration);
   const takes = initialMode === "video" ? VIDEO_TAKES : IMAGE_TAKES;
   const active = takes.find((item) => item.id === activeId) ?? takes[0];

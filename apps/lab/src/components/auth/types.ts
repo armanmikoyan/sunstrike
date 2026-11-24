@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
-
-export type AuthProvider = "google" | "github";
-
-export type SessionUser = {
-  id: string;
-  email: string | null;
-  avatarUrl: string | null;
-};
+import type { OAuthProvider } from "@/app/api/auth/oauth/types";
+import type { SessionUser } from "@/app/api/auth/types";
 
 export type SessionState = {
   user: SessionUser | null;
@@ -28,7 +22,7 @@ export type OAuthUrlResponse = {
 export type OAuthStartResult = { ok: true; url: string } | { ok: false; error: string };
 
 export type ProviderIconProps = {
-  provider: AuthProvider;
+  provider: OAuthProvider;
   className?: string;
 };
 

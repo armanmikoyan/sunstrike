@@ -4,7 +4,6 @@ import { Textarea } from "@/ui/textarea";
 import { COMPOSER_COPY } from "./constants";
 import type { ComposerProps } from "./types";
 
-/** The textarea and its animated placeholder. */
 export function ComposerPrompt({ composer: { prompt, setPrompt, submit, typedPlaceholder } }: ComposerProps) {
   return (
     <div className="relative">

@@ -1,29 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { mixMediaByKind } from "@/components/media-card/utils";
+import type { MediaFilter } from "@/components/media-card/types";
+import { filterMedia, mixMediaByKind } from "@/components/media-card/utils";
 import { mediaItems } from "@/mocks/media";
-import type { KindFilter } from "./types";
+import { EXPLORE_SEARCH_FIELDS } from "./constants";
 
-/** Kind and query, plus the list they produce. */
 export function useExploreGallery() {
-  const [kind, setKind] = useState<KindFilter>("all");
+  const [kind, setKind] = useState<MediaFilter>("all");
   const [query, setQuery] = useState("");
 
-  const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return mixMediaByKind(
-      mediaItems.filter((item) => {
-        const kindMatch = kind === "all" || item.kind === kind;
-        const queryMatch =
-          !normalized ||
-          item.title.toLowerCase().includes(normalized) ||
-          item.prompt.toLowerCase().includes(normalized) ||
-          item.model.toLowerCase().includes(normalized);
-        return kindMatch && queryMatch;
-      }),
-    );
-  }, [kind, query]);
+  const filtered = useMemo(
+    () => mixMediaByKind(filterMedia(mediaItems, kind, query, EXPLORE_SEARCH_FIELDS)),
+    [kind, query],
+  );
 
   return {
     kind,

@@ -62,14 +62,12 @@ export type SliderDrag = {
 export type SegmentedSliderProps = SliderProps & {
   step: number;
   label: string;
-  /** Upper bound on how many ticks the strip may draw. */
   ticks?: number;
 };
 
 export type TickLayout = {
   width: number;
   ratio: number;
-  /** Sub-pixel part of the track's device offset, nudged back to a whole pixel. */
   snap: number;
 };
 

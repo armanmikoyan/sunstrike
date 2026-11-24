@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGNING_OUT_EVENT } from "./constants";
+import { SIGN_OUT_MIN_MS, SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGNING_OUT_EVENT } from "./constants";
 import type { SessionResponse, SessionState } from "./types";
 
 let inFlight: Promise<SessionState> | null = null;
@@ -21,11 +21,6 @@ async function fetchSession(): Promise<SessionState> {
   }
 }
 
-/**
- * One request per burst: every component mounting on the same render shares
- * this promise instead of hitting the BFF separately. It is dropped once it
- * settles, so a later mount (e.g. after navigation) still revalidates.
- */
 function loadSession(): Promise<SessionState> {
   inFlight ??= fetchSession().finally(() => {
     inFlight = null;
@@ -114,4 +109,50 @@ export function useRequireAuth(): SessionState {
   }, [pathname, router, signedOut, state.loading, state.user]);
 
   return state;
+}
+
+export function useSignOutOverlay(): boolean {
+  const [visible, setVisible] = useState(false);
+  const shownAt = useRef(0);
+  const hideTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const show = () => {
+      if (hideTimer.current !== null) {
+        window.clearTimeout(hideTimer.current);
+        hideTimer.current = null;
+      }
+
+      shownAt.current = Date.now();
+      setVisible(true);
+    };
+
+    const hide = () => {
+      if (hideTimer.current !== null) return;
+
+      const remaining = SIGN_OUT_MIN_MS - (Date.now() - shownAt.current);
+
+      if (remaining <= 0) {
+        setVisible(false);
+        return;
+      }
+
+      hideTimer.current = window.setTimeout(() => {
+        hideTimer.current = null;
+        setVisible(false);
+      }, remaining);
+    };
+
+    window.addEventListener(SIGNING_OUT_EVENT, show);
+    window.addEventListener(SIGNED_OUT_EVENT, hide);
+
+    return () => {
+      if (hideTimer.current !== null) window.clearTimeout(hideTimer.current);
+
+      window.removeEventListener(SIGNING_OUT_EVENT, show);
+      window.removeEventListener(SIGNED_OUT_EVENT, hide);
+    };
+  }, []);
+
+  return visible;
 }

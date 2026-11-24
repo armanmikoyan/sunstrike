@@ -1,8 +1,5 @@
 import { Film, Image as ImageIcon, LayoutGrid, type LucideIcon } from "lucide-react";
-import { mediaById } from "@/mocks/media";
-import type { Filter } from "./types";
-
-export const ASSET_IDS = ["01", "02", "04", "05", "06", "07", "10", "11", "13", "15", "17", "18"];
+import type { MediaFilter } from "@/components/media-card/types";
 
 export const ASSETS_COPY = {
   eyebrow: "Studio",
@@ -22,9 +19,7 @@ export const ASSETS_COPY = {
   storagePrefix: "assets/",
 } as const;
 
-export const ASSETS = ASSET_IDS.map((id) => mediaById(id)).filter((item) => item !== undefined);
-
-export const FILTERS: { value: Filter; label: string; icon: LucideIcon }[] = [
+export const FILTERS: { value: MediaFilter; label: string; icon: LucideIcon }[] = [
   { value: "all", label: ASSETS_COPY.filters.all, icon: LayoutGrid },
   { value: "video", label: ASSETS_COPY.filters.video, icon: Film },
   { value: "image", label: ASSETS_COPY.filters.image, icon: ImageIcon },

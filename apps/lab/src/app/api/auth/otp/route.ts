@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { engineRequest, errorResponse } from "@/app/api/_engine";
+import { ENGINE_AUTH_PATHS } from "@/app/api/auth/constants";
 import type { OtpAccepted } from "@/app/api/auth/types";
 
 export async function POST(request: Request) {
@@ -10,7 +11,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "An email is required." }, { status: 400 });
   }
 
-  const result = await engineRequest<OtpAccepted>("/api/v1/auth/otp", {
+  const result = await engineRequest<OtpAccepted>(ENGINE_AUTH_PATHS.otp, {
     method: "POST",
     body: { email },
   });

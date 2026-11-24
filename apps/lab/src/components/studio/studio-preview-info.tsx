@@ -5,7 +5,6 @@ import { formatUSD } from "@/components/pricing/utils";
 import { STUDIO_COPY } from "./constants";
 import type { StudioScopedProps } from "./types";
 
-/** Title, output summary and download action below the frame. */
 export function StudioPreviewInfo({
   studio: { active, aspect, cost, duration, isVideo, resolution, selectedModel },
 }: StudioScopedProps) {

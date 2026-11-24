@@ -1,6 +1,5 @@
 import { NARROW_QUERY } from "./constants";
 
-/** Nothing to subscribe to: the platform never changes during a session. */
 export function subscribeNothing() {
   return () => {};
 }

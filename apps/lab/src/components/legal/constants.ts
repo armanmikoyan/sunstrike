@@ -1,6 +1,5 @@
 import type { LegalDocument } from "./types";
 
-/** The date shown on both documents and used as their sitemap timestamp. */
 export const LEGAL_UPDATED = {
   label: "17 November 2026",
   iso: "2026-11-17",
@@ -232,15 +231,8 @@ export const LEGAL_COPY = {
   contactNote: "Questions about this page",
 };
 
-/** A heading is active once it reaches the reading line under the nav. */
 export const ACTIVATION_OFFSET = 140;
 
-/**
- * The shortest scroll distance an item gets. The final sections are often too
- * short to reach the reading line before the page ends, so the last item is
- * pinned to the bottom and the rail walks backwards from there. Without this,
- * one wheel step could skip several final sections.
- */
 export const MIN_GAP = 90;
 
 export const SCROLL_KEYS = new Set(["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "]);

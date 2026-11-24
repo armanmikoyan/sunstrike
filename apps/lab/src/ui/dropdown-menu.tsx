@@ -5,7 +5,6 @@ import { cn } from "cn";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { ChevronRightIcon } from "lucide-react";
 
-/** Movement past this many pixels is a scroll, not a tap. */
 const TAP_SLOP = 10;
 
 type DropdownMenuState = {
@@ -65,9 +64,6 @@ function DropdownMenuTrigger({
         onPointerDown?.(event);
         if (event.defaultPrevented || event.pointerType === "mouse") return;
 
-        // Radix opens on pointerdown, so a finger that lands here on its way
-        // into a scroll pops the menu and blocks the scroll. Touch and pen
-        // wait for the release instead, and only a tap that stayed put opens.
         event.preventDefault();
         tap.current = { x: event.clientX, y: event.clientY, scrolled: false };
       }}

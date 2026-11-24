@@ -5,7 +5,6 @@ import { SIDEBAR_COPY } from "./constants";
 import { SidebarBody } from "./sidebar-body";
 import type { MobileSidebarPanelProps } from "./types";
 
-/** The overlay and dialog shell; lifecycle lives in the parent. */
 export function MobileSidebarPanel({ panelRef, overlayRef, onClose }: MobileSidebarPanelProps) {
   return (
     <div className="fixed inset-0 z-90 lg:hidden">

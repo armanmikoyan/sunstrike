@@ -6,7 +6,7 @@ import { config } from "@/infrastructure/config";
  * human-readable output in development.
  */
 export const logger = pino({
-  level: process.env.LOG_LEVEL ?? (config.isProduction() ? "info" : "debug"),
+  level: config.logLevel(),
   ...(config.isProduction()
     ? {}
     : {

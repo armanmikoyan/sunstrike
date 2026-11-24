@@ -1,10 +1,6 @@
-import { mixMediaByKind } from "@/components/media-card/utils";
-import { mediaItems } from "@/mocks/media";
+import { LIBRARY_ITEMS } from "@/components/library-view/constants";
 import { formatUSD } from "@/components/pricing/utils";
 import { formatSeconds } from "./utils";
-
-/** The library is a working slice of the catalogue for the prototype. */
-export const LIBRARY_ITEMS = mixMediaByKind(mediaItems).slice(0, 14);
 
 const VIDEO_SECONDS = LIBRARY_ITEMS.reduce((total, item) => {
   if (!item.duration) return total;

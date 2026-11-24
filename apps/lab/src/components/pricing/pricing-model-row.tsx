@@ -5,7 +5,6 @@ import { PRICING_COPY } from "./constants";
 import { durationRange } from "./utils";
 import type { PricingModelRowProps } from "./types";
 
-/** One catalogue row: model facts on the left, price on the right. */
 export function PricingModelRow({ row }: PricingModelRowProps) {
   const model = row.model;
   const isVideo = row.kind === "video";

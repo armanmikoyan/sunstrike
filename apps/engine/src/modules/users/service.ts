@@ -1,6 +1,6 @@
+import { notFound } from "@/shared/utils";
 import * as repository from "./repository";
 import type { ProvisionUserInput, UserProfile } from "./types";
-import { notFound } from "./utils";
 
 export function getById(id: string): Promise<UserProfile | null> {
   return repository.getById(id);

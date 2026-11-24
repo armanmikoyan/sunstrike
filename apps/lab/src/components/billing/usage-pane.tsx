@@ -1,31 +1,29 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
+import { PaneHeader } from "@/components/pane-header";
 import { Button } from "@/ui/button";
-import { BILLING_COPY, BILLING_TRANSACTIONS } from "./constants";
+import { transactions } from "@/mocks/billing";
+import { BILLING_COPY } from "./constants";
 import { UsageTransactionRow } from "./usage-transaction-row";
 
 export function UsagePane() {
   return (
     <div>
-      <div className="flex items-start justify-between gap-3 border-b border-white/6 px-5 py-4">
-        <div>
-          <h2 className="text-sm lg:text-xs font-medium">{BILLING_COPY.usage.title}</h2>
-          <p className="mt-0.5 text-xs lg:text-[0.6875rem] text-muted-foreground">{BILLING_COPY.usage.description}</p>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 shrink-0 gap-1.5 rounded-lg border border-white/8 px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4 hover:text-foreground"
-        >
-          <Download className="size-3" />
-          {BILLING_COPY.receipts.download}
-        </Button>
-      </div>
+      <PaneHeader
+        title={BILLING_COPY.usage.title}
+        description={BILLING_COPY.usage.description}
+        action={
+          <Button variant="quiet" className="shrink-0 border-white/8">
+            <Download className="size-3" />
+            {BILLING_COPY.receipts.download}
+          </Button>
+        }
+      />
 
       <div className="p-5">
         <div className="min-w-0 rounded-xl border border-white/8 bg-white/1.5">
           <div className="divide-y divide-white/5.5">
-            {BILLING_TRANSACTIONS.map((transaction) => (
+            {transactions.map((transaction) => (
               <UsageTransactionRow key={transaction.id} transaction={transaction} />
             ))}
           </div>

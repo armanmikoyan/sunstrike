@@ -1,11 +1,5 @@
 import { Bell, CreditCard, Gauge, UserRound } from "lucide-react";
-import type { SettingsTab, User } from "./types";
-
-export const CURRENT_USER: User = {
-  id: "usr_01",
-  email: "arman@chronolab.ai",
-  createdAt: "2026-08-14T09:00:00.000Z",
-};
+import type { SettingsTab } from "./types";
 
 export const SETTINGS_NAV: {
   key: SettingsTab;

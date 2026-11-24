@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchMock, routerMock } from "~/vitest.setup";
 import { navigate } from "@/components/auth/utils";
 import { Login } from ".";
-import { loginCopy, loginProviders, RESEND_COOLDOWN_SECONDS, SENDING_PHASE_MS } from "./constants";
+import { OAUTH_PROVIDERS } from "@/app/api/auth/oauth/constants";
+import { loginCopy, RESEND_COOLDOWN_SECONDS, SENDING_PHASE_MS } from "./constants";
 
 vi.mock("@/components/auth/utils", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/components/auth/utils")>();
@@ -513,7 +514,7 @@ describe("login", () => {
     expect(screen.queryByText(loginCopy.tooManyCodes)).not.toBeInTheDocument();
   });
 
-  it.each(loginProviders)("starts %s sign-in and follows the returned URL", async (provider) => {
+  it.each(OAUTH_PROVIDERS)("starts %s sign-in and follows the returned URL", async (provider) => {
     const url = `https://${provider}.example/oauth`;
     fetchMock.mockResolvedValueOnce(json({ url }));
     render(<Login />);
@@ -557,5 +558,13 @@ describe("login", () => {
 
     expect(screen.getByRole("link", { name: loginCopy.terms })).toHaveAttribute("href", "/terms");
     expect(screen.getByRole("link", { name: loginCopy.privacy })).toHaveAttribute("href", "/privacy");
+  });
+
+  it("renders the inactive code step hidden on initial paint without flashing", () => {
+    const { container } = render(<Login />);
+    const codeForm = container.querySelector('form[aria-hidden="true"]');
+
+    expect(codeForm).not.toBeNull();
+    expect(codeForm).toHaveClass("opacity-0", "pointer-events-none");
   });
 });

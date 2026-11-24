@@ -43,8 +43,8 @@ Applied files are recorded in `public.schema_migrations`, so `db:migrate` is
 safe to re-run. Migrations are forward-only: add a new file rather than editing
 one that has already been applied.
 
-Scripts run from the repo root and delegate to the workspace. `typecheck`
-covers both apps; lint, tests and e2e run in `apps/lab`.
+Scripts run from the repo root and delegate to the workspace. `typecheck` and
+`lint` cover both apps; unit tests, coverage and e2e run in `apps/lab`.
 
 ## Structure
 

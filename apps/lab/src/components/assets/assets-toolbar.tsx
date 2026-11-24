@@ -5,7 +5,6 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { ASSETS_COPY, FILTERS } from "./constants";
 import type { AssetsToolbarProps } from "./types";
 
-/** Recent-assets heading, count and the all/image/video filter chips. */
 export function AssetsToolbar({ filter, count, onFilterChange }: AssetsToolbarProps) {
   return (
     <div className="mt-8 flex items-center justify-between">

@@ -22,8 +22,6 @@ export function PromptComposer({ className }: PromptComposerProps) {
         className,
       )}
     >
-      {/* Glass sheen: a soft top light over the frosted panel, under the
-          content so it never washes out the prompt. */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.015)_42%,rgba(255,255,255,0)_72%)]"

@@ -30,7 +30,7 @@ export function AutoTopUpCard() {
             </p>
           </div>
         </div>
-        <Switch checked={enabled} onCheckedChange={setEnabled} />
+        <Switch checked={enabled} onCheckedChange={setEnabled} aria-label={AUTO_TOP_UP_COPY.title} />
       </div>
       <div className={cn("mt-4 grid grid-cols-2 gap-2 transition-opacity", !enabled && "opacity-40")}>
         <div className="rounded-lg border border-white/6 bg-black/15 px-2.5 py-2">

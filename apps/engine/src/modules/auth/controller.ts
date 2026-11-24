@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { badRequest, unauthorized } from "@/shared/utils";
 import * as service from "./service";
 import type {
   CallbackBody,
@@ -9,7 +10,7 @@ import type {
   OtpVerifyBody,
   RefreshBody,
 } from "./types";
-import { badRequest, bearer, unauthorized } from "./utils";
+import { bearer } from "./utils";
 
 export async function sendOtpCode(request: Request, response: Response) {
   const { email } = (request.body ?? {}) as OtpRequestBody;

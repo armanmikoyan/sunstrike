@@ -217,7 +217,6 @@ export const NAV_COPY = {
   clearSearch: "Clear search",
 };
 
-/** Human labels for the notification types the API returns. */
 export const NOTIFICATION_TYPE_LABELS: Record<string, string> = {
   generation_succeeded: "Generation ready",
   generation_failed: "Generation failed",
@@ -225,6 +224,6 @@ export const NOTIFICATION_TYPE_LABELS: Record<string, string> = {
 
 export const NARROW_QUERY = "(max-width: 767px)";
 
-/** Matches the panel's `max-w-280` and keeps a small gutter to the shell edge. */
 export const PANEL_MAX_WIDTH = 1120;
 export const PANEL_GUTTER = 8;
+export const MENU_CLOSE_DELAY_MS = 110;

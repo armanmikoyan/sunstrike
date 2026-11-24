@@ -7,11 +7,6 @@ import { ComposerModelMenu } from "./composer-model-menu";
 import { ComposerSubmit } from "./composer-submit";
 import type { ComposerProps } from "./types";
 
-/**
- * Phones stack the bar into two rows — attachment and model on top, ratio,
- * duration and submit below. From sm up the groups dissolve and every control
- * sits on one line, with the submit at the right end.
- */
 export function ComposerToolbar({ composer }: ComposerProps) {
   return (
     <div className="flex flex-wrap items-center gap-1 px-0.5 pb-0.5">

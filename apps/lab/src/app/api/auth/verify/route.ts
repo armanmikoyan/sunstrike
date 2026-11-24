@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { engineRequest, errorResponse } from "@/app/api/_engine";
-import { setSessionCookies } from "@/app/api/auth/session";
+import { ENGINE_AUTH_PATHS } from "@/app/api/auth/constants";
+import { sessionResponse } from "@/app/api/auth/session";
 import type { AuthSession } from "@/app/api/auth/types";
 
 export async function POST(request: Request) {
@@ -12,15 +13,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "An email and code are required." }, { status: 400 });
   }
 
-  const result = await engineRequest<AuthSession>("/api/v1/auth/verify", {
+  const result = await engineRequest<AuthSession>(ENGINE_AUTH_PATHS.verify, {
     method: "POST",
     body: { email, token },
   });
 
   if (!result.ok) return errorResponse(result);
 
-  const response = NextResponse.json({ user: result.data.user });
-  setSessionCookies(response, result.data);
-
-  return response;
+  return sessionResponse(result.data);
 }

@@ -10,8 +10,6 @@ export function NavSearch() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
-  // Read from the browser instead of setting state in an effect: the server
-  // snapshot keeps hydration quiet, the client snapshot swaps in after mount.
   const shortcut = useShortcutLabel();
   const compact = useCompactNav();
 

@@ -1,8 +1,6 @@
-export const KIND_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "Video", value: "video" },
-  { label: "Image", value: "image" },
-] as const;
+import type { MediaSearchField } from "@/components/media-card/types";
+
+export const EXPLORE_SEARCH_FIELDS: MediaSearchField[] = ["title", "prompt", "model"];
 
 export const EXPLORE_RESULTS_COPY = {
   frame: "frame",

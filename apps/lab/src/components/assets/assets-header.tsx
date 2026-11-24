@@ -14,11 +14,7 @@ export function AssetsHeader({ fileInputRef }: AssetsHeaderProps) {
         title={ASSETS_COPY.title}
         description={ASSETS_COPY.description}
         action={
-          <Button
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            className="h-9 rounded-lg border-white/9 bg-white/1.5 px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4.5 hover:text-foreground"
-          >
+          <Button variant="subtle" size="cta-sm" onClick={() => fileInputRef.current?.click()}>
             <UploadCloud className="size-3.5" />
             {ASSETS_COPY.upload}
           </Button>

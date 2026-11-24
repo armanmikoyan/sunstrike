@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GenerationMode } from "@/components/studio/types";
 import { aspectRatiosFor, durationsFor, getGenerationCost } from "@/components/studio/utils";
-import { modelOptions } from "@/mocks/generation";
 import {
   aspectRatioAtom,
   attachmentAtom,
@@ -13,14 +12,11 @@ import {
   promptAtom,
   selectedModelAtom,
 } from "@/components/studio/state";
-import { useSharedState } from "@/components/studio/hooks";
-import { DEFAULT_MODEL, PROMPT_IDEAS } from "./constants";
+import { useSelectedModel, useSharedState } from "@/components/studio/hooks";
+import { STUDIO_MODELS } from "@/components/studio/constants";
+import { PROMPT_IDEAS } from "./constants";
 import type { TypingOptions } from "./types";
 
-/**
- * Types a word, pauses, deletes it, moves on. Returns the text to render;
- * the caller decides whether it is a placeholder or real content.
- */
 export function useTypingCycle(
   words: readonly string[],
   { typeSpeed = 24, deleteSpeed = 10, pauseDuration = 1200 }: TypingOptions = {},
@@ -60,7 +56,6 @@ export function useTypingCycle(
   return text;
 }
 
-/** Every atom and derived value the composer needs, plus its two actions. */
 export function usePromptComposer() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,27 +66,15 @@ export function usePromptComposer() {
   const [duration, setDuration] = useSharedState(durationAtom);
   const [attachment, setAttachment] = useSharedState(attachmentAtom);
 
-  const activeModels = modelOptions[mode];
-  const selectedModel = activeModels.find((item) => item.displayName === model) ?? activeModels[0];
+  const { activeModels, selectedModel } = useSelectedModel(mode);
   const cost = getGenerationCost(mode, selectedModel, duration);
   const aspectOptions = aspectRatiosFor(selectedModel);
   const durationOptions = durationsFor(selectedModel);
   const typedPlaceholder = useTypingCycle(PROMPT_IDEAS[mode]);
 
-  // Model capabilities define which settings are legal.
-  useEffect(() => {
-    const caps = selectedModel.capabilities;
-    if (!caps.aspectRatios.includes(aspect)) {
-      setAspect(caps.aspectRatios[0]);
-    }
-    if (caps.durations.length > 0 && !caps.durations.includes(duration)) {
-      setDuration(caps.durations[0]);
-    }
-  }, [selectedModel, aspect, duration, setAspect, setDuration]);
-
   const switchMode = (next: GenerationMode) => {
     setMode(next);
-    setModel(DEFAULT_MODEL[next]);
+    setModel(STUDIO_MODELS[next].create);
   };
 
   const submit = () => {

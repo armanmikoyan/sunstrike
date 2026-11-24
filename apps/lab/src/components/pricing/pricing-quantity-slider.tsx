@@ -1,62 +1,20 @@
 "use client";
 
-import { useRef, type PointerEvent as ReactPointerEvent } from "react";
-import { Slider } from "@/ui/slider";
 import { cn } from "cn";
+import { Slider } from "@/ui/slider";
 import { PERSPECTIVE, RADIUS, ROTATION_SPAN, SCALE_STYLES, TICK_COUNT, TICK_STEP } from "./constants";
-import type { QuantitySliderProps, SliderDrag } from "./types";
+import { useDrumDrag } from "./hooks";
+import type { QuantitySliderProps } from "./types";
 
-/**
- * A 3D drum of ticks that loops around a cylinder. The caret stays fixed at
- * the centre while the drum rotates under it; dragging the surface moves it
- * 1:1 with the pointer, so pulling right uncovers lower values from the left.
- */
 export function QuantitySlider({ value, min, max, onValueChange, ariaLabel, className }: QuantitySliderProps) {
-  const dragRef = useRef<SliderDrag | null>(null);
+  const { handlePointerDown, handlePointerMove, endDrag, clearDrag } = useDrumDrag({
+    value,
+    min,
+    max,
+    onValueChange,
+  });
 
-  const progress = (value - min) / (max - min);
-  const rotation = -progress * ROTATION_SPAN;
-
-  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || !event.isPrimary) return;
-
-    const root = event.currentTarget;
-    const slider = root.querySelector<HTMLElement>('[role="slider"]');
-
-    dragRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startValue: value,
-      travel: Math.max(1, root.getBoundingClientRect().width),
-    };
-
-    root.setPointerCapture(event.pointerId);
-    slider?.focus({ preventScroll: true });
-
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-
-    const delta = event.clientX - drag.startX;
-    const next = Math.round(drag.startValue - (delta / drag.travel) * (max - min));
-
-    onValueChange(Math.min(max, Math.max(min, next)));
-    event.preventDefault();
-  };
-
-  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-
-    dragRef.current = null;
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  };
+  const rotation = -((value - min) / (max - min)) * ROTATION_SPAN;
 
   return (
     <div
@@ -64,9 +22,7 @@ export function QuantitySlider({ value, min, max, onValueChange, ariaLabel, clas
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      onLostPointerCapture={() => {
-        dragRef.current = null;
-      }}
+      onLostPointerCapture={clearDrag}
       style={{ perspective: `${PERSPECTIVE}px` }}
       className={cn(
         "group relative flex h-8 w-full cursor-grab touch-none select-none items-center overflow-hidden active:cursor-grabbing mask-[linear-gradient(to_right,transparent,black_14%,black_86%,transparent)]",

@@ -1,7 +1,3 @@
-/**
- * Placeholder for the studio shell while the route's `mode` param streams in.
- * It mirrors the real frame so the panels do not jump when the studio mounts.
- */
 export function StudioSkeleton() {
   return (
     <div

@@ -1,17 +1,10 @@
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
-import { cookieOptions } from "@/app/api/auth/constants";
+import { cookieOptions, safeNext } from "@/app/api/auth/utils";
 import { OAUTH_COOKIE, OAUTH_MAX_AGE } from "./constants";
 import type { OAuthCookie } from "./types";
 
-export function safeNext(value: unknown): string {
-  if (typeof value !== "string") return "/";
-  if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return "/";
-
-  return value;
-}
-
-export function parseOAuthCookie(value: string | undefined): OAuthCookie | null {
+function parseOAuthCookie(value: string | undefined): OAuthCookie | null {
   if (!value) return null;
 
   try {

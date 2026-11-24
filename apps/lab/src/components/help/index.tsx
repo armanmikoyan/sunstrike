@@ -16,11 +16,7 @@ export function Help() {
         title={HELP_COPY.title}
         description={HELP_COPY.description}
         action={
-          <Button
-            asChild
-            variant="outline"
-            className="h-9 rounded-lg border-white/9 bg-white/1.5 px-3 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/4.5 hover:text-foreground"
-          >
+          <Button asChild variant="subtle" size="cta-sm">
             <Link href={`mailto:${SUPPORT_EMAIL}`}>
               <Mail className="size-3.5" />
               {HELP_COPY.contactSupport}

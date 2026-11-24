@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { engineRequest, errorResponse } from "@/app/api/_engine";
-import { safeNext, setOAuthCookie } from "./cookies";
+import { ENGINE_AUTH_PATHS } from "@/app/api/auth/constants";
+import { safeNext } from "@/app/api/auth/utils";
+import { setOAuthCookie } from "./cookies";
 import { OAUTH_PROVIDERS } from "./constants";
 import type { OAuthProvider, OAuthStart } from "./types";
 
@@ -13,7 +15,7 @@ export async function startOAuth(request: NextRequest, provider: OAuthProvider) 
   const next = safeNext(body?.next);
   const redirectTo = `${request.nextUrl.origin}/api/auth/callback`;
 
-  const result = await engineRequest<OAuthStart>(`/api/v1/auth/${provider}`, {
+  const result = await engineRequest<OAuthStart>(ENGINE_AUTH_PATHS.oauth[provider], {
     method: "POST",
     body: { redirectTo },
   });

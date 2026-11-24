@@ -4,11 +4,6 @@ import { LEGAL_COPY } from "./constants";
 import { LegalContents } from "./legal-contents";
 import type { LegalDocumentViewProps } from "./types";
 
-/**
- * One long-form legal page: a header with the revision date, the sections
- * themselves and a sticky contents rail from `lg` up. The rail is hidden on
- * phones, where the sections already read top to bottom.
- */
 export function LegalDocumentView({ document }: LegalDocumentViewProps) {
   return (
     <PageShell>

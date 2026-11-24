@@ -3,12 +3,10 @@ import type { MediaKind } from "@/components/media-card/types";
 import type { FieldProps } from "@/components/settings/types";
 import type { useStudio } from "./hooks";
 
-/** The two studio surfaces the UI exposes. */
 export type GenerationMode = MediaKind;
 
 export type ModelInputKind = "image" | "video" | "audio";
 
-/** Model capability row used by the mock catalog until /api/v1/models exists. */
 export type GenerationModelCapabilities = {
   modes: GenerationMode[];
   inputs: ModelInputKind[];
@@ -28,7 +26,6 @@ export type GenerationModel = {
   isEnabled: boolean;
 };
 
-/** 02 Core entities — `templates`. */
 export type Template = {
   id: string;
   sourceAssetId: string;
@@ -37,11 +34,6 @@ export type Template = {
   createdAt: string;
 };
 
-/**
- * A model row plus the price the UI quotes. `cost` is not a column in the
- * `generation_models` table; it comes from the pricing source, and the whole
- * option list is supplied by `src/mocks` until `GET /api/v1/models` is wired.
- */
 export type ModelOption = GenerationModel & { cost: number };
 
 export type StudioHeaderProps = {

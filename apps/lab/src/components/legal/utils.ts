@@ -1,10 +1,5 @@
 import { ACTIVATION_OFFSET, MIN_GAP } from "./constants";
 
-/**
- * Scroll positions at which each section becomes active. Positions are pushed
- * backwards until every item has at least `MIN_GAP` of scroll. The first item
- * always owns the top of the page.
- */
 export function activationTargets(tops: number[], maxScroll: number, offset = ACTIVATION_OFFSET) {
   const targets = tops.map((top) => Math.max(0, top - offset));
   if (targets.length === 0) return targets;

@@ -12,11 +12,26 @@ export function useIsActive() {
   };
 }
 
-/**
- * Drawer lifecycle: keep the panel mounted through its exit animation, run the
- * explicit keyframes, close on route change or desktop width, and lock the
- * page behind it.
- */
+export function useDismiss(ref: RefObject<HTMLElement | null>, open: boolean, onDismiss: () => void) {
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!ref.current?.contains(event.target as Node)) onDismiss();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onDismiss();
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [ref, open, onDismiss]);
+}
+
 export function useMobileSidebarDrawer(
   open: boolean,
   onOpenChange: (open: boolean) => void,
@@ -29,26 +44,19 @@ export function useMobileSidebarDrawer(
   const wasOpen = useRef(open);
   const [rendered, setRendered] = useState(open);
 
-  // Mount during render when it opens: that keeps the panel in the same commit
-  // as the trigger, so the opening keyframes are never skipped.
   if (open && !rendered) {
     setRendered(true);
   }
 
-  // A short buzz confirms the drawer opening or closing. Devices without a
-  // vibration motor (and Safari) simply ignore it.
   useEffect(() => {
     if (wasOpen.current === open) return;
     wasOpen.current = open;
 
     try {
       navigator.vibrate?.(open ? 12 : 8);
-    } catch {
-      // Vibration is a nicety; never let it break the drawer.
-    }
+    } catch {}
   }, [open]);
 
-  // Stay mounted through the exit animation, then drop the panel.
   useEffect(() => {
     if (open) return;
 
@@ -56,8 +64,6 @@ export function useMobileSidebarDrawer(
     return () => window.clearTimeout(timer);
   }, [open]);
 
-  // Explicit keyframes: they always start from off-screen, so the motion is
-  // never collapsed into the first paint the way a CSS transition can be.
   useEffect(() => {
     const panel = panelRef.current;
     const overlay = overlayRef.current;
@@ -79,8 +85,6 @@ export function useMobileSidebarDrawer(
     overlay.animate(open ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }], timing);
   }, [open, rendered]);
 
-  // Close only when the route actually changes, not on mount or when the
-  // parent hands us a fresh callback.
   useEffect(() => {
     if (lastPathname.current === pathname) return;
     lastPathname.current = pathname;

@@ -9,7 +9,6 @@ export const AUTH_COPY = {
   signingOutDetail: "Closing your session.",
 } as const;
 
-/** Keep the sign-out overlay up at least this long so the action is visible. */
 export const SIGN_OUT_MIN_MS = 800;
 
 export const GOOGLE_ONE_TAP_OPTIONS = {

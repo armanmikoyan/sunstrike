@@ -1,4 +1,6 @@
 export type MediaKind = "video" | "image";
+export type MediaFilter = "all" | MediaKind;
+export type MediaSearchField = "title" | "prompt" | "model";
 export type MediaCategory = "Portrait" | "Fashion" | "Abstract" | "City" | "Nature" | "Space" | "Cinematic";
 
 export type MediaItem = {

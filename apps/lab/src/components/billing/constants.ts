@@ -1,61 +1,12 @@
-import { ArrowDownToLine, Coins, Film, Image as ImageIcon } from "lucide-react";
+import { ArrowDownToLine, Coins, Film, Image as ImageIcon, type LucideIcon } from "lucide-react";
+import type { UsageTransactionKind } from "./types";
 
-export const BILLING_TRANSACTIONS = [
-  {
-    id: "txn_20931",
-    title: "Chronolab Motion 2 · After Rain",
-    detail: "Video generation · 6s · 1080p",
-    date: "Today, 14:32",
-    amount: "−$0.51",
-    status: "Completed",
-    icon: Film,
-  },
-  {
-    id: "txn_20930",
-    title: "Chronolab Image Pro · Soft Object",
-    detail: "Image generation · 2 MP",
-    date: "Today, 14:08",
-    amount: "−$0.12",
-    status: "Completed",
-    icon: ImageIcon,
-  },
-  {
-    id: "txn_20929",
-    title: "Balance top-up",
-    detail: "Studio pack · Visa ending 4242",
-    date: "Oct 27, 09:12",
-    amount: "+$25.00",
-    status: "Paid",
-    icon: Coins,
-  },
-  {
-    id: "txn_20928",
-    title: "Chronolab Motion Turbo · Orbit study",
-    detail: "Video generation · 4s · 720p",
-    date: "Oct 27, 08:44",
-    amount: "−$0.34",
-    status: "Completed",
-    icon: Film,
-  },
-  {
-    id: "txn_20927",
-    title: "Failed generation refund",
-    detail: "Chronolab Motion 2 · automatic refund",
-    date: "Oct 26, 19:03",
-    amount: "+$0.51",
-    status: "Refunded",
-    icon: ArrowDownToLine,
-  },
-  {
-    id: "txn_20926",
-    title: "Balance top-up",
-    detail: "Starter pack · Visa ending 4242",
-    date: "Oct 18, 12:21",
-    amount: "+$10.00",
-    status: "Paid",
-    icon: Coins,
-  },
-];
+export const TRANSACTION_ICONS: Record<UsageTransactionKind, LucideIcon> = {
+  video: Film,
+  image: ImageIcon,
+  "top-up": Coins,
+  refund: ArrowDownToLine,
+};
 
 export const BILLING_COPY = {
   title: "Billing",
@@ -64,7 +15,6 @@ export const BILLING_COPY = {
   balance: {
     label: "Available balance",
     tag: "PAYG",
-    value: "$10.54",
     currency: "USD",
     note: "Never expires",
   },

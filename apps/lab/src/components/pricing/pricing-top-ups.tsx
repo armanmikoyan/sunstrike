@@ -9,10 +9,6 @@ import { PricingCustomTopUp } from "./pricing-custom-top-up";
 import { PricingTopUpPacks } from "./pricing-top-up-packs";
 import type { PricingTopUpsProps } from "./types";
 
-/**
- * The preset tiles and the custom amount are one control: picking a tile sets
- * the amount in the bar below, and the bar keeps the matching tile selected.
- */
 export function PricingTopUps({ videoModels, imageModels }: PricingTopUpsProps) {
   const popular = topUpPacks.find((pack) => pack.popular) ?? topUpPacks[0];
   const [amount, setAmount] = useState(popular.price);

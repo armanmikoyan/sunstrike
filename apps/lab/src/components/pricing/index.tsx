@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { PageShell } from "@/ui/page-shell";
 import { Button } from "@/ui/button";
+import { CheckList } from "@/ui/check-list";
 import { imageRates, videoRates } from "@/mocks/pricing";
 import { PRICING_COPY, PRICING_POINTS } from "./constants";
 import { PricingFaq } from "./pricing-faq";
@@ -23,14 +24,7 @@ export function Pricing() {
           <p className="mt-4 max-w-144 text-[0.9375rem] leading-relaxed text-muted-foreground">
             {PRICING_COPY.hero.description}
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-4">
-            {PRICING_POINTS.map((item) => (
-              <span key={item} className="flex items-center gap-1.5 text-xs lg:text-[0.6875rem] text-muted-foreground">
-                <Check className="size-3.5 text-muted-foreground" />
-                {item}
-              </span>
-            ))}
-          </div>
+          <CheckList items={PRICING_POINTS} className="mt-5 items-center" />
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
@@ -40,11 +34,7 @@ export function Pricing() {
               <ArrowRight className="size-3.5" />
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-10 rounded-lg border-white/10 bg-transparent px-4 text-xs lg:text-[0.6875rem] text-foreground hover:bg-white/4"
-          >
+          <Button asChild variant="line" size="cta">
             <a href="#model-rates">{PRICING_COPY.hero.secondaryAction}</a>
           </Button>
         </div>

@@ -1,9 +1,10 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 import { logger } from "@/infrastructure/logger";
-import { httpError, messageOf, statusOf } from "./utils";
+import { notFound as notFoundError } from "@/shared/utils";
+import { messageOf, statusOf } from "./utils";
 
 export const notFound: RequestHandler = (_request, _response, next) => {
-  next(httpError(404, "Not found"));
+  next(notFoundError("Not found"));
 };
 
 export const errorHandler: ErrorRequestHandler = (error, _request, response, next) => {

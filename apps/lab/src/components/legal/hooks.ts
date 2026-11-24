@@ -5,11 +5,6 @@ import { SCROLL_KEYS } from "./constants";
 import type { ContentsSection } from "./types";
 import { activationTargets } from "./utils";
 
-/**
- * Scroll spy for the contents rail. A clicked item wins until the reader
- * scrolls again: the final sections cannot reach the reading line, so without
- * the lock the spy would immediately replace the click with the last item.
- */
 export function useActiveSection(sections: ContentsSection[]) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? "");
   const lockRef = useRef(false);
@@ -53,8 +48,6 @@ export function useActiveSection(sections: ContentsSection[]) {
       if (SCROLL_KEYS.has(event.key)) unlock();
     };
 
-    // The first read waits a frame so the browser has finished laying out
-    // (and applying any hash jump) before positions are measured.
     schedule();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);

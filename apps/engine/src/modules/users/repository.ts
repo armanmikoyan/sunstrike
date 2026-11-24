@@ -36,9 +36,3 @@ export async function syncEmail(id: string, email: string): Promise<void> {
 export async function syncAvatar(id: string, avatarUrl: string): Promise<void> {
   await query("update users set avatar_url = $2 where id = $1 and avatar_url is null", [id, avatarUrl]);
 }
-
-export async function updateEmail(id: string, email: string): Promise<UserProfile | null> {
-  const rows = await query<UserRow>(`update users set email = $2 where id = $1 returning ${columns}`, [id, email]);
-
-  return rows[0] ? mapUserRow(rows[0]) : null;
-}

@@ -1,6 +1,5 @@
 import type { ProviderIconProps } from "./types";
 
-/** Brand marks keep their official colours; only GitHub's mark is monochrome. */
 export function ProviderIcon({ provider, className }: ProviderIconProps) {
   if (provider === "google") {
     return (

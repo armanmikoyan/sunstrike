@@ -6,11 +6,6 @@ import { cn } from "cn";
 import { INSTANT_TRANSITION, LAYOUT_SPRING } from "@/motion/constants";
 import type { AnimatedHeightProps } from "./types";
 
-/**
- * Wraps content whose height changes when its children swap. The inner box is
- * measured with a ResizeObserver and the outer frame springs to that height, so
- * surrounding content glides instead of snapping.
- */
 export function AnimatedHeight({ children, className }: AnimatedHeightProps) {
   const innerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | null>(null);

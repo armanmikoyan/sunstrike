@@ -1,26 +1,20 @@
 import type { RefObject } from "react";
-import type { MediaKind } from "@/components/media-card/types";
-import type { ASSETS } from "./constants";
-
-export type Filter = "all" | MediaKind;
-
-export type Asset = (typeof ASSETS)[number];
+import type { MediaFilter, MediaItem } from "@/components/media-card/types";
 
 export type AssetsHeaderProps = {
   fileInputRef: RefObject<HTMLInputElement | null>;
 };
 
 export type AssetsToolbarProps = {
-  filter: Filter;
+  filter: MediaFilter;
   count: number;
-  onFilterChange: (filter: Filter) => void;
+  onFilterChange: (filter: MediaFilter) => void;
 };
 
 export type AssetsGridProps = {
-  assets: Asset[];
-  reduceMotion: boolean | null;
+  assets: MediaItem[];
 };
 
 export type AssetTileProps = {
-  asset: Asset;
+  asset: MediaItem;
 };

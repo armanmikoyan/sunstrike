@@ -4,7 +4,6 @@ import { topUpPacks } from "@/mocks/pricing";
 import { PricingTopUpPack } from "./pricing-top-up-pack";
 import type { PricingTopUpPacksProps } from "./types";
 
-/** Preset tiles; the closest one to the current amount stays selected. */
 export function PricingTopUpPacks({ amount, onSelect }: PricingTopUpPacksProps) {
   const activeIndex = topUpPacks.reduce(
     (closest, pack, index) =>

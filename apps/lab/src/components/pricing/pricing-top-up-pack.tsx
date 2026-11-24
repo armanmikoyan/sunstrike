@@ -5,7 +5,6 @@ import { cn } from "cn";
 import { PRICING_COPY } from "./constants";
 import type { PricingTopUpPackProps } from "./types";
 
-/** One preset amount tile; the selected tile carries the pack's own accent. */
 export function PricingTopUpPack({ pack, selected, onSelect }: PricingTopUpPackProps) {
   return (
     <button

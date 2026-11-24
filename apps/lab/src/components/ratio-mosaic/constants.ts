@@ -1,4 +1,3 @@
-/** Grid placement per tile, tuned so the mosaic keeps its rhythm on desktop. */
 export const MOSAIC_TILES = [
   {
     id: "09",

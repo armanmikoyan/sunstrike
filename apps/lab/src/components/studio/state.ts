@@ -1,14 +1,6 @@
 import { atom } from "jotai";
 import type { GenerationMode } from "./types";
 
-/**
- * Generation state owned by the studio. The home prompt composer is a compact
- * front door to the same settings, so it reads these atoms directly.
- *
- * The atoms map to `POST /api/v1/generations`:
- * prompt, model, settings (aspectRatio, duration, resolution, audio),
- * optional templateId and the reference input.
- */
 export const modeAtom = atom<GenerationMode>("video");
 export const promptAtom = atom("");
 export const selectedModelAtom = atom("Chronolab Motion 2");

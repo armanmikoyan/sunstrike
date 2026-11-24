@@ -7,7 +7,6 @@ import { CTA_BEVEL, SIDEBAR_COPY } from "./constants";
 import { RailTooltip } from "./rail-tooltip";
 import type { SidebarNewGenerationProps } from "./types";
 
-/** The solid brand key above the main navigation. */
 export function SidebarNewGeneration({ expanded, showToggle, onNavigate }: SidebarNewGenerationProps) {
   return (
     <RailTooltip expanded={expanded} label={SIDEBAR_COPY.newGeneration}>

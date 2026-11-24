@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { engineRequest } from "@/app/api/_engine";
+import { ENGINE_AUTH_PATHS } from "@/app/api/auth/constants";
 import { clearOAuthCookie, readOAuthCookie } from "@/app/api/auth/oauth/cookies";
 import { setSessionCookies } from "@/app/api/auth/session";
 import type { AuthSession } from "@/app/api/auth/types";
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
   if (error || !oauth) return redirectToLogin(request, "callback", oauth?.next);
   if (!code) return redirectToLogin(request, "callback", oauth.next);
 
-  const result = await engineRequest<AuthSession>("/api/v1/auth/callback", {
+  const result = await engineRequest<AuthSession>(ENGINE_AUTH_PATHS.callback, {
     method: "POST",
     body: {
       code,

@@ -1,6 +1,7 @@
 import type { RequestHandler } from "express";
+import { unauthorized } from "@/shared/utils";
 import { ensureUser, verify } from "./service";
-import { bearer, unauthorized } from "./utils";
+import { bearer } from "./utils";
 
 /**
  * Read the bearer token, validate the Supabase session, ensure its subject has

@@ -2,18 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  FADE_MS,
-  MAX_PROGRESS_MS,
-  MIN_VISIBLE_MS,
-  TRICKLE_MS,
-} from "./constants";
+import { FADE_MS, MAX_PROGRESS_MS, MIN_VISIBLE_MS, TRICKLE_MS } from "./constants";
 
-/**
- * Owns the bar's state machine: click (or popstate / explicit event) starts a
- * trickle, a completed route change finishes it, and a safety timer guarantees
- * the bar never sticks if a navigation dies.
- */
 export function useNavigationProgress() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
@@ -71,9 +61,7 @@ export function useNavigationProgress() {
     setVisible(true);
     setProgress(10);
     trickle.current = window.setInterval(() => {
-      setProgress((value) =>
-        Math.min(90, value + Math.max(1, (90 - value) * 0.08)),
-      );
+      setProgress((value) => Math.min(90, value + Math.max(1, (90 - value) * 0.08)));
     }, TRICKLE_MS);
     safety.current = window.setTimeout(finish, MAX_PROGRESS_MS);
   }, [finish]);
@@ -114,10 +102,7 @@ export function useNavigationProgress() {
       if (!href || !href.startsWith("/") || href.startsWith("//")) return;
 
       const next = new URL(href, window.location.href);
-      if (
-        next.pathname === window.location.pathname &&
-        next.search === window.location.search
-      ) {
+      if (next.pathname === window.location.pathname && next.search === window.location.search) {
         return;
       }
 
