@@ -1,5 +1,5 @@
-import { logger } from "@/infrastructure/logger";
-import * as supabase from "@/infrastructure/supabase";
+import { logger } from "@/infra/logger";
+import * as supabase from "@/infra/supabase";
 import { users } from "@/modules/users";
 import type { AuthSession, AuthSubject, OAuthProvider, OAuthStart, SessionUser } from "./types";
 import { toAuthSubject, toSessionUser } from "./utils";

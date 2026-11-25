@@ -30,6 +30,7 @@ mounts every module, `main.ts` serves HTTP, and `worker.ts` runs background jobs
 | --------------- | --------------------------------------------------------------------------------------- |
 | `auth`          | Supabase session and API-token verification, sign-in flows, `requireAuth`               |
 | `users`         | Application user profiles and account details                                           |
+| `health`        | Runtime health check (`/health`) probing engine and database status                     |
 | `catalog`       | Models, capabilities, `active` enable/disable, Runware mappings and synced costs, Redis |
 | `pricing`       | Selling prices (`model_prices`), markups, discounts, public rates and stateless quotes  |
 | `billing`       | Balances, top-ups (Lemon Squeezy), reserve/capture/release, refunds; no pricing deps    |
@@ -95,7 +96,7 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
   Cross-module consistency comes from compensation or events, never from a
   transaction that spans boundaries.
 - **Keep the shared kernel small.** Cross-cutting technical code lives in
-  `infrastructure`, `middleware` and `shared`; domain helpers stay inside
+  `infra`, `middleware` and `shared`; domain helpers stay inside
   their module. `shared/types.ts` and `shared/utils.ts` hold the types and
   helpers every module uses, such as the HTTP errors; `middleware` holds only
   request middleware and its own helpers.
@@ -103,9 +104,12 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
 
 ### Infrastructure
 
-`src/infrastructure` is the only place a database, cache, queue or storage
-client is created or imported. A strict boundary is what makes later extraction
-cheap; the monolith stays one deployment either way.
+`src/infra` is the only place a database, cache, queue or storage
+client is created or imported. `src/infra/index.ts` owns startup
+connection, shutdown and health probing (`connectInfra`, `disconnectInfra`,
+`checkInfraHealth`), so `app.ts` only wires middleware and module routers and
+`main.ts` only starts the server. A strict boundary is what makes later
+extraction cheap; the monolith stays one deployment either way.
 
 ## Lab
 

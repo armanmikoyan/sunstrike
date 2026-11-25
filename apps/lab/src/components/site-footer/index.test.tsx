@@ -5,14 +5,8 @@ import { SiteFooter } from ".";
 describe("site footer", () => {
   it("links to the studio areas", () => {
     render(<SiteFooter />);
-    expect(screen.getByRole("link", { name: /Video studio/ })).toHaveAttribute(
-      "href",
-      "/create/video",
-    );
-    expect(screen.getByRole("link", { name: /Billing/ })).toHaveAttribute(
-      "href",
-      "/settings/billing",
-    );
+    expect(screen.getByRole("link", { name: /Video studio/ })).toHaveAttribute("href", "/create/video");
+    expect(screen.getByRole("link", { name: /Billing/ })).toHaveAttribute("href", "/settings/billing");
   });
 
   it("does not promise credits that expire", () => {

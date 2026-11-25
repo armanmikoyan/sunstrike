@@ -31,7 +31,7 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 - Express app, middleware, error handling, health route and module routers as
   stubs.
-- Configuration through `infrastructure/config`; the build passes with and
+- Configuration through `infra/config`; the build passes with and
   without env.
 - Database migrations: one baseline SQL file, a `schema_migrations` ledger and
   the `db:migrate` script.
@@ -40,8 +40,11 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   and a sticky provider avatar — stored by the first identity that offers one,
   never swapped by a later provider.
 - Auth API: email OTP, session, refresh, sign-out and Google and GitHub OAuth on
-  the auth module; Supabase stays in `infrastructure/supabase`. Email templates
+  the auth module; Supabase stays in `infra/supabase`. Email templates
   send `{{ .Token }}` at a 6-digit OTP length, matching the login boxes.
+- Catalog: `generation_models` migration with 9 seeded models,
+  `GET /api/v1/models` and `GET /api/v1/models/:id` (with `?mode=video|image`),
+  shared capability validation, and abstract `CatalogProviderAdapter` sync.
 
 ### Blocked
 
@@ -61,10 +64,8 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Catalog and media
 
-- **Models and templates.** Seeded models with `active` enable/disable,
-  capabilities, Runware mappings and synced upstream costs; `/models` returns
-  active rows; `/templates` returns options; Redis cache with TTL and
-  invalidation.
+- **Templates.** Seeded templates and customisation options; `GET /templates`
+  and `GET /templates/{id}` return active rows.
 - **Uploads.** `POST /assets/uploads` returns a signed Supabase Storage upload
   URL; `/complete` records the kind.
 - **Assets.** `GET /assets/{id}` returns metadata and a short-lived URL; a
@@ -126,6 +127,8 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Hardening
 
+- **Catalog caching.** Add Redis cache-aside in `infra/cache` with TTL and
+  invalidation on catalog edits as an optimization pass.
 - **Performance.** p95 under 1s at target load, measured in CI.
 - **Authorisation.** Every route tested as owner, other user and anonymous;
   foreign ids 404.

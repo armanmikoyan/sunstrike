@@ -2,7 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Client } from "pg";
-import { config } from "@/infrastructure/config";
+import { config } from "@/infra/config";
 
 const migrationsDirectory = fileURLToPath(new URL("../supabase/migrations", import.meta.url));
 

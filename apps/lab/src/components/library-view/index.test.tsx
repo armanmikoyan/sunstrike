@@ -19,19 +19,14 @@ describe("library view", () => {
     await userEvent.click(screen.getByRole("tab", { name: "Video" }));
     const visible = cards();
     expect(visible.length).toBeLessThan(libraryCount);
-    expect(
-      screen.queryByText(/^Image$/, { selector: "span" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Image$/, { selector: "span" })).not.toBeInTheDocument();
   });
 
   it("filters to images", async () => {
     render(<LibraryView />);
     await userEvent.click(screen.getByRole("tab", { name: "Image" }));
     expect(cards().length).toBeGreaterThan(0);
-    expect(screen.getByRole("tab", { name: "Image" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    expect(screen.getByRole("tab", { name: "Image" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("narrows by search text", async () => {
@@ -45,15 +40,10 @@ describe("library view", () => {
 
   it("shows an empty state when nothing matches", async () => {
     render(<LibraryView />);
-    await userEvent.type(
-      screen.getByPlaceholderText("Search your library"),
-      "zzzzzz-no-match",
-    );
+    await userEvent.type(screen.getByPlaceholderText("Search your library"), "zzzzzz-no-match");
 
     expect(screen.queryAllByRole("article")).toHaveLength(0);
     expect(screen.getByText("Nothing here yet")).toBeInTheDocument();
-    expect(
-      screen.getByText("Generate a frame or clear your search."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Generate a frame or clear your search.")).toBeInTheDocument();
   });
 });

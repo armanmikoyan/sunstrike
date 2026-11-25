@@ -1,22 +1,14 @@
 import { Pool, type PoolClient } from "pg";
-import { config } from "@/infrastructure/config";
-import { logger } from "@/infrastructure/logger";
+import { config } from "@/infra/config";
+import { logger } from "@/infra/logger";
 import type { Row, Transaction } from "./types";
+import { poolOptions } from "./utils";
 
 let pool: Pool | undefined;
 
 function connection(): Pool {
   if (!pool) {
-    pool = new Pool({
-      connectionString: config.databaseUrl(),
-      // The Supabase pooler reaps idle sessions on its own schedule. Holding a
-      // minimum connection open means the pooler eventually resets it under us,
-      // so let the pool retire idle clients first and reconnect on demand.
-      min: 0,
-      idleTimeoutMillis: 30_000,
-      keepAlive: true,
-      connectionTimeoutMillis: 5000,
-    });
+    pool = new Pool(poolOptions(config.databaseUrl()));
     pool.on("error", (error) => {
       logger.warn({ err: error }, "Idle database connection was dropped");
     });
@@ -30,8 +22,6 @@ async function run<T>(client: Pool | PoolClient, text: string, values: unknown[]
 
   return result.rows;
 }
-
-export type { Row, Transaction } from "./types";
 
 export function query<T = Row>(text: string, values: unknown[] = []): Promise<T[]> {
   return run<T>(connection(), text, values);
@@ -47,6 +37,15 @@ export async function connect(): Promise<void> {
 /** Round-trip a trivial query so callers can report real connectivity. */
 export async function ping(): Promise<void> {
   await query("select 1");
+}
+
+/** Close the database pool on shutdown. */
+export async function disconnect(): Promise<void> {
+  if (!pool) return;
+
+  const active = pool;
+  pool = undefined;
+  await active.end();
 }
 
 function scoped(client: PoolClient): Transaction {

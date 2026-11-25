@@ -1,21 +1,25 @@
-import { app } from "./app";
-import { config } from "@/infrastructure/config";
-import { connect } from "@/infrastructure/database";
-import { logger } from "@/infrastructure/logger";
+import { createApp } from "./app";
+import { connectInfra, disconnectInfra } from "@/infra";
+import { config } from "@/infra/config";
+import { logger } from "@/infra/logger";
 
-async function main(): Promise<void> {
+async function startServer(): Promise<void> {
+  await connectInfra();
+
+  const app = createApp();
   const port = config.port();
-
-  try {
-    await connect();
-    logger.info("Database connected");
-  } catch (error) {
-    logger.error({ err: error }, "Database connection failed");
-  }
-
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     logger.info(`Engine listening on http://localhost:${port}`);
   });
+
+  const shutdown = () => {
+    server.close(() => {
+      disconnectInfra();
+    });
+  };
+
+  process.once("SIGINT", shutdown);
+  process.once("SIGTERM", shutdown);
 }
 
-await main();
+await startServer();

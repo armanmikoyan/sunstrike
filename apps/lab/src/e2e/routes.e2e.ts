@@ -1,10 +1,5 @@
 import { expect, test } from "@playwright/test";
-import {
-  appRoutes,
-  collectErrors,
-  expectNoHorizontalOverflow,
-  openApp,
-} from "./helpers";
+import { appRoutes, collectErrors, expectNoHorizontalOverflow, openApp } from "./helpers";
 
 test.describe("routes", () => {
   for (const route of appRoutes) {
@@ -17,9 +12,7 @@ test.describe("routes", () => {
       await expect(page.locator("main")).toBeVisible();
 
       if ("heading" in route) {
-        await expect(
-          page.getByRole("heading", { level: 1, name: route.heading }),
-        ).toBeVisible();
+        await expect(page.getByRole("heading", { level: 1, name: route.heading })).toBeVisible();
       }
 
       await expectNoHorizontalOverflow(page);
@@ -27,18 +20,12 @@ test.describe("routes", () => {
     });
   }
 
-  test("home opens with the prompt composer over the wall", async ({
-    page,
-  }) => {
+  test("home opens with the prompt composer over the wall", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
-    await expect(
-      page.getByRole("button", { name: "Start generation" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("textbox", { name: "Describe your generation" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Start generation" })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Describe your generation" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     expect(errors).toEqual([]);
   });
@@ -48,9 +35,7 @@ test.describe("routes", () => {
     await page.goto("/create/video", { waitUntil: "domcontentloaded" });
 
     await expect(page.getByText("Video Studio")).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Generate video" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Generate video" })).toBeVisible();
     expect(errors).toEqual([]);
   });
 
@@ -59,9 +44,7 @@ test.describe("routes", () => {
     await page.goto("/create/image", { waitUntil: "domcontentloaded" });
 
     await expect(page.getByText("Image Studio")).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Generate image" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Generate image" })).toBeVisible();
     expect(errors).toEqual([]);
   });
 
@@ -69,12 +52,8 @@ test.describe("routes", () => {
     const errors = collectErrors(page);
     await page.goto("/login", { waitUntil: "domcontentloaded" });
 
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "A studio for",
-    );
-    await expect(
-      page.getByRole("button", { name: /Open navigation/ }),
-    ).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("A studio for");
+    await expect(page.getByRole("button", { name: /Open navigation/ })).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 
@@ -102,9 +81,7 @@ test.describe("routes", () => {
   test("billing lives in the settings tabs", async ({ page }) => {
     await openApp(page, "/settings/billing");
     await expect(
-      page
-        .getByRole("navigation", { name: "Settings sections" })
-        .getByRole("link", { name: "Billing" }),
+      page.getByRole("navigation", { name: "Settings sections" }).getByRole("link", { name: "Billing" }),
     ).toHaveAttribute("aria-current", "page");
     await expect(page.getByText("Available balance")).toBeVisible();
     await expect(page.getByText("Auto top-up", { exact: true })).toBeVisible();
@@ -113,9 +90,7 @@ test.describe("routes", () => {
   test("usage lists the ledger", async ({ page }) => {
     await openApp(page, "/settings/usage");
     await expect(
-      page
-        .getByRole("navigation", { name: "Settings sections" })
-        .getByRole("link", { name: "Usage" }),
+      page.getByRole("navigation", { name: "Settings sections" }).getByRole("link", { name: "Usage" }),
     ).toHaveAttribute("aria-current", "page");
     await expect(page.getByText(/\+\$25\.00/)).toBeVisible();
     await expect(page.getByText(/−\$0\.51/)).toBeVisible();

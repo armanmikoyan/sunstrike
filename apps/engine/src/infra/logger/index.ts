@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import { config } from "@/infrastructure/config";
+import { config } from "@/infra/config";
 
 /**
  * Structured logger. JSON in production so collectors can parse it, and

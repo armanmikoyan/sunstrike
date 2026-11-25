@@ -9,9 +9,7 @@ for (const width of widths) {
     await openApp(page, "/library");
 
     await expectNoHorizontalOverflow(page);
-    await expect(
-      page.getByRole("searchbox", { name: "Search the studio" }),
-    ).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Search the studio" })).toBeVisible();
 
     const hamburger = page.getByRole("button", { name: "Open navigation" });
     const toolNav = page.locator('nav[aria-label="Studio tools"]');
@@ -29,13 +27,7 @@ for (const width of widths) {
 test("every page fits the viewport on a phone", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
 
-  for (const path of [
-    "/",
-    "/library",
-    "/explore",
-    "/pricing",
-    "/settings/billing",
-  ]) {
+  for (const path of ["/", "/library", "/explore", "/pricing", "/settings/billing"]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     await expectNoHorizontalOverflow(page);
   }
@@ -44,13 +36,7 @@ test("every page fits the viewport on a phone", async ({ page }) => {
 test("every page fits the viewport on a tablet", async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 1024 });
 
-  for (const path of [
-    "/",
-    "/library",
-    "/explore",
-    "/pricing",
-    "/settings/billing",
-  ]) {
+  for (const path of ["/", "/library", "/explore", "/pricing", "/settings/billing"]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     await expectNoHorizontalOverflow(page);
   }

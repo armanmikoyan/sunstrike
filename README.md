@@ -32,7 +32,7 @@ URL or key.
 ### Database
 
 The engine owns the schema. Migrations live in
-`apps/engine/src/infrastructure/supabase/migrations` and run against
+`apps/engine/src/infra/supabase/migrations` and run against
 `DATABASE_URL` from `apps/engine/.env`.
 
 ```bash

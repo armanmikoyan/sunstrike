@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
     "start": "tsx --env-file-if-exists=.env src/main.ts",
-    "db:migrate": "tsx --env-file-if-exists=.env src/infrastructure/database/migrate.ts"
+    "db:migrate": "tsx --env-file-if-exists=.env src/infra/database/migrate.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",

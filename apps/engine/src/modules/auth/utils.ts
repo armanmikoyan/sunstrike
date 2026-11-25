@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import type { SupabaseUser } from "@/infrastructure/supabase";
+import type { SupabaseUser } from "@/infra/supabase/types";
 import type { AuthSubject, SessionUser } from "./types";
 
 export function bearer(request: Request): string | null {

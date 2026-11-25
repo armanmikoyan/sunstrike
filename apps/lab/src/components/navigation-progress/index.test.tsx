@@ -34,9 +34,7 @@ describe("navigation progress", () => {
     document.body.appendChild(link);
 
     act(() => {
-      link.dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true }),
-      );
+      link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     });
 
     expect(bar()).toHaveClass("opacity-100");
@@ -50,9 +48,7 @@ describe("navigation progress", () => {
     document.body.appendChild(link);
 
     act(() => {
-      link.dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true }),
-      );
+      link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     });
     expect(bar()).toHaveClass("opacity-0");
 

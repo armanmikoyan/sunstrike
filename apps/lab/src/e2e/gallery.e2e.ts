@@ -43,10 +43,7 @@ test.describe("explore", () => {
       await expect(counter).not.toHaveText(before ?? "");
     }).toPass({ timeout: 10000 });
 
-    await page
-      .locator("main")
-      .getByPlaceholder("Search")
-      .fill("nothing-matches-this");
+    await page.locator("main").getByPlaceholder("Search").fill("nothing-matches-this");
     await expect(page.getByText("No frames found")).toBeVisible();
   });
 
@@ -60,8 +57,6 @@ test.describe("explore", () => {
     await page.getByRole("button", { name: /Trending/ }).click();
     await page.getByRole("menuitem", { name: "Most liked" }).click();
 
-    await expect(page.getByRole("article").first()).not.toHaveText(
-      before ?? "",
-    );
+    await expect(page.getByRole("article").first()).not.toHaveText(before ?? "");
   });
 });

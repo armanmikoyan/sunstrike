@@ -1,5 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
-import { logger } from "@/infrastructure/logger";
+import { logger } from "@/infra/logger";
 import { notFound as notFoundError } from "@/shared/utils";
 import { messageOf, statusOf } from "./utils";
 

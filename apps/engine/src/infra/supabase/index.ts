@@ -1,9 +1,7 @@
 import { createClient, type Provider, type SupabaseClient } from "@supabase/supabase-js";
-import { config } from "@/infrastructure/config";
+import { config } from "@/infra/config";
 import type { OAuthStart, SupabaseSession, SupabaseUser } from "./types";
 import { authOptions, avatarFromMetadata, createVerifierStorage, mapSession, throwAuthError } from "./utils";
-
-export type { OAuthStart, SupabaseSession, SupabaseUser } from "./types";
 
 let client: SupabaseClient | undefined;
 

@@ -2,7 +2,7 @@ import compression from "compression";
 import express, { type RequestHandler } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import { config } from "@/infrastructure/config";
+import { config } from "@/infra/config";
 import { corsMiddleware } from "./cors";
 
 export const middleware: RequestHandler[] = [

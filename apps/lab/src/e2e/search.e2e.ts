@@ -1,8 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { openApp } from "./helpers";
 
-const search = (page: Page) =>
-  page.getByRole("searchbox", { name: "Search the studio" });
+const search = (page: Page) => page.getByRole("searchbox", { name: "Search the studio" });
 
 test.describe("nav search", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -14,14 +13,10 @@ test.describe("nav search", () => {
     await expect(field).toHaveValue("");
     await expect(page.locator("form[role=search] kbd")).toBeVisible();
     await expect(page.locator("form[role=search] kbd")).toHaveText(/K/);
-    await expect(
-      page.getByRole("button", { name: "Clear search" }),
-    ).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Clear search" })).toHaveCount(0);
   });
 
-  test("swaps the hint for a clear button in the same slot", async ({
-    page,
-  }) => {
+  test("swaps the hint for a clear button in the same slot", async ({ page }) => {
     await openApp(page, "/library");
     const badge = page.locator("form[role=search] kbd");
     const badgeBox = await badge.boundingBox();
@@ -36,9 +31,7 @@ test.describe("nav search", () => {
     expect(badgeBox).not.toBeNull();
     expect(clearBox).not.toBeNull();
     // Same right edge, within a pixel.
-    expect(
-      Math.abs(badgeBox!.x + badgeBox!.width - (clearBox!.x + clearBox!.width)),
-    ).toBeLessThanOrEqual(1);
+    expect(Math.abs(badgeBox!.x + badgeBox!.width - (clearBox!.x + clearBox!.width))).toBeLessThanOrEqual(1);
   });
 
   test("clears the field and keeps focus", async ({ page }) => {
@@ -57,16 +50,12 @@ test.describe("nav search", () => {
     await search(page).press("Enter");
 
     await expect(page).toHaveURL(/\/explore\?q=neon%20alley$/);
-    await expect(
-      page.getByRole("heading", { level: 1, name: "The feed" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "The feed" })).toBeVisible();
   });
 
   test("focuses from the keyboard shortcut", async ({ page }) => {
     await openApp(page, "/library");
-    await page.keyboard.press(
-      process.platform === "darwin" ? "Meta+k" : "Control+k",
-    );
+    await page.keyboard.press(process.platform === "darwin" ? "Meta+k" : "Control+k");
     await expect(search(page)).toBeFocused();
   });
 
@@ -94,9 +83,7 @@ test.describe("nav search on small screens", () => {
     await expect(page.locator("form[role=search] kbd")).toBeHidden();
 
     await field.fill("portrait");
-    await expect(
-      page.getByRole("button", { name: "Clear search" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Clear search" })).toBeVisible();
   });
 
   test("submits on the mobile keyboard", async ({ page }) => {

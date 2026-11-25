@@ -3,9 +3,7 @@ import { expectNoHorizontalOverflow } from "./helpers";
 
 async function openFresh(page: Page, path = "/") {
   await page.goto(path, { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(
-    () => document.documentElement.dataset.hydrated === "true",
-  );
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "true");
 }
 
 test.describe("cookie consent", () => {
@@ -18,41 +16,25 @@ test.describe("cookie consent", () => {
     await expect(banner).toBeHidden();
 
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForFunction(
-      () => document.documentElement.dataset.hydrated === "true",
-    );
+    await page.waitForFunction(() => document.documentElement.dataset.hydrated === "true");
     await expect(banner).toBeHidden();
-    expect(
-      await page.evaluate(() =>
-        window.localStorage.getItem("chronolab:cookie-consent"),
-      ),
-    ).toBe("all");
+    expect(await page.evaluate(() => window.localStorage.getItem("chronolab:cookie-consent"))).toBe("all");
   });
 
   test("Essential only dismisses without analytics", async ({ page }) => {
     await openFresh(page, "/pricing");
 
     await page.getByRole("button", { name: "Essential only" }).click();
-    await expect(
-      page.getByRole("region", { name: "Cookie consent" }),
-    ).toBeHidden();
-    expect(
-      await page.evaluate(() =>
-        window.localStorage.getItem("chronolab:cookie-consent"),
-      ),
-    ).toBe("essential");
+    await expect(page.getByRole("region", { name: "Cookie consent" })).toBeHidden();
+    expect(await page.evaluate(() => window.localStorage.getItem("chronolab:cookie-consent"))).toBe("essential");
   });
 
-  test("links to the cookie section of the privacy policy", async ({
-    page,
-  }) => {
+  test("links to the cookie section of the privacy policy", async ({ page }) => {
     await openFresh(page);
 
     await page.getByRole("link", { name: "Privacy policy" }).click();
     await expect(page).toHaveURL(/\/privacy#cookies$/);
-    await expect(
-      page.getByRole("heading", { level: 1, name: "Privacy policy" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Privacy policy" })).toBeVisible();
     await expect(page.locator("#cookies")).toBeVisible();
   });
 
@@ -60,9 +42,7 @@ test.describe("cookie consent", () => {
     await page.setViewportSize({ width: 320, height: 720 });
     await openFresh(page);
 
-    await expect(
-      page.getByRole("region", { name: "Cookie consent" }),
-    ).toBeVisible();
+    await expect(page.getByRole("region", { name: "Cookie consent" })).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 });

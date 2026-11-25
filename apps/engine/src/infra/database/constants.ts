@@ -1,0 +1,3 @@
+export const POOL_MIN_CONNECTIONS = 0;
+export const POOL_IDLE_TIMEOUT_MS = 30_000;
+export const POOL_CONNECTION_TIMEOUT_MS = 5000;

@@ -1,4 +1,4 @@
-import { query } from "@/infrastructure/database";
+import { query } from "@/infra/database";
 import type { ProvisionUserInput, UserProfile, UserRow } from "./types";
 import { mapUserRow } from "./utils";
 

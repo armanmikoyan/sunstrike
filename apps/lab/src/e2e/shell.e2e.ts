@@ -14,15 +14,11 @@ test.describe("app shell", () => {
     await expect(collapse).toBeVisible();
     await expect(page.getByRole("link", { name: "Favorites" })).toBeVisible();
     // Wordmark appears next to the collapse control, the bar keeps the mark.
-    await expect(
-      page.getByRole("link", { name: "Chronolab.ai home" }),
-    ).toHaveCount(2);
+    await expect(page.getByRole("link", { name: "Chronolab.ai home" })).toHaveCount(2);
 
     await collapse.click();
     await expect(expand).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Chronolab.ai home" }),
-    ).toHaveCount(1);
+    await expect(page.getByRole("link", { name: "Chronolab.ai home" })).toHaveCount(1);
   });
 
   test("animates the rail open instead of snapping", async ({ page }) => {
@@ -45,8 +41,7 @@ test.describe("app shell", () => {
         const aside = document.querySelector("aside");
         if (aside) samples.push(aside.getBoundingClientRect().width);
         const last = samples.slice(-3);
-        const settled =
-          last.length === 3 && last.every((width) => width > 183.95);
+        const settled = last.length === 3 && last.every((width) => width > 183.95);
         if (!settled && performance.now() - started < 20_000) {
           requestAnimationFrame(tick);
         }
@@ -55,17 +50,13 @@ test.describe("app shell", () => {
     });
 
     await page.getByRole("button", { name: "Expand sidebar" }).click();
-    await expect(
-      page.getByRole("button", { name: "Collapse sidebar" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Collapse sidebar" })).toBeVisible();
     await page.waitForFunction(() => {
       const samples = (window as unknown as { __rail: number[] }).__rail;
       return samples.length > 3 && Math.abs(samples.at(-1)! - 184) < 0.05;
     });
 
-    const samples = await page.evaluate(
-      () => (window as unknown as { __rail: number[] }).__rail,
-    );
+    const samples = await page.evaluate(() => (window as unknown as { __rail: number[] }).__rail);
     const between = samples.filter((value) => value > 59 && value < 182);
 
     expect(Math.min(...samples)).toBeLessThanOrEqual(59);
@@ -75,9 +66,7 @@ test.describe("app shell", () => {
     expect((await rail.boundingBox())!.width).toBeCloseTo(184, 0);
   });
 
-  test("grows the rail out of one axis instead of shifting its controls", async ({
-    page,
-  }) => {
+  test("grows the rail out of one axis instead of shifting its controls", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, "/library");
 
@@ -93,41 +82,33 @@ test.describe("app shell", () => {
           const frames: { rail: number; x: number; toggle: number }[] = [];
           (window as unknown as { __axis: typeof frames }).__axis = frames;
           const started = performance.now();
-          (window as unknown as { __axisDone: Promise<void> }).__axisDone =
-            new Promise<void>((resolve) => {
-              const tick = () => {
-                const aside = document.querySelector("aside");
-                const item = aside?.querySelector('a[aria-label="Explore"]');
-                const toggle = aside?.querySelector("button[aria-expanded]");
-                if (aside && item && toggle) {
-                  frames.push({
-                    rail: aside.getBoundingClientRect().width,
-                    x: item.getBoundingClientRect().x,
-                    toggle: toggle.getBoundingClientRect().x,
-                  });
-                }
-                // Settle on the target width instead of running for a fixed
-                // window, which can expire before a delayed click lands.
-                const last = frames.slice(-3);
-                const settled =
-                  last.length === 3 &&
-                  last.every((frame) => Math.abs(frame.rail - target) < 0.05);
-                if (settled || performance.now() - started > 20_000) {
-                  resolve();
-                  return;
-                }
-                requestAnimationFrame(tick);
-              };
+          (window as unknown as { __axisDone: Promise<void> }).__axisDone = new Promise<void>((resolve) => {
+            const tick = () => {
+              const aside = document.querySelector("aside");
+              const item = aside?.querySelector('a[aria-label="Explore"]');
+              const toggle = aside?.querySelector("button[aria-expanded]");
+              if (aside && item && toggle) {
+                frames.push({
+                  rail: aside.getBoundingClientRect().width,
+                  x: item.getBoundingClientRect().x,
+                  toggle: toggle.getBoundingClientRect().x,
+                });
+              }
+              // Settle on the target width instead of running for a fixed
+              // window, which can expire before a delayed click lands.
+              const last = frames.slice(-3);
+              const settled = last.length === 3 && last.every((frame) => Math.abs(frame.rail - target) < 0.05);
+              if (settled || performance.now() - started > 20_000) {
+                resolve();
+                return;
+              }
               requestAnimationFrame(tick);
-            });
+            };
+            requestAnimationFrame(tick);
+          });
         }, target)
         .then(run)
-        .then(() =>
-          page.evaluate(
-            () =>
-              (window as unknown as { __axisDone: Promise<void> }).__axisDone,
-          ),
-        )
+        .then(() => page.evaluate(() => (window as unknown as { __axisDone: Promise<void> }).__axisDone))
         .then(() =>
           page.evaluate(
             () =>
@@ -149,10 +130,7 @@ test.describe("app shell", () => {
       }
     };
 
-    const expanding = await sample(
-      () => page.getByRole("button", { name: "Expand sidebar" }).click(),
-      184,
-    );
+    const expanding = await sample(() => page.getByRole("button", { name: "Expand sidebar" }).click(), 184);
     expect(expanding.length).toBeGreaterThan(4);
     for (const frame of expanding) {
       // Pinned to the rail's inset: the pill never leads or lags the rail.
@@ -161,10 +139,7 @@ test.describe("app shell", () => {
     expect(Math.abs(expanding.at(-1)!.toggle - 10)).toBeLessThan(1);
     expectNoTeleport(expanding);
 
-    const collapsing = await sample(
-      () => page.getByRole("button", { name: "Collapse sidebar" }).click(),
-      57,
-    );
+    const collapsing = await sample(() => page.getByRole("button", { name: "Collapse sidebar" }).click(), 57);
     for (const frame of collapsing) {
       expect(Math.abs(frame.x - 10)).toBeLessThan(0.6);
       // While the rail is still fully open, nothing may have moved yet.
@@ -209,9 +184,7 @@ test.describe("app shell", () => {
     expect(tip.x).toBeLessThan(rail!.x + rail!.width + 12);
   });
 
-  test("keeps the rail's contents still between the two states", async ({
-    page,
-  }) => {
+  test("keeps the rail's contents still between the two states", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, "/library");
 
@@ -221,23 +194,17 @@ test.describe("app shell", () => {
       page.getByRole("link", { name: "Favorites" }),
       page.locator("aside button[aria-label='Account menu']"),
     ];
-    const collapsed = await Promise.all(
-      controls.map(async (control) => (await control.boundingBox())!),
-    );
+    const collapsed = await Promise.all(controls.map(async (control) => (await control.boundingBox())!));
 
     await page.getByRole("button", { name: "Expand sidebar" }).click();
-    await expect(
-      page.getByRole("button", { name: "Collapse sidebar" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Collapse sidebar" })).toBeVisible();
     // Let the width transition settle before reading the layout.
     await page.waitForFunction(() => {
       const rail = document.querySelector("aside")!;
       return Math.abs(rail.getBoundingClientRect().width - 184) < 0.05;
     });
 
-    const expanded = await Promise.all(
-      controls.map(async (control) => (await control.boundingBox())!),
-    );
+    const expanded = await Promise.all(controls.map(async (control) => (await control.boundingBox())!));
 
     // Only the width may animate: nothing may drift down the rail.
     collapsed.forEach((box, index) => {
@@ -246,26 +213,18 @@ test.describe("app shell", () => {
     });
   });
 
-  test("does not resurrect a tooltip when the rail collapses under the pointer", async ({
-    page,
-  }) => {
+  test("does not resurrect a tooltip when the rail collapses under the pointer", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, "/library");
 
     await page.getByRole("button", { name: "Expand sidebar" }).click();
-    await expect(
-      page.getByRole("button", { name: "Collapse sidebar" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Collapse sidebar" })).toBeVisible();
     await page.getByRole("link", { name: "Explore" }).hover();
     await page.waitForTimeout(250);
 
     // Collapse without moving the pointer off the item.
-    await page
-      .getByRole("button", { name: "Collapse sidebar" })
-      .evaluate((button) => (button as HTMLElement).click());
-    await expect(
-      page.getByRole("button", { name: "Expand sidebar" }),
-    ).toBeVisible();
+    await page.getByRole("button", { name: "Collapse sidebar" }).evaluate((button) => (button as HTMLElement).click());
+    await expect(page.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
     await page.waitForTimeout(400);
     await expect(page.getByRole("tooltip")).toHaveCount(0);
 
@@ -275,9 +234,7 @@ test.describe("app shell", () => {
     await expect(page.getByRole("tooltip")).toContainText("Explore");
   });
 
-  test("keeps balance and settings inside the profile menu", async ({
-    page,
-  }) => {
+  test("keeps balance and settings inside the profile menu", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, "/library");
     await page.getByRole("button", { name: "Expand sidebar" }).click();
@@ -285,15 +242,9 @@ test.describe("app shell", () => {
     await page.getByRole("button", { name: "Account menu" }).click();
 
     const menu = page.getByRole("menu");
-    await expect(
-      menu.getByRole("menuitem", { name: /Balance/ }),
-    ).toHaveAttribute("href", "/settings/billing");
-    await expect(
-      menu.getByRole("menuitem", { name: "Settings" }),
-    ).toHaveAttribute("href", "/settings/account");
-    await expect(
-      menu.getByRole("menuitem", { name: "Sign out" }),
-    ).toHaveAttribute("href", "/login");
+    await expect(menu.getByRole("menuitem", { name: /Balance/ })).toHaveAttribute("href", "/settings/billing");
+    await expect(menu.getByRole("menuitem", { name: "Settings" })).toHaveAttribute("href", "/settings/account");
+    await expect(menu.getByRole("menuitem", { name: "Sign out" })).toHaveAttribute("href", "/login");
   });
 
   test("the rail does not repeat billing or settings", async ({ page }) => {
@@ -301,9 +252,7 @@ test.describe("app shell", () => {
     await openApp(page, "/library");
 
     // Pricing and Help sit below the primary nav but still in the rail.
-    const hrefs = await page
-      .locator("aside a")
-      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+    const hrefs = await page.locator("aside a").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
 
     expect(hrefs.filter((href) => href?.startsWith("/settings"))).toEqual([]);
     expect(hrefs).toContain("/pricing");
@@ -316,9 +265,7 @@ test.describe("app shell", () => {
 
     await page.getByRole("link", { name: "Explore" }).click();
     await expect(page).toHaveURL(/\/explore$/);
-    await expect(
-      page.getByRole("heading", { level: 1, name: "Explore" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Explore" })).toBeVisible();
   });
 
   test("drawer opens over the page, not full screen", async ({ page }) => {
@@ -338,15 +285,11 @@ test.describe("app shell", () => {
 
     // The drawer is wider than the 184px rail, so its controls must stretch
     // with it rather than inherit the rail's 180px content cap.
-    const item = await dialog
-      .getByRole("link", { name: "Explore" })
-      .boundingBox();
+    const item = await dialog.getByRole("link", { name: "Explore" }).boundingBox();
     expect(item!.width).toBeGreaterThan(box!.width - 40);
   });
 
-  test("drawer closes with escape and keeps the page behind it", async ({
-    page,
-  }) => {
+  test("drawer closes with escape and keeps the page behind it", async ({ page }) => {
     await page.setViewportSize({ width: 412, height: 900 });
     await openApp(page, "/library");
 
@@ -355,9 +298,7 @@ test.describe("app shell", () => {
 
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toBeHidden();
-    await expect(
-      page.getByRole("heading", { level: 1, name: "Library" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Library" })).toBeVisible();
   });
 
   test("drawer navigation closes the drawer", async ({ page }) => {
@@ -365,10 +306,7 @@ test.describe("app shell", () => {
     await openApp(page, "/library");
 
     await page.getByRole("button", { name: "Open navigation" }).click();
-    await page
-      .getByRole("dialog")
-      .getByRole("link", { name: "Explore" })
-      .click();
+    await page.getByRole("dialog").getByRole("link", { name: "Explore" }).click();
 
     await expect(page).toHaveURL(/\/explore$/);
     await expect(page.getByRole("dialog")).toBeHidden();
@@ -382,10 +320,7 @@ test.describe("app shell", () => {
     await page.getByRole("button", { name: "Account menu" }).click();
 
     const dialog = page.getByRole("dialog");
-    await expect(dialog.getByRole("link", { name: /Balance/ })).toHaveAttribute(
-      "href",
-      "/settings/billing",
-    );
+    await expect(dialog.getByRole("link", { name: /Balance/ })).toHaveAttribute("href", "/settings/billing");
     await expect(dialog.getByRole("link", { name: "Settings" })).toBeVisible();
   });
 
