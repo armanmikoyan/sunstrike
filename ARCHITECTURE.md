@@ -157,7 +157,7 @@ feature component and its logic, and nothing else.
 | `src/components/<feature>` | Anything with product copy, domain types, data, composition or feature state. A part reused inside one feature stays in that feature |
 | `src/motion`               | Reusable animation primitives and transitions, each in its own folder                                                                |
 | `src/hooks`                | Generic, product-agnostic React hooks, one file per hook                                                                             |
-| `src/mocks`                | Demo data shown until the engine serves it; components read it from here instead of defining their own                               |
+| `src/mocks`                | Demo data shown until the engine serves it, and engine-shaped replies for tests and e2e; components never define their own           |
 
 - The same UI in two places is one shared component configured by props.
 - The primitive owns height, radius and text scale; call sites override layout

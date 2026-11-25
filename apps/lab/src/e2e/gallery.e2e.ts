@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { openApp } from "./helpers";
+import { expect } from "@playwright/test";
+import { openApp, test } from "./helpers";
 
 test.describe("library", () => {
   test("filters by tab and search", async ({ page }) => {

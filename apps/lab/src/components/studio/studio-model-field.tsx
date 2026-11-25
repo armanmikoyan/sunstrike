@@ -1,9 +1,9 @@
 "use client";
 
-import { formatUSD } from "@/components/pricing/utils";
 import { STUDIO_COPY } from "./constants";
 import { StudioSelectField } from "./studio-select-field";
 import type { StudioScopedProps } from "./types";
+import { formatRate } from "./utils";
 
 export function StudioModelField({ studio }: StudioScopedProps) {
   const model = studio.selectedModel;
@@ -12,21 +12,19 @@ export function StudioModelField({ studio }: StudioScopedProps) {
     <>
       <StudioSelectField
         label={STUDIO_COPY.controls.model}
-        value={model.displayName}
+        value={model.id}
         options={studio.activeModels.map((item) => ({
-          value: item.displayName,
+          value: item.id,
           label: item.displayName,
-          hint: (
-            <>
-              {item.provider} · <span className="tabular-nums font-normal">{formatUSD(item.cost)}</span>
-            </>
-          ),
+          hint: <span className="tabular-nums font-normal">{formatRate(item)}</span>,
         }))}
         onChange={studio.setModel}
       />
       <div className="mt-1.5 flex items-center justify-between gap-3 text-xs lg:text-[0.6875rem]">
-        <span className="text-muted-foreground">{model.provider}</span>
-        <span className="text-muted-foreground">
+        <span className="min-w-0 truncate text-muted-foreground" title={model.summary}>
+          {model.summary}
+        </span>
+        <span className="shrink-0 text-muted-foreground">
           {model.capabilities.audio ? STUDIO_COPY.controls.audio : STUDIO_COPY.controls.silent}
         </span>
       </div>

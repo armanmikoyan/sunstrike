@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { expectNoHorizontalOverflow } from "./helpers";
+import { expect, type Page } from "@playwright/test";
+import { expectNoHorizontalOverflow, test } from "./helpers";
 
 async function openFresh(page: Page, path = "/") {
   await page.goto(path, { waitUntil: "domcontentloaded" });

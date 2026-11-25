@@ -1,4 +1,22 @@
-import { expect, type Page } from "@playwright/test";
+import { test as base, expect, type Page } from "@playwright/test";
+import { offeringsResponse, quoteResponse } from "../mocks/offerings";
+
+/** The e2e server runs without an engine, so engine-backed routes answer from the seeded fixture. */
+export async function stubEngine(page: Page) {
+  await page.route("**/api/offerings*", (route) => route.fulfill({ json: offeringsResponse }));
+  await page.route("**/api/pricing/quote?*", (route) => {
+    const quote = quoteResponse(new URL(route.request().url()).search);
+
+    return quote ? route.fulfill({ json: quote }) : route.fulfill({ status: 404, json: { error: "Model not found." } });
+  });
+}
+
+export const test = base.extend({
+  page: async ({ page }, use) => {
+    await stubEngine(page);
+    await use(page);
+  },
+});
 
 export const appRoutes = [
   { path: "/library", heading: "Library" },

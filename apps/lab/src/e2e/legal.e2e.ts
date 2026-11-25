@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { openApp } from "./helpers";
+import { expect } from "@playwright/test";
+import { openApp, test } from "./helpers";
 
 test.describe("legal contents rail", () => {
   test("marks the section being read and follows a jump", async ({ page }) => {

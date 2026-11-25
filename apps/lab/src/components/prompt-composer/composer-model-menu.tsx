@@ -12,11 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { formatUSD } from "@/components/pricing/utils";
+import { formatRate } from "@/components/studio/utils";
 import { COMPOSER_COPY } from "./constants";
 import type { ComposerProps } from "./types";
 
-export function ComposerModelMenu({ composer: { mode, model, setModel, activeModels } }: ComposerProps) {
+export function ComposerModelMenu({
+  composer: { mode, modelLabel, selectedModel, setModel, activeModels },
+}: ComposerProps) {
   const modelCopy = COMPOSER_COPY.modelLabels[mode];
 
   return (
@@ -30,8 +32,8 @@ export function ComposerModelMenu({ composer: { mode, model, setModel, activeMod
             className="max-w-full gap-1.5 font-medium text-foreground/80 hover:bg-white/5.5 hover:text-foreground"
           >
             <WandSparkles className="size-3 shrink-0 text-muted-foreground" />
-            <span className="min-w-0 truncate" title={model}>
-              {model}
+            <span className="min-w-0 truncate" title={modelLabel}>
+              {modelLabel}
             </span>
             <ChevronDown className="size-3 shrink-0 text-muted-foreground" />
           </Button>
@@ -41,13 +43,13 @@ export function ComposerModelMenu({ composer: { mode, model, setModel, activeMod
           {activeModels.map((item) => (
             <DropdownMenuItem
               key={item.id}
-              onSelect={() => setModel(item.displayName)}
-              className={cn("items-start gap-2", model === item.displayName && "bg-white/8 text-foreground")}
+              onSelect={() => setModel(item.id)}
+              className={cn("items-start gap-2", selectedModel?.id === item.id && "bg-white/8 text-foreground")}
             >
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-1.5 font-medium">{item.displayName}</span>
                 <span className="mt-0.5 block text-muted-foreground">
-                  {item.provider} · <span className="tabular-nums font-normal">{formatUSD(item.cost)}</span>
+                  <span className="tabular-nums font-normal">{formatRate(item)}</span> · {item.summary}
                 </span>
               </span>
             </DropdownMenuItem>

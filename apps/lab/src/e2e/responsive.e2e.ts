@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { expectNoHorizontalOverflow, openApp } from "./helpers";
+import { expect } from "@playwright/test";
+import { expectNoHorizontalOverflow, openApp, test } from "./helpers";
 
 const widths = [320, 390, 768, 1024, 1280, 1440];
 

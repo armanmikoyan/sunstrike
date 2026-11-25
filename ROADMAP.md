@@ -16,12 +16,16 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   own wait and the project email cap shown as copy instead of a fake clock, a
   blinking caret and a reduced-motion path. Session refresh, a session-aware
   account menu with the provider avatar, and the `/settings` gate.
+- **Studio on Offerings.** The studio and home composer list models from
+  `/api/offerings`, default to the first in catalog order, and show the price
+  from `/api/pricing/quote` for the current settings. Both routes forward to
+  the engine; e2e answers them from `src/mocks/offerings.ts`.
 
 ### Next
 
 - **Draft resume.** A signed-out generate resumes its draft after sign-in.
-- **Real data.** Studio, library, assets, billing, settings and notifications
-  read engine rows, with no mock on a product screen.
+- **Real data.** Pricing page, library, assets, billing, settings and
+  notifications read engine rows, with no mock on a product screen.
 - **End-to-end.** Sign in, upload, quote, generate, notify, history and top up,
   plus the failure path and a worker restart.
 

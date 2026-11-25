@@ -1,4 +1,4 @@
-import type { GenerationMode } from "@/components/studio/types";
+import type { GenerationMode, PriceUnit } from "@/components/studio/types";
 import { mediaByIds } from "@/mocks/media";
 
 export const ASPECT_RATIOS = [
@@ -10,7 +10,14 @@ export const ASPECT_RATIOS = [
   { value: "21:9", label: "Cinema", shape: "h-1.75 w-4.5" },
 ];
 
-export const DURATIONS = ["4s", "5s", "6s", "8s", "12s"];
+export const OFFERINGS_URL = "/api/offerings";
+export const QUOTE_URL = "/api/pricing/quote";
+export const QUOTE_KIND = "create";
+export const MICROS_PER_USD = 1_000_000;
+export const PRICE_UNIT_SUFFIX: Record<PriceUnit, string> = {
+  per_second: "/s",
+  per_image: "/image",
+};
 
 export const VIDEO_TAKES = mediaByIds(["09", "07", "14", "16"]);
 export const IMAGE_TAKES = mediaByIds(["05", "10", "17", "18"]);
@@ -22,9 +29,14 @@ export const STARTER_PROMPTS: Record<GenerationMode, string> = {
     "An editorial portrait in cool blue studio light, direct gaze, subtle film grain, 85mm lens, minimal styling, crisp catchlights.",
 };
 
-export const STUDIO_MODELS: Record<GenerationMode, { create: string; label: string }> = {
-  video: { create: "Chronolab Motion 2", label: "Video Studio" },
-  image: { create: "Chronolab Image 2", label: "Image Studio" },
+export const SKELETON_BAR = "block rounded-full bg-white/6";
+export const SKELETON_SURFACE = "rounded-lg border border-white/7 bg-white/1.5";
+export const SKELETON_SLOTS = { aspects: 6, durations: 5, takes: 4, facts: 3 };
+export const ZERO_WIDTH_SPACE = "\u200b";
+
+export const STUDIO_LABELS: Record<GenerationMode, string> = {
+  video: "Video Studio",
+  image: "Image Studio",
 };
 
 export const STUDIO_COPY = {
@@ -56,8 +68,13 @@ export const STUDIO_COPY = {
     silent: "Silent",
     audioHint: "Use the model's generated soundtrack.",
     estimatedCost: "Estimated cost",
+    pricing: "Calculating price",
     generate: { video: "Generate video", image: "Generate image", signIn: "Sign in to generate" },
     available: "available · pay as you go",
+  },
+  unavailable: {
+    title: "Models are unavailable",
+    body: "We couldn't load the models right now. Try again in a moment.",
   },
   summary: {
     model: "Model",

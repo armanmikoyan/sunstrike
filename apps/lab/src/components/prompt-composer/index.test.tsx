@@ -19,11 +19,11 @@ function renderComposer() {
 const prompt = () => screen.getByRole("textbox", { name: "Describe your generation" });
 
 describe("home prompt composer", () => {
-  it("starts in video mode with a dollar estimate", () => {
+  it("starts in video mode with the engine's quote", async () => {
     renderComposer();
     expect(prompt()).toBeInTheDocument();
     expect(
-      screen.getByText((_, node) => node?.textContent === "$0.51" && node.classList.contains("tabular-nums")),
+      await screen.findByText((_, node) => node?.textContent === "$0.43" && node.classList.contains("tabular-nums")),
     ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Video" })).toHaveAttribute("aria-selected", "true");
   });
@@ -32,7 +32,7 @@ describe("home prompt composer", () => {
     renderComposer();
     await userEvent.click(screen.getByRole("tab", { name: "Image" }));
     expect(
-      screen.getByText((_, node) => node?.textContent === "$0.07" && node.classList.contains("tabular-nums")),
+      await screen.findByText((_, node) => node?.textContent === "$0.07" && node.classList.contains("tabular-nums")),
     ).toBeInTheDocument();
   });
 

@@ -5,10 +5,10 @@ import { STARTER_PROMPTS, STUDIO_COPY } from "./constants";
 import type { StudioScopedProps } from "./types";
 
 export function StudioSummary({
-  studio: { selectedModel, template, aspect, resolution, duration, audio, prompt, isVideo },
+  studio: { selectedModel, template, aspect, resolution, durationLabel, audio, prompt, isVideo },
 }: StudioScopedProps) {
   const shownPrompt = prompt || STARTER_PROMPTS[isVideo ? "video" : "image"];
-  const output = [aspect, resolution, isVideo && duration ? duration : null, audio ? "Audio" : null]
+  const output = [aspect, resolution, isVideo ? durationLabel : null, audio ? "Audio" : null]
     .filter(Boolean)
     .join(" · ");
 

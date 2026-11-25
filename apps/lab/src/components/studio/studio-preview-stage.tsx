@@ -10,7 +10,7 @@ import type { StudioScopedProps } from "./types";
 
 export function StudioPreviewStage({
   studio,
-  studio: { active, aspect, duration, isVideo, resolution, selectedModel },
+  studio: { active, aspect, durationLabel, isVideo, resolution, selectedModel },
 }: StudioScopedProps) {
   const frameClass = STUDIO_FRAME_CLASSES[aspect] ?? STUDIO_FRAME_CLASSES["16:9"];
 
@@ -50,7 +50,7 @@ export function StudioPreviewStage({
 
       <div className="absolute right-3 top-3 flex items-center gap-1.5">
         <span className="rounded-md border border-white/15 bg-black/40 px-1.5 py-1 font-mono text-xs lg:text-[0.6875rem] text-white/65 backdrop-blur-md">
-          {isVideo && duration ? `${duration} · ${resolution}` : resolution}
+          {isVideo ? `${durationLabel} · ${resolution}` : resolution}
         </span>
       </div>
 

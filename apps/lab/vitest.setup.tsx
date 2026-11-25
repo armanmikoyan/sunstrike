@@ -4,6 +4,7 @@ import { afterEach, beforeEach, vi } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 import { Provider } from "jotai";
 import { TooltipProvider } from "@/ui/tooltip";
+import { offeringsResponse, quoteResponse } from "@/mocks/offerings";
 
 type WithChildrenProps = {
   children?: React.ReactNode;
@@ -34,14 +35,24 @@ const navigation = vi.hoisted(() => ({
 export const routerMock = navigation.routerMock;
 export const navigationState = navigation.state;
 
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
 const defaultFetch = async (input: RequestInfo | URL) => {
   const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
 
-  if (url === "/api/auth/session") {
-    return new Response(JSON.stringify({ user: null }), {
-      status: 200,
-      headers: { "content-type": "application/json" },
-    });
+  if (url === "/api/auth/session") return jsonResponse({ user: null });
+
+  if (url === "/api/offerings") return jsonResponse(offeringsResponse);
+
+  if (url.startsWith("/api/pricing/quote?")) {
+    const quote = quoteResponse(url.slice(url.indexOf("?")));
+
+    return quote ? jsonResponse(quote) : jsonResponse({ error: "Model not found." }, 404);
   }
 
   return new Response(null, { status: 204 });

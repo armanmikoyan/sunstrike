@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { collectErrors, openApp } from "./helpers";
+import { expect } from "@playwright/test";
+import { collectErrors, openApp, test } from "./helpers";
 
 test.describe("app shell", () => {
   test("expands and collapses the desktop rail", async ({ page }) => {

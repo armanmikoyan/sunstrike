@@ -29,6 +29,8 @@ export const COMPOSER_COPY = {
     image: "Image model",
   },
   compareModels: "Compare models and rates",
+  loadingModels: "Loading models",
+  noModels: "No models available",
   attach: {
     ariaLabel: "Attach reference",
     addReference: "Add reference",

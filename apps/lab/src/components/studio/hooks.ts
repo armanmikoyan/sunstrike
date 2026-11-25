@@ -1,11 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useStore, type WritableAtom } from "jotai";
-import type { GenerationMode } from "./types";
-import { ASPECT_RATIOS, IMAGE_TAKES, STUDIO_MODELS, VIDEO_TAKES } from "./constants";
-import { aspectRatiosFor, durationsFor, getGenerationCost, resolutionsFor } from "./utils";
-import { modelOptions } from "@/mocks/generation";
+import type {
+  GenerationMode,
+  ModelOption,
+  OfferingsResponse,
+  OfferingsState,
+  QuoteRequest,
+  QuoteResponse,
+} from "./types";
+import { ASPECT_RATIOS, IMAGE_TAKES, OFFERINGS_URL, QUOTE_URL, VIDEO_TAKES } from "./constants";
+import {
+  aspectRatiosFor,
+  durationsFor,
+  formatDuration,
+  microsToUSD,
+  modelsForMode,
+  quoteQuery,
+  resolutionsFor,
+  toModelOption,
+} from "./utils";
 import { templateById } from "@/mocks/templates";
 import {
   aspectRatioAtom,
@@ -14,11 +29,46 @@ import {
   balanceAtom,
   durationAtom,
   modeAtom,
+  offeringsAtom,
   promptAtom,
   resolutionAtom,
   selectedModelAtom,
   templateIdAtom,
 } from "./state";
+
+let offeringsRequest: Promise<OfferingsState> | null = null;
+
+async function fetchOfferings(): Promise<OfferingsState> {
+  try {
+    const response = await fetch(OFFERINGS_URL, { cache: "no-store" });
+
+    if (!response.ok) return { status: "failed", models: [] };
+
+    const body = (await response.json()) as OfferingsResponse;
+
+    return { status: "ready", models: body.offerings.map(toModelOption) };
+  } catch {
+    return { status: "failed", models: [] };
+  }
+}
+
+function loadOfferings(): Promise<OfferingsState> {
+  offeringsRequest ??= fetchOfferings().finally(() => {
+    offeringsRequest = null;
+  });
+
+  return offeringsRequest;
+}
+
+async function fetchQuoteTotal(query: string, signal: AbortSignal): Promise<number | null> {
+  const response = await fetch(`${QUOTE_URL}?${query}`, { cache: "no-store", signal });
+
+  if (!response.ok) return null;
+
+  const body = (await response.json()) as QuoteResponse;
+
+  return microsToUSD(body.quote.totalMicros);
+}
 
 export function useSharedState<Value, Args extends unknown[], Result>(atom: WritableAtom<Value, Args, Result>) {
   const store = useStore();
@@ -34,23 +84,74 @@ export function useSharedState<Value, Args extends unknown[], Result>(atom: Writ
   return [store.get(atom), setValue] as const;
 }
 
+export function useOfferings(mode: GenerationMode) {
+  const [offerings, setOfferings] = useSharedState(offeringsAtom);
+
+  useEffect(() => {
+    if (offerings.status !== "loading") return;
+
+    let active = true;
+
+    async function hydrate() {
+      const next = await loadOfferings();
+
+      if (active) setOfferings(next);
+    }
+
+    void hydrate();
+
+    return () => {
+      active = false;
+    };
+  }, [offerings.status, setOfferings]);
+
+  const models = useMemo(() => modelsForMode(offerings.models, mode), [offerings.models, mode]);
+
+  return { status: offerings.status, models };
+}
+
+export function useQuote(request: QuoteRequest | null) {
+  const query = request ? quoteQuery(request) : null;
+  const [cost, setCost] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!query) return;
+
+    const controller = new AbortController();
+
+    async function requestQuote(search: string) {
+      const total = await fetchQuoteTotal(search, controller.signal).catch(() => null);
+
+      if (!controller.signal.aborted) setCost(total);
+    }
+
+    void requestQuote(query);
+
+    return () => controller.abort();
+  }, [query]);
+
+  return query ? cost : null;
+}
+
 export function useSelectedModel(mode: GenerationMode) {
-  const [model] = useSharedState(selectedModelAtom);
+  const { status, models } = useOfferings(mode);
+  const [modelId, setModelId] = useSharedState(selectedModelAtom);
   const [aspect, setAspect] = useSharedState(aspectRatioAtom);
   const [duration, setDuration] = useSharedState(durationAtom);
   const [resolution, setResolution] = useSharedState(resolutionAtom);
   const [audio, setAudio] = useSharedState(audioAtom);
 
-  const activeModels = modelOptions[mode];
-  const selectedModel = activeModels.find((item) => item.displayName === model) ?? activeModels[0];
+  const selectedModel = models.find((item) => item.id === modelId) ?? models[0] ?? null;
 
   useEffect(() => {
+    if (!selectedModel) return;
+
     const caps = selectedModel.capabilities;
     if (!caps.aspectRatios.includes(aspect)) {
       setAspect(caps.aspectRatios[0]);
     }
-    if (caps.durations.length > 0 && !caps.durations.includes(duration)) {
-      setDuration(caps.durations[0]);
+    if (caps.durationsSeconds.length > 0 && !caps.durationsSeconds.includes(duration)) {
+      setDuration(caps.durationsSeconds[0]);
     }
     if (!caps.resolutions.includes(resolution)) {
       setResolution(caps.resolutions[0]);
@@ -60,13 +161,33 @@ export function useSelectedModel(mode: GenerationMode) {
     }
   }, [selectedModel, aspect, duration, resolution, audio, setAspect, setDuration, setResolution, setAudio]);
 
-  return { activeModels, selectedModel };
+  return { status, activeModels: models, selectedModel, setModel: setModelId };
 }
 
-export function useStudio(initialMode: GenerationMode) {
+export function useGenerationCost(mode: GenerationMode, model: ModelOption | null) {
+  const [aspect] = useSharedState(aspectRatioAtom);
+  const [duration] = useSharedState(durationAtom);
+  const [resolution] = useSharedState(resolutionAtom);
+  const [audio] = useSharedState(audioAtom);
+
+  return useQuote(
+    model
+      ? {
+          modelId: model.id,
+          mode,
+          resolution,
+          aspectRatio: aspect,
+          durationSeconds: mode === "video" ? duration : null,
+          audio,
+        }
+      : null,
+  );
+}
+
+export function useStudio(initialMode: GenerationMode, activeModels: ModelOption[], selectedModel: ModelOption) {
   const [, setMode] = useSharedState(modeAtom);
   const [prompt, setPrompt] = useSharedState(promptAtom);
-  const [model, setModel] = useSharedState(selectedModelAtom);
+  const [, setModel] = useSharedState(selectedModelAtom);
   const [aspect, setAspect] = useSharedState(aspectRatioAtom);
   const [duration, setDuration] = useSharedState(durationAtom);
   const [resolution, setResolution] = useSharedState(resolutionAtom);
@@ -80,11 +201,9 @@ export function useStudio(initialMode: GenerationMode) {
 
   useEffect(() => {
     setMode(initialMode);
-    setModel(STUDIO_MODELS[initialMode].create);
-  }, [initialMode, setMode, setModel]);
+  }, [initialMode, setMode]);
 
-  const { activeModels, selectedModel } = useSelectedModel(initialMode);
-  const cost = getGenerationCost(initialMode, selectedModel, duration);
+  const cost = useGenerationCost(initialMode, selectedModel);
   const takes = initialMode === "video" ? VIDEO_TAKES : IMAGE_TAKES;
   const active = takes.find((item) => item.id === activeId) ?? takes[0];
   const isVideo = initialMode === "video";
@@ -95,11 +214,11 @@ export function useStudio(initialMode: GenerationMode) {
   return {
     prompt,
     setPrompt,
-    model,
     setModel,
     aspect,
     setAspect,
     duration,
+    durationLabel: formatDuration(duration),
     setDuration,
     resolution,
     setResolution,

@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
-import { appRoutes, collectErrors, expectNoHorizontalOverflow, openApp } from "./helpers";
+import { expect } from "@playwright/test";
+import { appRoutes, collectErrors, expectNoHorizontalOverflow, openApp, test } from "./helpers";
 
 test.describe("routes", () => {
   for (const route of appRoutes) {

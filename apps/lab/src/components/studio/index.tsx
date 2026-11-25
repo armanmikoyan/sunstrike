@@ -1,28 +1,17 @@
 "use client";
 
-import { useStudio } from "./hooks";
-import { StudioControls } from "./studio-controls";
-import { StudioHeader } from "./studio-header";
-import { StudioPreview } from "./studio-preview";
-import { StudioQueueDialog } from "./studio-queue-dialog";
-import { StudioSummary } from "./studio-summary";
-import { StudioTakes } from "./studio-takes";
+import { useSelectedModel } from "./hooks";
+import { StudioSkeleton } from "./studio-skeleton";
+import { StudioUnavailable } from "./studio-unavailable";
+import { StudioWorkspace } from "./studio-workspace";
 import type { StudioProps } from "./types";
 
 export function Studio({ initialMode }: StudioProps) {
-  const studio = useStudio(initialMode);
+  const { status, activeModels, selectedModel } = useSelectedModel(initialMode);
 
-  return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col lg:h-[calc(100vh-3rem)] lg:min-h-180 lg:overflow-hidden">
-      <StudioHeader mode={initialMode} credits={studio.credits} />
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <StudioControls studio={studio} />
-        <StudioPreview studio={studio}>
-          <StudioTakes studio={studio} />
-          <StudioSummary studio={studio} />
-        </StudioPreview>
-      </div>
-      <StudioQueueDialog studio={studio} />
-    </div>
-  );
+  if (selectedModel) {
+    return <StudioWorkspace initialMode={initialMode} models={activeModels} selectedModel={selectedModel} />;
+  }
+
+  return status === "loading" ? <StudioSkeleton /> : <StudioUnavailable initialMode={initialMode} />;
 }

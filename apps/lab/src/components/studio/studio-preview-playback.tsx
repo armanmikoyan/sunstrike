@@ -4,7 +4,7 @@ import { Maximize, Pause, Volume2 } from "lucide-react";
 import { STUDIO_COPY } from "./constants";
 import type { StudioScopedProps } from "./types";
 
-export function StudioPreviewPlayback({ studio: { active, audio, duration, isVideo } }: StudioScopedProps) {
+export function StudioPreviewPlayback({ studio: { active, audio, durationLabel, isVideo } }: StudioScopedProps) {
   return (
     <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
       <div className="mb-2.5 flex items-center gap-1.5">
@@ -16,7 +16,7 @@ export function StudioPreviewPlayback({ studio: { active, audio, duration, isVid
           <span className="absolute left-[38%] top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow" />
         </div>
         <span className="font-mono text-xs lg:text-[0.6875rem] text-white/60">
-          {isVideo && duration ? duration : STUDIO_COPY.preview.image}
+          {isVideo ? durationLabel : STUDIO_COPY.preview.image}
         </span>
       </div>
       <div className="flex items-center justify-between">

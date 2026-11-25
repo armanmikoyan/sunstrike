@@ -3,18 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GenerationMode } from "@/components/studio/types";
-import { aspectRatiosFor, durationsFor, getGenerationCost } from "@/components/studio/utils";
-import {
-  aspectRatioAtom,
-  attachmentAtom,
-  durationAtom,
-  modeAtom,
-  promptAtom,
-  selectedModelAtom,
-} from "@/components/studio/state";
-import { useSelectedModel, useSharedState } from "@/components/studio/hooks";
-import { STUDIO_MODELS } from "@/components/studio/constants";
-import { PROMPT_IDEAS } from "./constants";
+import { aspectRatiosFor, durationsFor } from "@/components/studio/utils";
+import { aspectRatioAtom, attachmentAtom, durationAtom, modeAtom, promptAtom } from "@/components/studio/state";
+import { useGenerationCost, useSelectedModel, useSharedState } from "@/components/studio/hooks";
+import { COMPOSER_COPY, PROMPT_IDEAS } from "./constants";
 import type { TypingOptions } from "./types";
 
 export function useTypingCycle(
@@ -61,20 +53,21 @@ export function usePromptComposer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useSharedState(modeAtom);
   const [prompt, setPrompt] = useSharedState(promptAtom);
-  const [model, setModel] = useSharedState(selectedModelAtom);
   const [aspect, setAspect] = useSharedState(aspectRatioAtom);
   const [duration, setDuration] = useSharedState(durationAtom);
   const [attachment, setAttachment] = useSharedState(attachmentAtom);
 
-  const { activeModels, selectedModel } = useSelectedModel(mode);
-  const cost = getGenerationCost(mode, selectedModel, duration);
-  const aspectOptions = aspectRatiosFor(selectedModel);
-  const durationOptions = durationsFor(selectedModel);
+  const { status, activeModels, selectedModel, setModel } = useSelectedModel(mode);
+  const cost = useGenerationCost(mode, selectedModel);
+  const aspectOptions = selectedModel ? aspectRatiosFor(selectedModel) : [];
+  const durationOptions = selectedModel ? durationsFor(selectedModel) : [];
+  const modelLabel =
+    selectedModel?.displayName ?? (status === "loading" ? COMPOSER_COPY.loadingModels : COMPOSER_COPY.noModels);
   const typedPlaceholder = useTypingCycle(PROMPT_IDEAS[mode]);
 
   const switchMode = (next: GenerationMode) => {
     setMode(next);
-    setModel(STUDIO_MODELS[next].create);
+    setModel(null);
   };
 
   const submit = () => {
@@ -86,7 +79,7 @@ export function usePromptComposer() {
     mode,
     prompt,
     setPrompt,
-    model,
+    modelLabel,
     setModel,
     aspect,
     setAspect,

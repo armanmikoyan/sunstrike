@@ -4,19 +4,19 @@ import Link from "next/link";
 import { Clock3 } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/dialog";
-import { formatUSD } from "@/components/pricing/utils";
 import { STARTER_PROMPTS, STUDIO_COPY } from "./constants";
+import { StudioCost } from "./studio-cost";
 import type { StudioScopedProps } from "./types";
 
 export function StudioQueueDialog({
-  studio: { queued, setQueued, isVideo, cost, prompt, selectedModel, template, aspect, duration, resolution },
+  studio: { queued, setQueued, isVideo, cost, prompt, selectedModel, template, aspect, durationLabel, resolution },
 }: StudioScopedProps) {
   const chips = [
     selectedModel.displayName,
     template?.name,
     aspect,
     resolution,
-    isVideo ? duration : STUDIO_COPY.preview.imageUnit,
+    isVideo ? durationLabel : STUDIO_COPY.preview.imageUnit,
   ].filter((chip): chip is string => Boolean(chip));
 
   return (
@@ -30,7 +30,7 @@ export function StudioQueueDialog({
           <DialogDescription className="text-xs lg:text-[0.6875rem] leading-relaxed">
             Your {isVideo ? "video" : "image"} is in the queue. This prototype holds the shot in the library while the
             real renderer is wired up.
-            <span className="tabular-nums font-normal">{formatUSD(cost)}</span> {STUDIO_COPY.queue.reserved}
+            <StudioCost cost={cost} /> {STUDIO_COPY.queue.reserved}
           </DialogDescription>
         </DialogHeader>
         <div className="rounded-lg border border-white/8 bg-white/1.5 p-3">
@@ -48,7 +48,7 @@ export function StudioQueueDialog({
               </span>
             ))}
             <span className="rounded border border-white/8 bg-black/20 px-1.5 py-0.5 font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">
-              <span className="tabular-nums font-normal">{formatUSD(cost)}</span>
+              <StudioCost cost={cost} />
             </span>
           </div>
         </div>

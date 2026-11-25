@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { Button } from "@/ui/button";
 import { formatUSD } from "@/components/pricing/utils";
 import { cn } from "cn";
-import { STUDIO_COPY, STUDIO_MODELS } from "./constants";
+import { STUDIO_COPY, STUDIO_LABELS } from "./constants";
 import type { StudioHeaderProps } from "./types";
 
 export function StudioHeader({ mode, credits }: StudioHeaderProps) {
@@ -23,7 +23,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           </Link>
         </Button>
         <span className="h-4 w-px bg-border" />
-        <span className="w-19 truncate text-xs lg:text-[0.6875rem] font-medium">{STUDIO_MODELS[mode].label}</span>
+        <span className="w-19 truncate text-xs lg:text-[0.6875rem] font-medium">{STUDIO_LABELS[mode]}</span>
         <div className="ml-1 hidden items-center gap-0.5 rounded-lg border border-white/6 bg-white/2.5 p-0.5 sm:flex">
           <Link
             href="/create/video"

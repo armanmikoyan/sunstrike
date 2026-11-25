@@ -7,23 +7,57 @@ export type GenerationMode = MediaKind;
 
 export type ModelInputKind = "image" | "video" | "audio";
 
-export type GenerationModelCapabilities = {
+export type PriceUnit = "per_second" | "per_image";
+
+export type ModelCapabilities = {
   modes: GenerationMode[];
   inputs: ModelInputKind[];
   resolutions: string[];
-  durations: string[];
+  durationsSeconds: number[];
   aspectRatios: string[];
   audio: boolean;
 };
 
-export type GenerationModel = {
-  id: string;
-  slug: string;
-  displayName: string;
-  provider: string;
-  providerModelId: string;
-  capabilities: GenerationModelCapabilities;
-  isEnabled: boolean;
+/** One entry of `GET /api/offerings`: a model a customer can use now, with its selling price. */
+export type Offering = {
+  model: {
+    id: string;
+    slug: string;
+    name: string;
+    summary: string;
+    capabilities: ModelCapabilities;
+  };
+  price: {
+    unit: PriceUnit;
+    unitPriceMicros: number;
+    currency: string;
+  };
+};
+
+export type OfferingsResponse = {
+  offerings: Offering[];
+};
+
+export type OfferingsStatus = "loading" | "ready" | "failed";
+
+export type OfferingsState = {
+  status: OfferingsStatus;
+  models: ModelOption[];
+};
+
+export type QuoteRequest = {
+  modelId: string;
+  mode: GenerationMode;
+  resolution: string;
+  aspectRatio: string;
+  durationSeconds: number | null;
+  audio: boolean;
+};
+
+export type QuoteResponse = {
+  quote: {
+    totalMicros: number;
+  };
 };
 
 export type Template = {
@@ -34,7 +68,29 @@ export type Template = {
   createdAt: string;
 };
 
-export type ModelOption = GenerationModel & { cost: number };
+export type ModelOption = {
+  id: string;
+  slug: string;
+  displayName: string;
+  summary: string;
+  capabilities: ModelCapabilities;
+  unit: PriceUnit;
+  unitPrice: number;
+};
+
+export type StudioCostProps = {
+  cost: number | null;
+};
+
+export type StudioSkeletonLineProps = {
+  width: string;
+  className?: string;
+};
+
+export type StudioWorkspaceProps = StudioProps & {
+  models: ModelOption[];
+  selectedModel: ModelOption;
+};
 
 export type StudioHeaderProps = {
   mode: GenerationMode;

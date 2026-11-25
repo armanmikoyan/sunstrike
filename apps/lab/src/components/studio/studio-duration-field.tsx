@@ -3,6 +3,7 @@
 import { cn } from "cn";
 import { STUDIO_COPY } from "./constants";
 import { StudioField } from "./studio-field";
+import { formatDuration } from "./utils";
 import type { StudioScopedProps } from "./types";
 
 export function StudioDurationField({ studio }: StudioScopedProps) {
@@ -21,7 +22,7 @@ export function StudioDurationField({ studio }: StudioScopedProps) {
               studio.duration === value && "border-white/20 bg-white/8 text-foreground",
             )}
           >
-            {value}
+            {formatDuration(value)}
           </button>
         ))}
       </div>

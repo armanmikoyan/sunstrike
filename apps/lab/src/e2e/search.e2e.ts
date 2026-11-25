@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { openApp } from "./helpers";
+import { expect, type Page } from "@playwright/test";
+import { openApp, test } from "./helpers";
 
 const search = (page: Page) => page.getByRole("searchbox", { name: "Search the studio" });
 

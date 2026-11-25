@@ -1,25 +1,24 @@
-import type {
-  GenerationMode,
-  GenerationModel,
-  GenerationModelCapabilities,
-  ModelOption,
-} from "@/components/studio/types";
-import { DURATIONS } from "@/components/studio/constants";
+import type { GenerationMode, ModelInputKind } from "@/components/studio/types";
 
+const DURATIONS = ["4s", "5s", "6s", "8s", "12s"];
 const VIDEO_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"];
 const STILL_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"];
 
-const capabilities = (overrides: Partial<GenerationModelCapabilities> = {}): GenerationModelCapabilities => ({
-  modes: ["video"],
-  inputs: ["image", "video"],
+const VIDEO_CAPABILITIES = {
+  modes: ["video"] as GenerationMode[],
+  inputs: ["image", "video"] as ModelInputKind[],
   resolutions: ["720p", "1080p"],
   durations: DURATIONS,
   aspectRatios: VIDEO_ASPECTS,
   audio: true,
+};
+
+const capabilities = (overrides: Partial<typeof VIDEO_CAPABILITIES> = {}) => ({
+  ...VIDEO_CAPABILITIES,
   ...overrides,
 });
 
-export const generationModels: GenerationModel[] = [
+export const generationModels = [
   {
     id: "mdl_motion_2",
     slug: "chronolab-motion-2",
@@ -162,16 +161,16 @@ export const modelCosts: Record<string, number> = {
   "chronolab-product": 0.1,
 };
 
-const withCost = (model: GenerationModel): ModelOption => ({
+const withCost = (model: (typeof generationModels)[number]) => ({
   ...model,
   cost: modelCosts[model.slug] ?? 0,
 });
 
-export function modelsForMode(mode: GenerationMode): ModelOption[] {
+export function modelsForMode(mode: GenerationMode) {
   return generationModels.filter((model) => model.isEnabled && model.capabilities.modes.includes(mode)).map(withCost);
 }
 
-export const modelOptions: Record<GenerationMode, ModelOption[]> = {
+export const modelOptions = {
   video: modelsForMode("video"),
   image: modelsForMode("image"),
 };
