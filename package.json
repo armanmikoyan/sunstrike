@@ -10,6 +10,7 @@
     "dev:lab": "npm run dev --workspace @chronolab/lab",
     "dev:engine": "npm run dev --workspace @chronolab/engine",
     "db:migrate": "npm run db:migrate --workspace @chronolab/engine",
+    "catalog:sync": "npm run catalog:sync --workspace @chronolab/engine",
     "build": "npm run build --workspace @chronolab/lab",
     "start": "npm run start --workspace @chronolab/lab --",
     "lint": "oxlint",

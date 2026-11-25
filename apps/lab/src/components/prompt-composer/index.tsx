@@ -27,7 +27,7 @@ export function PromptComposer({ className }: PromptComposerProps) {
         className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.015)_42%,rgba(255,255,255,0)_72%)]"
       />
 
-      <ComposerModeSwitch mode={composer.mode} cost={composer.cost} onSwitch={composer.switchMode} />
+      <ComposerModeSwitch mode={composer.mode} onSwitch={composer.switchMode} />
       <ComposerPrompt composer={composer} />
       <ComposerAttachmentChip composer={composer} />
       <ComposerToolbar composer={composer} />

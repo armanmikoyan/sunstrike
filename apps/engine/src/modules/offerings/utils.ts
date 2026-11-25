@@ -20,6 +20,7 @@ export function buildOfferings(models: readonly CatalogModel[], rates: readonly 
           slug: model.slug,
           name: model.name,
           summary: model.summary,
+          vendor: model.vendor,
           capabilities: model.capabilities,
         },
         price,

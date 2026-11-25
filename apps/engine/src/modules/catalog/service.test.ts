@@ -23,6 +23,7 @@ const videoModel: CatalogModelWithCost = {
   summary: "Native audio and longer takes.",
   provider: "chronolab",
   providerModelKey: "motion-2",
+  vendor: null,
   capabilities: {
     modes: ["video"],
     inputs: ["image", "video"],
@@ -44,6 +45,7 @@ const imageModel: CatalogModelWithCost = {
   summary: "Everyday 1 MP images.",
   provider: "chronolab",
   providerModelKey: "image-2",
+  vendor: null,
   capabilities: {
     modes: ["image"],
     inputs: ["image"],
@@ -152,9 +154,10 @@ describe("catalog service", () => {
       fetchModelUpdates: vi.fn().mockResolvedValue([
         {
           providerModelKey: videoModel.providerModelKey,
-          name: videoModel.name,
-          providerCostMicros: 52_000,
+          vendor: null,
           active: true,
+          capabilities: null,
+          cost: { micros: 52_000, unit: "per_second" },
         },
       ]),
     };

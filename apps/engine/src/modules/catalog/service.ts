@@ -1,6 +1,6 @@
 import { badRequest, isUuid, notFound } from "@/shared/utils";
 import { GENERATION_MODES } from "./constants";
-import { getProviderAdapter, registerProviderAdapter as registerAdapter } from "./providers";
+import { getProviderAdapter, listProviderAdapters, registerProviderAdapter as registerAdapter } from "./providers";
 import type { CatalogProviderAdapter } from "./providers/types";
 import * as repository from "./repository";
 import type { CatalogModel, CatalogModelWithCost, GenerationSettingsInput, UpsertProviderModelInput } from "./types";
@@ -97,4 +97,14 @@ export async function syncFromProvider(
   if (remoteUpdates.length === 0) return [];
 
   return syncProviderModels(mergeProviderUpdates(scoped, remoteUpdates));
+}
+
+export async function syncAllProviders(): Promise<CatalogModelWithCost[]> {
+  const synced: CatalogModelWithCost[] = [];
+
+  for (const adapter of listProviderAdapters()) {
+    synced.push(...(await syncFromProvider(adapter.provider, adapter)));
+  }
+
+  return synced;
 }

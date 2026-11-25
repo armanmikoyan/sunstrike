@@ -22,8 +22,10 @@ import {
   TICK_RADIUS,
   TICK_WIDTH,
 } from "./constants";
+import { useOfferings } from "@/components/studio/hooks";
 import type {
   GenerationKind,
+  PricingModels,
   PricingTopUpEstimateProps,
   SegmentedSliderProps,
   SliderDrag,
@@ -293,16 +295,23 @@ export function useDrumDrag({
   return { handlePointerDown, handlePointerMove, endDrag, clearDrag };
 }
 
+export function usePricingModels(): PricingModels {
+  const video = useOfferings("video");
+  const image = useOfferings("image");
+
+  return { status: video.status, videoModels: video.models, imageModels: image.models };
+}
+
 export function useTopUpEstimate({ videoModels, imageModels, amount }: PricingTopUpEstimateProps) {
   const [mode, setMode] = useState<GenerationKind>("video");
-  const [videoSlug, setVideoSlug] = useState(videoModels[0]?.slug ?? "");
-  const [imageSlug, setImageSlug] = useState(imageModels[0]?.slug ?? "");
+  const [videoSlug, setVideoSlug] = useState("");
+  const [imageSlug, setImageSlug] = useState("");
 
   const models = mode === "video" ? videoModels : imageModels;
   const activeSlug = mode === "video" ? videoSlug : imageSlug;
   const selectedModel = models.find((model) => model.slug === activeSlug) ?? models[0];
-  const rate = selectedModel ? (mode === "video" ? (selectedModel.perSecond ?? 0) : (selectedModel.perImage ?? 0)) : 0;
-  const capacity = modelCapacity(selectedModel, mode, amount, PRICING_COPY.topUps.custom.videoSeconds);
+  const rate = selectedModel?.unitPrice ?? 0;
+  const capacity = modelCapacity(selectedModel, amount);
   const unit = mode === "video" ? PRICING_COPY.topUps.videos : PRICING_COPY.topUps.images;
 
   const setSelectedSlug = (slug: string) => {

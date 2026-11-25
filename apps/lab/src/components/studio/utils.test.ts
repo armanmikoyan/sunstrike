@@ -3,12 +3,15 @@ import type { ModelOption, Offering } from "./types";
 import { ASPECT_RATIOS } from "./constants";
 import {
   aspectRatiosFor,
+  durationIndex,
   durationsFor,
   formatDuration,
+  formatDurationRange,
   formatRate,
   modelsForMode,
   quoteQuery,
   resolutionsFor,
+  spokenDuration,
   toModelOption,
 } from "./utils";
 
@@ -25,25 +28,54 @@ const model = (overrides: Partial<ModelOption> = {}): ModelOption => ({
     aspectRatios: ["16:9", "9:16", "1:1"],
     audio: false,
   },
+  vendor: { id: "bytedance", name: "ByteDance", logoUrl: null },
   unit: "per_second",
   unitPrice: 0.085,
+  priceVaries: false,
+  tiers: [],
+  example: { units: 6, total: 0.51 },
   ...overrides,
+});
+
+const offering = (price: Partial<Offering["price"]> = {}): Offering => ({
+  model: {
+    id: "mdl_test",
+    slug: "chronolab-test",
+    name: "Chronolab Test",
+    summary: "Fast drafts and short motion tests.",
+    vendor: { id: "bytedance", name: "ByteDance", logoUrl: null },
+    capabilities: model().capabilities,
+  },
+  price: {
+    unit: "per_second",
+    unitPriceMicros: 85_000,
+    rules: { tiers: [], resolutionMultipliers: {}, audioMultiplier: 1, discountPercent: 0 },
+    example: { units: 6, totalMicros: 510_000 },
+    currency: "USD",
+    ...price,
+  },
 });
 
 describe("toModelOption", () => {
   it("names the model and prices it in dollars", () => {
-    const offering: Offering = {
-      model: {
-        id: "mdl_test",
-        slug: "chronolab-test",
-        name: "Chronolab Test",
-        summary: "Fast drafts and short motion tests.",
-        capabilities: model().capabilities,
-      },
-      price: { unit: "per_second", unitPriceMicros: 85_000, currency: "USD" },
-    };
+    expect(toModelOption(offering())).toEqual(model());
+  });
 
-    expect(toModelOption(offering)).toEqual(model());
+  it("marks a price that rises with resolution or audio, and converts volume tiers", () => {
+    const option = toModelOption(
+      offering({
+        rules: {
+          tiers: [{ minQuantity: 10, unitPriceMicros: 60_000 }],
+          resolutionMultipliers: { "1080p": 1.5 },
+          audioMultiplier: 1,
+          discountPercent: 0,
+        },
+      }),
+    );
+
+    expect(option.priceVaries).toBe(true);
+    expect(option.tiers).toEqual([{ minQuantity: 10, unitPrice: 0.06 }]);
+    expect(toModelOption(offering()).priceVaries).toBe(false);
   });
 });
 
@@ -59,6 +91,18 @@ describe("modelsForMode", () => {
 describe("formatting", () => {
   it("labels durations in seconds", () => {
     expect(formatDuration(5)).toBe("5s");
+  });
+
+  it("labels the duration range and speaks the value", () => {
+    expect(formatDurationRange([4, 5, 6, 15])).toBe("4–15s");
+    expect(formatDurationRange([5])).toBe("5s");
+    expect(formatDurationRange([])).toBe("");
+    expect(spokenDuration(6)).toBe("6 seconds");
+  });
+
+  it("finds the slider stop for a duration, falling back to the first", () => {
+    expect(durationIndex([4, 6, 7, 8], 7)).toBe(2);
+    expect(durationIndex([4, 6, 7, 8], 5)).toBe(0);
   });
 
   it("shows the rate with its unit", () => {

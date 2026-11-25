@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { GenerationMode } from "@/components/studio/types";
 import { aspectRatiosFor, durationsFor } from "@/components/studio/utils";
 import { aspectRatioAtom, attachmentAtom, durationAtom, modeAtom, promptAtom } from "@/components/studio/state";
-import { useGenerationCost, useSelectedModel, useSharedState } from "@/components/studio/hooks";
+import { useSelectedModel, useSharedState } from "@/components/studio/hooks";
 import { COMPOSER_COPY, PROMPT_IDEAS } from "./constants";
 import type { TypingOptions } from "./types";
 
@@ -58,7 +58,6 @@ export function usePromptComposer() {
   const [attachment, setAttachment] = useSharedState(attachmentAtom);
 
   const { status, activeModels, selectedModel, setModel } = useSelectedModel(mode);
-  const cost = useGenerationCost(mode, selectedModel);
   const aspectOptions = selectedModel ? aspectRatiosFor(selectedModel) : [];
   const durationOptions = selectedModel ? durationsFor(selectedModel) : [];
   const modelLabel =
@@ -91,7 +90,6 @@ export function usePromptComposer() {
     selectedModel,
     aspectOptions,
     durationOptions,
-    cost,
     typedPlaceholder,
     fileInputRef,
     switchMode,

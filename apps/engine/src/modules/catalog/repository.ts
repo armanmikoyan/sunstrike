@@ -9,6 +9,9 @@ const columns = `
   summary,
   provider,
   provider_model_key,
+  vendor_id,
+  vendor_name,
+  vendor_logo_url,
   supported_modes,
   supported_inputs,
   resolutions,
@@ -75,6 +78,9 @@ export async function upsertProviderModel(input: UpsertProviderModelInput): Prom
        summary,
        provider,
        provider_model_key,
+       vendor_id,
+       vendor_name,
+       vendor_logo_url,
        supported_modes,
        supported_inputs,
        resolutions,
@@ -87,11 +93,14 @@ export async function upsertProviderModel(input: UpsertProviderModelInput): Prom
        active,
        updated_at
      )
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now())
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, now())
      on conflict (provider, provider_model_key) do update set
        slug = excluded.slug,
        name = excluded.name,
        summary = excluded.summary,
+       vendor_id = excluded.vendor_id,
+       vendor_name = excluded.vendor_name,
+       vendor_logo_url = excluded.vendor_logo_url,
        supported_modes = excluded.supported_modes,
        supported_inputs = excluded.supported_inputs,
        resolutions = excluded.resolutions,
@@ -100,7 +109,6 @@ export async function upsertProviderModel(input: UpsertProviderModelInput): Prom
        supports_audio = excluded.supports_audio,
        provider_cost_micros = excluded.provider_cost_micros,
        provider_cost_unit = excluded.provider_cost_unit,
-       sort_order = excluded.sort_order,
        active = excluded.active,
        updated_at = now()
      returning ${columns}`,
@@ -110,6 +118,9 @@ export async function upsertProviderModel(input: UpsertProviderModelInput): Prom
       input.summary ?? "",
       input.provider,
       input.providerModelKey,
+      input.vendor?.id ?? null,
+      input.vendor?.name ?? null,
+      input.vendor?.logoUrl ?? null,
       input.capabilities.modes,
       input.capabilities.inputs,
       input.capabilities.resolutions,

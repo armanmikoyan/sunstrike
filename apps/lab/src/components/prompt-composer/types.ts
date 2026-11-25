@@ -13,7 +13,6 @@ export type ComposerProps = {
 
 export type ComposerModeSwitchProps = {
   mode: GenerationMode;
-  cost: PromptComposerState["cost"];
   onSwitch: (mode: GenerationMode) => void;
 };
 

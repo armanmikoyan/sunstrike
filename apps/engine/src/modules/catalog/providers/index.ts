@@ -1,6 +1,7 @@
+import { runwareAdapter } from "./runware";
 import type { CatalogProviderAdapter } from "./types";
 
-const adapters = new Map<string, CatalogProviderAdapter>();
+const adapters = new Map<string, CatalogProviderAdapter>([[runwareAdapter.provider, runwareAdapter]]);
 
 export function registerProviderAdapter(adapter: CatalogProviderAdapter): void {
   adapters.set(adapter.provider, adapter);

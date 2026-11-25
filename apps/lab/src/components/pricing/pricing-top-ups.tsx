@@ -5,13 +5,14 @@ import { ShieldCheck } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { topUpPacks } from "@/mocks/pricing";
 import { PRICING_COPY } from "./constants";
+import { usePricingModels } from "./hooks";
 import { PricingCustomTopUp } from "./pricing-custom-top-up";
 import { PricingTopUpPacks } from "./pricing-top-up-packs";
-import type { PricingTopUpsProps } from "./types";
 
-export function PricingTopUps({ videoModels, imageModels }: PricingTopUpsProps) {
+export function PricingTopUps() {
   const popular = topUpPacks.find((pack) => pack.popular) ?? topUpPacks[0];
   const [amount, setAmount] = useState(popular.price);
+  const { videoModels, imageModels } = usePricingModels();
 
   return (
     <>

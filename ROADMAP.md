@@ -17,15 +17,18 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   blinking caret and a reduced-motion path. Session refresh, a session-aware
   account menu with the provider avatar, and the `/settings` gate.
 - **Studio on Offerings.** The studio and home composer list models from
-  `/api/offerings`, default to the first in catalog order, and show the price
-  from `/api/pricing/quote` for the current settings. Both routes forward to
+  `/api/offerings` and default to the first in catalog order; the studio shows
+  the price from `/api/pricing/quote` for the current settings. Both routes forward to
   the engine; e2e answers them from `src/mocks/offerings.ts`.
+- **Pricing page on Offerings.** Model rates, vendor logos, volume tiers, the
+  per-clip example and the top-up estimate come from `/api/offerings`; the
+  engine prices the example clip. Only the top-up packs are still copy.
 
 ### Next
 
 - **Draft resume.** A signed-out generate resumes its draft after sign-in.
-- **Real data.** Pricing page, library, assets, billing, settings and
-  notifications read engine rows, with no mock on a product screen.
+- **Real data.** Library, assets, billing, settings and notifications read
+  engine rows, with no mock on a product screen.
 - **End-to-end.** Sign in, upload, quote, generate, notify, history and top up,
   plus the failure path and a worker restart.
 
@@ -49,6 +52,12 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 - Catalog: `generation_models` migration with 9 seeded models,
   `GET /api/v1/models` and `GET /api/v1/models/:id` (with `?mode=video|image`),
   shared capability validation, and abstract `CatalogProviderAdapter` sync.
+- Runware catalog: 5 video and 4 image Runware models keyed by AIR id, with
+  their vendor and its logo. The Runware adapter reads availability through
+  the authenticated model search, and capabilities, upstream cost and vendor
+  from each model's published schema; `catalog:sync` runs it once and keeps the
+  catalog's name, summary and order. Prices are the lowest Runware rate plus
+  50%, with Runware's resolution and audio steps as multipliers.
 - Pricing: `model_prices` migration seeded for the 9 models (per-second video,
   per-image stills, image volume tiers), `pricing_rules` for tiers, resolution
   and audio multipliers and a percentage discount; `pricing.listRates(models)`
@@ -79,6 +88,9 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Catalog and media
 
+- **Scheduled sync.** Run the catalog sync as a worker job on a schedule, keep
+  an admin's disable separate from upstream availability so a sync never
+  re-enables it, and flag a synced cost that rises above the selling price.
 - **Templates.** Seeded templates and customisation options; `GET /templates`
   and `GET /templates/{id}` return active rows.
 - **Uploads.** `POST /assets/uploads` returns a signed Supabase Storage upload

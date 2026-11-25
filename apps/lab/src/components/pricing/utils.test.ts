@@ -1,104 +1,43 @@
 import { describe, expect, it } from "vitest";
-import { MAX_IMAGES, MIN_IMAGES } from "./constants";
-import {
-  clampImageQuantity,
-  formatUSD,
-  formatUSDRate,
-  getImageQuote,
-  getImageUnitPrice,
-  getVideoSecondQuote,
-} from "./utils";
+import { toModelOption } from "@/components/studio/utils";
+import { offerings } from "@/mocks/offerings";
+import { formatUSD, formatUSDRate, interleaveRows, modelCapacity, rowsFor } from "./utils";
 
-describe("image tiers", () => {
-  it("charges 7c below ten images", () => {
-    expect(getImageUnitPrice(1)).toBe(0.07);
-    expect(getImageUnitPrice(9)).toBe(0.07);
+const [motion, seedance, image2, imagePro] = offerings.map(toModelOption);
+
+describe("modelCapacity", () => {
+  it("counts whole example outputs the amount buys", () => {
+    expect(modelCapacity(motion, 50)).toBe(98);
+    expect(modelCapacity(image2, 5)).toBe(71);
   });
 
-  it("charges 6c from ten images", () => {
-    expect(getImageUnitPrice(10)).toBe(0.06);
-    expect(getImageUnitPrice(49)).toBe(0.06);
-  });
-
-  it("charges 5c from fifty images", () => {
-    expect(getImageUnitPrice(50)).toBe(0.05);
-    expect(getImageUnitPrice(MAX_IMAGES)).toBe(0.05);
+  it("buys nothing without a model", () => {
+    expect(modelCapacity(undefined, 50)).toBe(0);
   });
 });
 
-describe("clampImageQuantity", () => {
-  it("never drops below the minimum", () => {
-    expect(clampImageQuantity(0)).toBe(MIN_IMAGES);
-    expect(clampImageQuantity(-12)).toBe(MIN_IMAGES);
+describe("interleaveRows", () => {
+  it("alternates video and image rows, then lists the rest", () => {
+    const rows = interleaveRows([motion, seedance], [image2, imagePro]);
+
+    expect(rows.map((row) => `${row.kind}:${row.model.slug}`)).toEqual([
+      "video:chronolab-motion-2",
+      "image:chronolab-image-2",
+      "video:seedance",
+      "image:chronolab-image-pro",
+    ]);
+    expect(interleaveRows([motion, seedance], [image2]).map((row) => row.model.slug)).toEqual([
+      "chronolab-motion-2",
+      "chronolab-image-2",
+      "seedance",
+    ]);
   });
 
-  it("never exceeds the 500 image cap", () => {
-    expect(clampImageQuantity(501)).toBe(MAX_IMAGES);
-    expect(clampImageQuantity(5000)).toBe(MAX_IMAGES);
-  });
+  it("filters rows by kind", () => {
+    const rows = interleaveRows([motion], [image2]);
 
-  it("rounds fractional input", () => {
-    expect(clampImageQuantity(3.4)).toBe(3);
-    expect(clampImageQuantity(3.6)).toBe(4);
-  });
-});
-
-describe("getImageQuote", () => {
-  it("prices a ten image order at the middle tier", () => {
-    const quote = getImageQuote(10);
-    expect(quote).toMatchObject({ quantity: 10, unit: 0.06, total: 0.6 });
-    expect(quote.savings).toBeCloseTo(0.1, 5);
-    expect(quote.percent).toBe(14);
-  });
-
-  it("prices the 500 image maximum", () => {
-    const quote = getImageQuote(500);
-    expect(quote.quantity).toBe(MAX_IMAGES);
-    expect(quote.unit).toBe(0.05);
-    expect(quote.total).toBe(25);
-    expect(quote.savings).toBe(10);
-  });
-
-  it("reports no saving on the base tier", () => {
-    const quote = getImageQuote(5);
-    expect(quote.savings).toBe(0);
-    expect(quote.percent).toBe(0);
-  });
-
-  it("clamps out of range quantities before quoting", () => {
-    expect(getImageQuote(0).quantity).toBe(MIN_IMAGES);
-    expect(getImageQuote(10_000).quantity).toBe(MAX_IMAGES);
-  });
-
-  it("rounds totals to cents", () => {
-    for (const quantity of [1, 7, 13, 49, 51, 137, 499]) {
-      const { total } = getImageQuote(quantity);
-      expect(Number.isInteger(Math.round(total * 100))).toBe(true);
-      expect(total).toBe(Math.round(total * 100) / 100);
-    }
-  });
-});
-
-describe("getVideoSecondQuote", () => {
-  it("multiplies seconds by the model rate", () => {
-    expect(getVideoSecondQuote(6, 0.085)).toEqual({
-      seconds: 6,
-      perSecond: 0.085,
-      total: 0.51,
-    });
-  });
-
-  it("rounds seconds and totals to cents", () => {
-    expect(getVideoSecondQuote(5.4, 0.1)).toEqual({
-      seconds: 5,
-      perSecond: 0.1,
-      total: 0.5,
-    });
-  });
-
-  it("never quotes less than one second", () => {
-    expect(getVideoSecondQuote(0, 0.085).seconds).toBe(1);
-    expect(getVideoSecondQuote(-4, 0.085).seconds).toBe(1);
+    expect(rowsFor(rows, "image").map((row) => row.kind)).toEqual(["image"]);
+    expect(rowsFor(rows, "all")).toHaveLength(2);
   });
 });
 

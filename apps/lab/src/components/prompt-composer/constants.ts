@@ -21,7 +21,6 @@ export const COMPOSER_COPY = {
     video: "Video",
     image: "Image",
   },
-  estimated: "Estimated",
   aspectRatio: "Aspect ratio",
   duration: "Duration",
   modelLabels: {

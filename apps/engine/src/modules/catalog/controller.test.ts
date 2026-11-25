@@ -25,6 +25,7 @@ const sampleModel: CatalogModel = {
   summary: "Native audio and longer takes.",
   provider: "chronolab",
   providerModelKey: "motion-2",
+  vendor: null,
   capabilities: {
     modes: ["video"],
     inputs: ["image", "video"],

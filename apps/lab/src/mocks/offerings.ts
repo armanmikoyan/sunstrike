@@ -1,9 +1,33 @@
 import type { Offering, OfferingsResponse, QuoteResponse } from "@/components/studio/types";
 
+type Rules = Offering["price"]["rules"];
+
 const VIDEO_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"];
 const STILL_ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"];
 
-/** Engine replies for tests and e2e runs that have no engine; mirrors the seeded catalog and prices. */
+const NO_RULES: Rules = { tiers: [], resolutionMultipliers: {}, audioMultiplier: 1, discountPercent: 0 };
+const EXAMPLE_VIDEO_SECONDS = 6;
+
+function price(
+  unit: Offering["price"]["unit"],
+  unitPriceMicros: number,
+  rules: Partial<Rules> = {},
+): Offering["price"] {
+  const units = unit === "per_second" ? EXAMPLE_VIDEO_SECONDS : 1;
+
+  return {
+    unit,
+    unitPriceMicros,
+    rules: { ...NO_RULES, ...rules },
+    example: { units, totalMicros: unitPriceMicros * units },
+    currency: "USD",
+  };
+}
+
+const CHRONOLAB = { id: "chronolab", name: "Chronolab", logoUrl: null };
+const BYTEDANCE = { id: "bytedance", name: "ByteDance", logoUrl: null };
+
+/** Engine-shaped offerings for tests and e2e runs that have no engine. */
 export const offerings: Offering[] = [
   {
     model: {
@@ -11,6 +35,7 @@ export const offerings: Offering[] = [
       slug: "chronolab-motion-2",
       name: "Chronolab Motion 2",
       summary: "Native audio and longer takes for finished shots.",
+      vendor: CHRONOLAB,
       capabilities: {
         modes: ["video"],
         inputs: ["image", "video"],
@@ -20,7 +45,7 @@ export const offerings: Offering[] = [
         audio: true,
       },
     },
-    price: { unit: "per_second", unitPriceMicros: 85_000, currency: "USD" },
+    price: price("per_second", 85_000, { resolutionMultipliers: { "1080p": 1.5 } }),
   },
   {
     model: {
@@ -28,6 +53,7 @@ export const offerings: Offering[] = [
       slug: "seedance",
       name: "Seedance",
       summary: "Natural motion and strong prompt adherence.",
+      vendor: BYTEDANCE,
       capabilities: {
         modes: ["video"],
         inputs: ["image", "video"],
@@ -37,7 +63,7 @@ export const offerings: Offering[] = [
         audio: false,
       },
     },
-    price: { unit: "per_second", unitPriceMicros: 90_000, currency: "USD" },
+    price: price("per_second", 90_000),
   },
   {
     model: {
@@ -45,6 +71,7 @@ export const offerings: Offering[] = [
       slug: "chronolab-image-2",
       name: "Chronolab Image 2",
       summary: "Everyday images at 1 megapixel.",
+      vendor: CHRONOLAB,
       capabilities: {
         modes: ["image"],
         inputs: ["image"],
@@ -54,7 +81,12 @@ export const offerings: Offering[] = [
         audio: false,
       },
     },
-    price: { unit: "per_image", unitPriceMicros: 70_000, currency: "USD" },
+    price: price("per_image", 70_000, {
+      tiers: [
+        { minQuantity: 10, unitPriceMicros: 60_000 },
+        { minQuantity: 50, unitPriceMicros: 50_000 },
+      ],
+    }),
   },
   {
     model: {
@@ -62,6 +94,7 @@ export const offerings: Offering[] = [
       slug: "chronolab-image-pro",
       name: "Chronolab Image Pro",
       summary: "Sharper 2 MP images for final frames.",
+      vendor: null,
       capabilities: {
         modes: ["image"],
         inputs: ["image"],
@@ -71,7 +104,7 @@ export const offerings: Offering[] = [
         audio: false,
       },
     },
-    price: { unit: "per_image", unitPriceMicros: 120_000, currency: "USD" },
+    price: price("per_image", 120_000),
   },
 ];
 

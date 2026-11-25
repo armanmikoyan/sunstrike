@@ -17,6 +17,7 @@ const model: CatalogModel = {
   summary: "Native audio and longer takes.",
   provider: "chronolab",
   providerModelKey: "motion-2",
+  vendor: null,
   capabilities: {
     modes: ["video"],
     inputs: ["image"],
@@ -34,6 +35,7 @@ const rate: PricingRate = {
   unit: "per_second",
   unitPriceMicros: 85_000,
   rules: { tiers: [], resolutionMultipliers: {}, audioMultiplier: 1, discountPercent: 0 },
+  example: { units: 6, totalMicros: 510_000 },
   currency: "USD",
   updatedAt: "2026-11-25T09:00:00.000Z",
 };

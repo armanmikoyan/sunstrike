@@ -7,6 +7,7 @@ import type {
   ModelOption,
   OfferingsResponse,
   OfferingsState,
+  Quote,
   QuoteRequest,
   QuoteResponse,
 } from "./types";
@@ -110,9 +111,9 @@ export function useOfferings(mode: GenerationMode) {
   return { status: offerings.status, models };
 }
 
-export function useQuote(request: QuoteRequest | null) {
+export function useQuote(request: QuoteRequest | null): Quote {
   const query = request ? quoteQuery(request) : null;
-  const [cost, setCost] = useState<number | null>(null);
+  const [result, setResult] = useState<{ query: string | null; total: number | null }>({ query: null, total: null });
 
   useEffect(() => {
     if (!query) return;
@@ -122,7 +123,7 @@ export function useQuote(request: QuoteRequest | null) {
     async function requestQuote(search: string) {
       const total = await fetchQuoteTotal(search, controller.signal).catch(() => null);
 
-      if (!controller.signal.aborted) setCost(total);
+      if (!controller.signal.aborted) setResult({ query: search, total });
     }
 
     void requestQuote(query);
@@ -130,7 +131,9 @@ export function useQuote(request: QuoteRequest | null) {
     return () => controller.abort();
   }, [query]);
 
-  return query ? cost : null;
+  if (!query) return { total: null, pending: false };
+
+  return { total: result.total, pending: result.query !== query };
 }
 
 export function useSelectedModel(mode: GenerationMode) {

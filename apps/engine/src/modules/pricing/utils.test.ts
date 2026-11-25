@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogModel } from "@/modules/catalog";
 import type { ModelPrice, QuoteRequest } from "./types";
-import { buildQuote, buildRates, mapPriceRow, parsePricingRules, parseQuoteQuery, tierUnitPrice } from "./utils";
+import {
+  buildQuote,
+  buildRates,
+  mapPriceRow,
+  parsePricingRules,
+  parseQuoteQuery,
+  rateExample,
+  tierUnitPrice,
+} from "./utils";
 
 const videoModel: CatalogModel = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -10,6 +18,7 @@ const videoModel: CatalogModel = {
   summary: "Native audio and longer takes.",
   provider: "chronolab",
   providerModelKey: "motion-2",
+  vendor: null,
   capabilities: {
     modes: ["video"],
     inputs: ["image", "video"],
@@ -119,10 +128,18 @@ describe("pricing utils", () => {
         unit: "per_second",
         unitPriceMicros: 85_000,
         rules: noRules,
+        example: { units: 6, totalMicros: 510_000 },
         currency: "USD",
         updatedAt: videoPrice.updatedAt,
       },
     ]);
+  });
+
+  it("prices the example at base settings, after the discount", () => {
+    const discounted = { ...videoPrice, rules: { ...noRules, discountPercent: 10 } };
+
+    expect(rateExample("per_second", discounted)).toEqual({ units: 6, totalMicros: 459_000 });
+    expect(rateExample("per_image", imagePrice)).toEqual({ units: 1, totalMicros: 70_000 });
   });
 
   it("quotes video by the second and images by the tiered unit", () => {

@@ -9,3 +9,6 @@ export const PRICE_UNITS = {
 } as const;
 
 export const MAX_QUOTE_QUANTITY = 500;
+
+/** Length of the example clip each video rate is priced at. */
+export const EXAMPLE_VIDEO_SECONDS = 6;

@@ -38,12 +38,25 @@ export interface ModelPriceRow {
   updated_at: string;
 }
 
+/** The price of one example output at base settings: a short clip for video, one image for stills. */
+export interface RateExample {
+  units: number;
+  totalMicros: number;
+}
+
+export interface PriceTotals {
+  subtotalMicros: number;
+  discountMicros: number;
+  totalMicros: number;
+}
+
 /** Public selling rate for one active model; model details stay with catalog. */
 export interface PricingRate {
   modelId: string;
   unit: PriceUnit;
   unitPriceMicros: number;
   rules: PricingRules;
+  example: RateExample;
   currency: Currency;
   updatedAt: string;
 }

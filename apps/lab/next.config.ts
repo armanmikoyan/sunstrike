@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Model vendor logos come from the catalog, which syncs them from Runware.
+  images: {
+    remotePatterns: [new URL("https://assets.runware.ai/**")],
+  },
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
   cacheComponents: true,
   agentRules: false,

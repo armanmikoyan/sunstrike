@@ -62,10 +62,12 @@ export function StudioSkeleton() {
             <div className={cn(SKELETON_SURFACE, "mt-2 h-9")} />
 
             <StudioSkeletonLine width="w-12" className="mt-5" />
-            <div className="mt-2 flex gap-1">
-              {slots(SKELETON_SLOTS.durations).map((slot) => (
-                <span key={slot} className={cn(SKELETON_SURFACE, "h-7 flex-1")} />
-              ))}
+            <div className={cn(SKELETON_SURFACE, "mt-2 flex h-9 items-center px-3")}>
+              <span className={cn(SKELETON_BAR, "h-1 w-full")} />
+            </div>
+            <div className="mt-1.5 flex items-center justify-between">
+              <StudioSkeletonLine width="w-10" />
+              <StudioSkeletonLine width="w-5" />
             </div>
 
             <div className="mt-5 flex items-center justify-between gap-4">

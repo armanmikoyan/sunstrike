@@ -19,21 +19,18 @@ function renderComposer() {
 const prompt = () => screen.getByRole("textbox", { name: "Describe your generation" });
 
 describe("home prompt composer", () => {
-  it("starts in video mode with the engine's quote", async () => {
+  it("starts in video mode on the first video model, without a price", async () => {
     renderComposer();
     expect(prompt()).toBeInTheDocument();
-    expect(
-      await screen.findByText((_, node) => node?.textContent === "$0.43" && node.classList.contains("tabular-nums")),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Chronolab Motion 2" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Video" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByText("Estimated")).not.toBeInTheDocument();
   });
 
-  it("re-prices when switching to images", async () => {
+  it("switches to the first image model", async () => {
     renderComposer();
     await userEvent.click(screen.getByRole("tab", { name: "Image" }));
-    expect(
-      await screen.findByText((_, node) => node?.textContent === "$0.07" && node.classList.contains("tabular-nums")),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Chronolab Image 2" })).toBeInTheDocument();
   });
 
   it("accepts a prompt and starts a generation", async () => {

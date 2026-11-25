@@ -14,11 +14,9 @@ test.describe("pricing", () => {
       }),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Chronolab Motion 2" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Chronolab Loop" })).toBeVisible();
-    await expect(page.getByText("$0.085", { exact: true })).toHaveCount(2);
-    await expect(page.getByText("$0.10", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("$0.072", { exact: true })).toBeVisible();
-    await expect(page.getByText("$0.51 per 6-second clip")).toHaveCount(2);
+    await expect(page.getByRole("heading", { name: "Seedance" })).toBeVisible();
+    await expect(page.getByText("$0.51 per 6-second clip")).toBeVisible();
+    await expect(page.getByText("$0.54 per 6-second clip")).toBeVisible();
   });
 
   test("filters the rate list to image models", async ({ page }) => {
@@ -28,6 +26,7 @@ test.describe("pricing", () => {
     await expect(page.getByRole("heading", { name: "Chronolab Image 2" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Chronolab Motion 2" })).toHaveCount(0);
     await expect(page.getByText("$0.07", { exact: true })).toBeVisible();
+    await expect(page.getByText("Volume 10+ $0.06 · 50+ $0.05")).toBeVisible();
   });
 
   test("scrolls to the rates without running the route loader", async ({ page }) => {

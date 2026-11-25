@@ -10,6 +10,7 @@ export const config = {
   databaseUrl: () => required("DATABASE_URL"),
   supabaseUrl: () => required("SUPABASE_URL"),
   supabaseKey: () => required("SUPABASE_PUBLISHABLE_KEY"),
+  runwareApiKey: () => required("RUNWARE_API_KEY"),
   corsOrigins: () => parseOrigins(process.env.CORS_ORIGIN ?? DEFAULT_CORS_ORIGIN),
   port: () => positiveInt("PORT", DEFAULT_PORT),
   isProduction: () => process.env.NODE_ENV === "production",

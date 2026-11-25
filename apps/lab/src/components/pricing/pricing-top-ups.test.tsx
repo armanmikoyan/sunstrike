@@ -1,11 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { imageRates, videoRates } from "@/mocks/pricing";
 import { PricingTopUps } from "./pricing-top-ups";
 
 function renderTopUps() {
-  return render(<PricingTopUps videoModels={videoRates} imageModels={imageRates} />);
+  return render(<PricingTopUps />);
 }
 
 describe("top-up presets", () => {

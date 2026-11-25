@@ -9,6 +9,7 @@ export const catalog = {
   registerProviderAdapter: service.registerProviderAdapter,
   syncProviderModels: service.syncProviderModels,
   syncFromProvider: service.syncFromProvider,
+  syncAllProviders: service.syncAllProviders,
 };
 
 export type { CatalogProviderAdapter, ProviderSyncTarget, ProviderSyncUpdate } from "./providers/types";
@@ -20,6 +21,7 @@ export type {
   GenerationSettingsInput,
   ModelCapabilities,
   ModelInputKind,
+  ModelVendor,
   ProviderCostUnit,
   UpsertProviderModelInput,
 } from "./types";

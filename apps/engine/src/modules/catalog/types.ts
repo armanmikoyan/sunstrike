@@ -15,6 +15,12 @@ export interface ModelCapabilities {
   audio: boolean;
 }
 
+export interface ModelVendor {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+}
+
 /** Public model representation served to clients (never exposes upstream provider costs). */
 export interface CatalogModel {
   id: string;
@@ -23,6 +29,7 @@ export interface CatalogModel {
   summary: string;
   provider: string;
   providerModelKey: string;
+  vendor: ModelVendor | null;
   capabilities: ModelCapabilities;
   active: boolean;
   updatedAt: string;
@@ -41,6 +48,9 @@ export interface ModelRow {
   summary: string;
   provider: string;
   provider_model_key: string;
+  vendor_id: string | null;
+  vendor_name: string | null;
+  vendor_logo_url: string | null;
   supported_modes: string[];
   supported_inputs: string[];
   resolutions: string[];
@@ -73,6 +83,7 @@ export interface UpsertProviderModelInput {
   summary?: string;
   provider: string;
   providerModelKey: string;
+  vendor?: ModelVendor | null;
   capabilities: ModelCapabilities;
   providerCostMicros: number;
   providerCostUnit: ProviderCostUnit;

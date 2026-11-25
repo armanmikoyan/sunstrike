@@ -1,6 +1,7 @@
 "use client";
 
 import { STUDIO_COPY } from "./constants";
+import { StudioModelLogo } from "./studio-model-logo";
 import { StudioSelectField } from "./studio-select-field";
 import type { StudioScopedProps } from "./types";
 import { formatRate } from "./utils";
@@ -16,6 +17,7 @@ export function StudioModelField({ studio }: StudioScopedProps) {
         options={studio.activeModels.map((item) => ({
           value: item.id,
           label: item.displayName,
+          icon: <StudioModelLogo vendor={item.vendor} />,
           hint: <span className="tabular-nums font-normal">{formatRate(item)}</span>,
         }))}
         onChange={studio.setModel}

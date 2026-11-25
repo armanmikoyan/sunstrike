@@ -2,8 +2,13 @@ import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { imageRates, videoRates } from "@/mocks/pricing";
+import { modelsForMode, toModelOption } from "@/components/studio/utils";
+import { offerings } from "@/mocks/offerings";
 import { PricingCustomTopUp } from "./pricing-custom-top-up";
+
+const models = offerings.map(toModelOption);
+const videoRates = modelsForMode(models, "video");
+const imageRates = modelsForMode(models, "image");
 
 function Harness() {
   const [amount, setAmount] = useState(5);

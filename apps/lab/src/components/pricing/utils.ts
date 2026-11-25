@@ -1,51 +1,5 @@
-import type { GenerationKind, ModelRate } from "./types";
-import { IMAGE_TIERS, MAX_IMAGES, MIN_IMAGES } from "./constants";
-
-export function getImageTier(quantity: number) {
-  let tier = IMAGE_TIERS[0];
-
-  for (const candidate of IMAGE_TIERS) {
-    if (quantity >= candidate.start) tier = candidate;
-  }
-
-  return tier;
-}
-
-export function getImageUnitPrice(quantity: number) {
-  return getImageTier(quantity).unit;
-}
-
-export function clampImageQuantity(quantity: number) {
-  return Math.min(MAX_IMAGES, Math.max(MIN_IMAGES, Math.round(quantity)));
-}
-
-export function getImageQuote(quantity: number) {
-  const count = clampImageQuantity(quantity);
-  const unit = getImageUnitPrice(count);
-  const total = Math.round(count * unit * 100) / 100;
-  const base = count * IMAGE_TIERS[0].unit;
-  const savings = Math.round((base - total) * 100) / 100;
-  const percent = base > 0 ? Math.round((savings / base) * 100) : 0;
-
-  return {
-    quantity: count,
-    unit,
-    total,
-    savings,
-    percent,
-  };
-}
-
-export function getVideoSecondQuote(seconds: number, perSecond: number) {
-  const count = Math.max(1, Math.round(seconds));
-  const total = Math.round(count * perSecond * 100) / 100;
-
-  return {
-    seconds: count,
-    perSecond,
-    total,
-  };
-}
+import type { ModelOption } from "@/components/studio/types";
+import type { GenerationKind, ModelRow } from "./types";
 
 export function formatUSD(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -73,20 +27,30 @@ export function amountLabel(value: number) {
   }).format(value);
 }
 
-export function modelCapacity(
-  model: ModelRate | undefined,
-  mode: GenerationKind,
-  amount: number,
-  videoSeconds: number,
-) {
-  const rate = model ? (mode === "video" ? (model.perSecond ?? 0) : (model.perImage ?? 0)) : 0;
-  if (rate <= 0) return 0;
-  return mode === "video" ? Math.floor(amount / (rate * videoSeconds)) : Math.floor(amount / rate);
+/** Whole example outputs the amount buys: clips of the example length for video, single images for stills. */
+export function modelCapacity(model: ModelOption | undefined, amount: number) {
+  const price = model?.example.total ?? 0;
+
+  return price > 0 ? Math.floor(amount / price) : 0;
 }
 
-export function durationRange(durations: string[]) {
-  if (durations.length === 0) return "";
-  return `${durations[0]}–${durations[durations.length - 1]}`;
+/** Video and image rows alternate, so the "All models" view mixes both kinds from the top. */
+export function interleaveRows(videoModels: readonly ModelOption[], imageModels: readonly ModelOption[]): ModelRow[] {
+  const rows: ModelRow[] = [];
+
+  for (let index = 0; index < Math.max(videoModels.length, imageModels.length); index += 1) {
+    const video = videoModels[index];
+    const image = imageModels[index];
+
+    if (video) rows.push({ kind: "video", model: video });
+    if (image) rows.push({ kind: "image", model: image });
+  }
+
+  return rows;
+}
+
+export function rowsFor(rows: readonly ModelRow[], kind: GenerationKind | "all") {
+  return kind === "all" ? [...rows] : rows.filter((row) => row.kind === kind);
 }
 
 export function clamp(value: number, min: number, max: number) {

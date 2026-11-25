@@ -10,6 +10,8 @@ import { PRICING_COPY, TOP_UP_MODES } from "./constants";
 import { useTopUpEstimate } from "./hooks";
 import type { PricingTopUpEstimateProps } from "./types";
 import { formatUSDRate } from "./utils";
+import { StudioModelLogo } from "@/components/studio/studio-model-logo";
+import { formatDuration } from "@/components/studio/utils";
 
 export function PricingTopUpEstimate({ videoModels, imageModels, amount }: PricingTopUpEstimateProps) {
   const router = useRouter();
@@ -46,11 +48,19 @@ export function PricingTopUpEstimate({ videoModels, imageModels, amount }: Prici
             id="custom-top-up-model"
             className="mt-1.5 w-full border-white/10 bg-white/3.5 text-foreground hover:border-white/20 focus-visible:border-white/20 focus-visible:ring-0 dark:bg-white/3.5 dark:hover:bg-white/5"
           >
-            <SelectValue>{selectedModel?.displayName}</SelectValue>
+            <SelectValue>
+              {selectedModel ? (
+                <span className="flex min-w-0 items-center gap-2">
+                  <StudioModelLogo vendor={selectedModel.vendor} />
+                  <span className="truncate">{selectedModel.displayName}</span>
+                </span>
+              ) : null}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {models.map((model) => (
               <SelectItem key={model.slug} value={model.slug}>
+                <StudioModelLogo vendor={model.vendor} />
                 {model.displayName}
               </SelectItem>
             ))}
@@ -72,7 +82,7 @@ export function PricingTopUpEstimate({ videoModels, imageModels, amount }: Prici
           <p className="mt-1.5 text-xs text-muted-foreground lg:text-[0.6875rem]">
             <span className="tabular-nums">{formatUSDRate(rate)}</span>{" "}
             {mode === "video"
-              ? `${PRICING_COPY.rates.perSecond} · ${PRICING_COPY.topUps.custom.videoSeconds}s each`
+              ? `${PRICING_COPY.rates.perSecond} · ${formatDuration(selectedModel?.example.units ?? 0)} ${PRICING_COPY.rates.each}`
               : PRICING_COPY.rates.perImage}
           </p>
         </div>

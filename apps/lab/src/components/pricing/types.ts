@@ -1,24 +1,18 @@
 import type { MediaKind } from "@/components/media-card/types";
-import type { imageRates, topUpPacks, videoRates } from "@/mocks/pricing";
-import type { getImageQuote } from "./utils";
-
-export type ModelRate = {
-  perSecond?: number;
-  perImage?: number;
-};
-
-export type PricingModel = ModelRate & {
-  slug: string;
-  displayName: string;
-};
+import type { ModelOption, OfferingsStatus } from "@/components/studio/types";
+import type { topUpPacks } from "@/mocks/pricing";
 
 export type GenerationKind = MediaKind;
 
 export type ModelFilter = "all" | GenerationKind;
 
 export type PricingModelSet = {
-  videoModels: PricingModel[];
-  imageModels: PricingModel[];
+  videoModels: ModelOption[];
+  imageModels: ModelOption[];
+};
+
+export type PricingModels = PricingModelSet & {
+  status: OfferingsStatus;
 };
 
 export type AmountControlProps = {
@@ -28,17 +22,16 @@ export type AmountControlProps = {
 
 export type PricingCustomTopUpProps = PricingModelSet & AmountControlProps;
 
-export type PricingTopUpsProps = PricingModelSet;
-
 export type PricingTopUpAmountProps = AmountControlProps;
 
 export type PricingTopUpEstimateProps = PricingModelSet & {
   amount: number;
 };
 
-export type ModelRow =
-  | { kind: "video"; model: (typeof videoRates)[number] }
-  | { kind: "image"; model: (typeof imageRates)[number] };
+export type ModelRow = {
+  kind: GenerationKind;
+  model: ModelOption;
+};
 
 export type SliderProps = {
   value: number;
@@ -71,8 +64,6 @@ export type TickLayout = {
   snap: number;
 };
 
-export type ImageQuote = ReturnType<typeof getImageQuote>;
-
 export type TopUpPack = (typeof topUpPacks)[number];
 
 export type PricingTopUpPacksProps = {
@@ -83,21 +74,6 @@ export type PricingTopUpPacksProps = {
 export type PricingTopUpPackProps = {
   pack: TopUpPack;
   selected: boolean;
-  onSelect: () => void;
-};
-
-export type ImageOrderQuoteProps = {
-  quote: ImageQuote;
-};
-
-export type ImageOrderProps = ImageOrderQuoteProps & {
-  onQuantityChange: (quantity: number) => void;
-};
-
-export type ImageOrderTierProps = {
-  label: string;
-  price: string;
-  active: boolean;
   onSelect: () => void;
 };
 

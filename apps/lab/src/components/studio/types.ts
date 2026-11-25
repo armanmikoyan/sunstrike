@@ -18,6 +18,12 @@ export type ModelCapabilities = {
   audio: boolean;
 };
 
+export type ModelVendor = {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+};
+
 /** One entry of `GET /api/offerings`: a model a customer can use now, with its selling price. */
 export type Offering = {
   model: {
@@ -25,13 +31,27 @@ export type Offering = {
     slug: string;
     name: string;
     summary: string;
+    vendor: ModelVendor | null;
     capabilities: ModelCapabilities;
   };
   price: {
     unit: PriceUnit;
     unitPriceMicros: number;
+    rules: {
+      tiers: { minQuantity: number; unitPriceMicros: number }[];
+      resolutionMultipliers: Record<string, number>;
+      audioMultiplier: number;
+      discountPercent: number;
+    };
+    example: { units: number; totalMicros: number };
     currency: string;
   };
+};
+
+/** From `minQuantity` outputs upward, each output costs `unitPrice` dollars. */
+export type VolumeTier = {
+  minQuantity: number;
+  unitPrice: number;
 };
 
 export type OfferingsResponse = {
@@ -73,13 +93,32 @@ export type ModelOption = {
   slug: string;
   displayName: string;
   summary: string;
+  vendor: ModelVendor | null;
   capabilities: ModelCapabilities;
   unit: PriceUnit;
   unitPrice: number;
+  /** True when resolution or audio raise the price above `unitPrice`. */
+  priceVaries: boolean;
+  tiers: VolumeTier[];
+  example: { units: number; total: number };
+};
+
+/** The last quoted total in dollars; `pending` while a newer quote is on its way. */
+export type Quote = {
+  total: number | null;
+  pending: boolean;
 };
 
 export type StudioCostProps = {
-  cost: number | null;
+  cost: Quote;
+};
+
+export type StudioDurationSliderProps = {
+  options: number[];
+  value: number;
+  onValueChange: (seconds: number) => void;
+  label: string;
+  className?: string;
 };
 
 export type StudioSkeletonLineProps = {
@@ -116,7 +155,13 @@ export type StudioFieldProps = Pick<FieldProps, "label" | "children">;
 export type StudioSelectOption = {
   value: string;
   label: string;
+  icon?: ReactNode;
   hint?: ReactNode;
+};
+
+export type StudioModelLogoProps = {
+  vendor: ModelVendor | null;
+  className?: string;
 };
 
 export type StudioSelectFieldProps = {

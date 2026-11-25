@@ -22,7 +22,8 @@ Chronolab.ai is one npm workspace with two apps.
 `apps/engine` is a modular monolith: one deployable, divided into modules by
 business domain. A module owns one area of behaviour, the data behind it, and
 the public interface other modules use to reach it. `app.ts` builds the app and
-mounts every module, `main.ts` serves HTTP, and `worker.ts` runs background jobs.
+mounts every module, `main.ts` serves HTTP, `worker.ts` runs background jobs,
+and `sync.ts` syncs the catalog from its providers once.
 
 ### Modules
 
@@ -107,6 +108,27 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
   and own no business data of theirs; neither depends on the other. Clients
   get composed answers from these modules, never by joining two responses in
   the lab.
+
+### Catalog sync
+
+The catalog fills its models from provider adapters in `catalog/providers/`;
+Runware is the only one. A sync writes what the provider knows and keeps what
+we decide:
+
+| Source            | Fields                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| Provider (synced) | Availability, capabilities, upstream cost (highest published rate), vendor and logo |
+| Catalog (ours)    | Which models exist and their provider key, name, summary, order                     |
+| Pricing (ours)    | Selling price and rules; never synced                                               |
+
+- **The sync is manual today.** `sync.ts` runs it once and exits through the
+  `catalog:sync` script. Nothing schedules it, so the catalog only changes
+  when someone runs it, and a new model stays inactive until its first sync.
+- **Scheduling it is a worker job**, and it waits on two changes. A sync
+  overwrites `active` with upstream availability, so a model we disabled
+  comes back on; the catalog needs separate "disabled by us" and "available
+  upstream" flags. A synced cost can also rise above the selling price
+  unnoticed, so the job must flag it until the price admin guards the margin.
 
 ### Infrastructure
 

@@ -1,14 +1,17 @@
 import type { CatalogModel, GenerationMode, GenerationSettingsInput } from "@/modules/catalog";
 import { isOneOf, isPositiveNumber, isRecord, isUuid, isWholeNumber, parseBoolean, parseInteger } from "@/shared/utils";
-import { CURRENCY, PRICE_UNITS, QUOTE_KINDS } from "./constants";
+import { CURRENCY, EXAMPLE_VIDEO_SECONDS, PRICE_UNITS, QUOTE_KINDS } from "./constants";
 import type {
   ModelPrice,
   ModelPriceRow,
   ParseResult,
+  PriceTotals,
+  PriceUnit,
   PricingRate,
   PricingRules,
   Quote,
   QuoteRequest,
+  RateExample,
   VolumeTier,
 } from "./types";
 
@@ -78,6 +81,28 @@ export function settingsMultiplier(rules: PricingRules, settings: GenerationSett
   return resolution * audio;
 }
 
+export function priceTotals(
+  unitPriceMicros: number,
+  multiplier: number,
+  units: number,
+  quantity: number,
+  discountPercent: number,
+): PriceTotals {
+  const subtotalMicros = Math.round(unitPriceMicros * multiplier * units * quantity);
+  const discountMicros = Math.round((subtotalMicros * discountPercent) / 100);
+
+  return { subtotalMicros, discountMicros, totalMicros: subtotalMicros - discountMicros };
+}
+
+export function rateExample(unit: PriceUnit, price: ModelPrice): RateExample {
+  const units = unit === PRICE_UNITS.video ? EXAMPLE_VIDEO_SECONDS : 1;
+
+  return {
+    units,
+    totalMicros: priceTotals(price.unitPriceMicros, 1, units, 1, price.rules.discountPercent).totalMicros,
+  };
+}
+
 export function buildRates(models: readonly CatalogModel[], prices: readonly ModelPrice[]): PricingRate[] {
   const byModel = new Map(prices.map((price) => [price.modelId, price]));
 
@@ -87,12 +112,15 @@ export function buildRates(models: readonly CatalogModel[], prices: readonly Mod
 
     if (!price || !mode) return [];
 
+    const unit = PRICE_UNITS[mode];
+
     return [
       {
         modelId: model.id,
-        unit: PRICE_UNITS[mode],
+        unit,
         unitPriceMicros: price.unitPriceMicros,
         rules: price.rules,
+        example: rateExample(unit, price),
         currency: CURRENCY,
         updatedAt: price.updatedAt,
       },
@@ -105,8 +133,13 @@ export function buildQuote(request: QuoteRequest, model: CatalogModel, price: Mo
   const unit = PRICE_UNITS[settings.mode];
   const units = unit === PRICE_UNITS.video ? (settings.durationSeconds ?? 0) : 1;
   const unitPriceMicros = tierUnitPrice(price, quantity);
-  const subtotalMicros = Math.round(unitPriceMicros * settingsMultiplier(price.rules, settings) * units * quantity);
-  const discountMicros = Math.round((subtotalMicros * price.rules.discountPercent) / 100);
+  const { subtotalMicros, discountMicros } = priceTotals(
+    unitPriceMicros,
+    settingsMultiplier(price.rules, settings),
+    units,
+    quantity,
+    price.rules.discountPercent,
+  );
 
   return {
     kind: request.kind,

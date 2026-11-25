@@ -4,7 +4,6 @@ import { SectionHeader } from "@/components/section-header";
 import { PageShell } from "@/ui/page-shell";
 import { Button } from "@/ui/button";
 import { CheckList } from "@/ui/check-list";
-import { imageRates, videoRates } from "@/mocks/pricing";
 import { PRICING_COPY, PRICING_POINTS } from "./constants";
 import { PricingFaq } from "./pricing-faq";
 import { PricingModelRates } from "./pricing-model-rates";
@@ -41,7 +40,7 @@ export function Pricing() {
       </section>
 
       <section className="mt-12">
-        <PricingTopUps videoModels={videoRates} imageModels={imageRates} />
+        <PricingTopUps />
       </section>
 
       <div id="model-rates" className="mt-14 scroll-mt-20">

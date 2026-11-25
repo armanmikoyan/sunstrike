@@ -1,7 +1,7 @@
 import type { CatalogModel } from "@/modules/catalog";
 import type { PricingRate } from "@/modules/pricing";
 
-export type OfferingModel = Pick<CatalogModel, "id" | "slug" | "name" | "summary" | "capabilities">;
+export type OfferingModel = Pick<CatalogModel, "id" | "slug" | "name" | "summary" | "vendor" | "capabilities">;
 
 export type OfferingPrice = Omit<PricingRate, "modelId">;
 

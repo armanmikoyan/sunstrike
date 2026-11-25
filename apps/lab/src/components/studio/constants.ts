@@ -31,7 +31,8 @@ export const STARTER_PROMPTS: Record<GenerationMode, string> = {
 
 export const SKELETON_BAR = "block rounded-full bg-white/6";
 export const SKELETON_SURFACE = "rounded-lg border border-white/7 bg-white/1.5";
-export const SKELETON_SLOTS = { aspects: 6, durations: 5, takes: 4, facts: 3 };
+export const SKELETON_SLOTS = { aspects: 6, takes: 4, facts: 3 };
+export const DURATION_SPOKEN_UNIT = "seconds";
 export const ZERO_WIDTH_SPACE = "\u200b";
 
 export const STUDIO_LABELS: Record<GenerationMode, string> = {

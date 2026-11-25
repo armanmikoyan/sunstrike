@@ -2,14 +2,8 @@
 
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/ui/button";
-import { cn } from "cn";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/ui/dropdown-menu";
+import { StudioDurationSlider } from "@/components/studio/studio-duration-slider";
 import { formatDuration } from "@/components/studio/utils";
 import { COMPOSER_COPY } from "./constants";
 import type { ComposerProps } from "./types";
@@ -28,17 +22,15 @@ export function ComposerDurationMenu({ composer: { duration, setDuration, durati
           <ChevronDown className="size-3 opacity-60" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-36 p-1">
+      <DropdownMenuContent align="start" className="w-60 p-1">
         <DropdownMenuLabel>{COMPOSER_COPY.duration}</DropdownMenuLabel>
-        {durationOptions.map((value) => (
-          <DropdownMenuItem
-            key={value}
-            onSelect={() => setDuration(value)}
-            className={cn(duration === value && "bg-white/8 text-foreground")}
-          >
-            {formatDuration(value)}
-          </DropdownMenuItem>
-        ))}
+        <StudioDurationSlider
+          className="px-2 pb-2"
+          options={durationOptions}
+          value={duration}
+          onValueChange={setDuration}
+          label={COMPOSER_COPY.duration}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

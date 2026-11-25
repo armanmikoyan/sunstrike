@@ -17,6 +17,7 @@ const videoModel: CatalogModelWithCost = {
   summary: "Native audio and longer takes.",
   provider: "chronolab",
   providerModelKey: "motion-2",
+  vendor: null,
   capabilities: {
     modes: ["video"],
     inputs: ["image", "video"],
@@ -38,6 +39,7 @@ const imageModel: CatalogModelWithCost = {
   summary: "Everyday 1 MP images.",
   provider: "chronolab",
   providerModelKey: "image-2",
+  vendor: null,
   capabilities: {
     modes: ["image"],
     inputs: ["image"],
@@ -61,6 +63,9 @@ describe("catalog utils", () => {
       summary: videoModel.summary,
       provider: videoModel.provider,
       provider_model_key: videoModel.providerModelKey,
+      vendor_id: null,
+      vendor_name: null,
+      vendor_logo_url: null,
       supported_modes: ["video", "unknown-mode"],
       supported_inputs: ["image", "video", "invalid-input"],
       resolutions: ["720p", "1080p"],
@@ -98,15 +103,17 @@ describe("catalog utils", () => {
     expect(filterModelsByProvider([videoModel, imageModel], "chronolab")).toEqual([videoModel, imageModel]);
   });
 
-  it("merges upstream provider updates with existing catalog metadata", () => {
+  it("takes upstream capabilities and cost but keeps the catalog's name and summary", () => {
+    const capabilities = { ...videoModel.capabilities, durationsSeconds: [4, 8] };
     const merged = mergeProviderUpdates(
       [videoModel, imageModel],
       [
         {
           providerModelKey: videoModel.providerModelKey,
-          name: "Chronolab Motion 2.1",
-          providerCostMicros: 52_000,
+          vendor: null,
           active: true,
+          capabilities,
+          cost: { micros: 52_000, unit: "per_second" },
         },
       ],
     );
@@ -114,16 +121,52 @@ describe("catalog utils", () => {
     expect(merged).toEqual([
       {
         slug: videoModel.slug,
-        name: "Chronolab Motion 2.1",
+        name: videoModel.name,
         summary: videoModel.summary,
         provider: videoModel.provider,
         providerModelKey: videoModel.providerModelKey,
-        capabilities: videoModel.capabilities,
+        vendor: null,
+        capabilities,
         providerCostMicros: 52_000,
-        providerCostUnit: videoModel.providerCostUnit,
+        providerCostUnit: "per_second",
         active: true,
       },
     ]);
+  });
+
+  it("drops upstream modes, inputs and cost units the catalog does not recognise", () => {
+    const [merged] = mergeProviderUpdates(
+      [videoModel],
+      [
+        {
+          providerModelKey: videoModel.providerModelKey,
+          vendor: null,
+          active: true,
+          capabilities: { ...videoModel.capabilities, modes: ["video", "3d"], inputs: ["image", "mesh"] },
+          cost: { micros: 10_000, unit: "per_megapixel" },
+        },
+      ],
+    );
+
+    expect(merged?.capabilities).toMatchObject({ modes: ["video"], inputs: ["image"] });
+    expect(merged).toMatchObject({
+      providerCostMicros: videoModel.providerCostMicros,
+      providerCostUnit: videoModel.providerCostUnit,
+    });
+  });
+
+  it("keeps current capabilities and cost when the provider does not report them", () => {
+    const [merged] = mergeProviderUpdates(
+      [videoModel],
+      [{ providerModelKey: videoModel.providerModelKey, active: false, capabilities: null, cost: null, vendor: null }],
+    );
+
+    expect(merged).toMatchObject({
+      capabilities: videoModel.capabilities,
+      providerCostMicros: videoModel.providerCostMicros,
+      providerCostUnit: videoModel.providerCostUnit,
+      active: false,
+    });
   });
 
   it("accepts valid video and image generation settings", () => {

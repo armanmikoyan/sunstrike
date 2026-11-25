@@ -1,12 +1,13 @@
 import { isOneOf } from "@/shared/utils";
 import { DEFAULT_PROVIDER_COST_UNIT, GENERATION_MODES, MODEL_INPUT_KINDS, PROVIDER_COST_UNITS } from "./constants";
-import type { ProviderSyncUpdate } from "./providers/types";
+import type { ProviderCapabilities, ProviderSyncUpdate } from "./providers/types";
 import type {
   CapabilityValidationResult,
   CatalogModel,
   CatalogModelWithCost,
   GenerationMode,
   GenerationSettingsInput,
+  ModelCapabilities,
   ModelRow,
   UpsertProviderModelInput,
 } from "./types";
@@ -28,6 +29,9 @@ export function mapModelRow(row: ModelRow): CatalogModelWithCost {
     summary: row.summary,
     provider: row.provider,
     providerModelKey: row.provider_model_key,
+    vendor: row.vendor_id
+      ? { id: row.vendor_id, name: row.vendor_name ?? row.vendor_id, logoUrl: row.vendor_logo_url }
+      : null,
     capabilities: {
       modes: row.supported_modes.filter(isGenerationMode),
       inputs: row.supported_inputs.filter((kind) => isOneOf(MODEL_INPUT_KINDS, kind)),
@@ -67,6 +71,14 @@ export function filterModelsByProvider(
   return models.filter((model) => model.provider === provider);
 }
 
+export function toModelCapabilities(capabilities: ProviderCapabilities): ModelCapabilities {
+  return {
+    ...capabilities,
+    modes: capabilities.modes.filter(isGenerationMode),
+    inputs: capabilities.inputs.filter((kind) => isOneOf(MODEL_INPUT_KINDS, kind)),
+  };
+}
+
 export function mergeProviderUpdates(
   models: readonly CatalogModelWithCost[],
   updates: readonly ProviderSyncUpdate[],
@@ -79,15 +91,19 @@ export function mergeProviderUpdates(
 
     if (!current) continue;
 
+    const unit = update.cost?.unit;
+    const cost = update.cost && isOneOf(PROVIDER_COST_UNITS, unit) ? { micros: update.cost.micros, unit } : null;
+
     inputs.push({
       slug: current.slug,
-      name: update.name,
+      name: current.name,
       summary: current.summary,
       provider: current.provider,
       providerModelKey: current.providerModelKey,
-      capabilities: current.capabilities,
-      providerCostMicros: update.providerCostMicros,
-      providerCostUnit: current.providerCostUnit,
+      vendor: update.vendor ?? current.vendor,
+      capabilities: update.capabilities ? toModelCapabilities(update.capabilities) : current.capabilities,
+      providerCostMicros: cost ? cost.micros : current.providerCostMicros,
+      providerCostUnit: cost ? cost.unit : current.providerCostUnit,
       active: update.active,
     });
   }

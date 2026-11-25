@@ -9,14 +9,18 @@ import { SegmentedTabs } from "@/ui/segmented-tabs";
 import { AnimatedHeight } from "@/motion/animated-height";
 import { Button } from "@/ui/button";
 import { INSTANT_TRANSITION, LAYOUT_SPRING } from "@/motion/constants";
-import { MODEL_FILTERS, PRICING_COPY, ROWS } from "./constants";
+import { MODEL_FILTERS, PRICING_COPY, RATE_SKELETON_ROWS } from "./constants";
+import { usePricingModels } from "./hooks";
 import { PricingModelRow } from "./pricing-model-row";
+import { PricingModelRowSkeleton } from "./pricing-model-row-skeleton";
 import type { ModelFilter } from "./types";
+import { interleaveRows, rowsFor } from "./utils";
 
 export function PricingModelRates() {
   const [filter, setFilter] = useState<ModelFilter>("all");
   const reduceMotion = useReducedMotion();
-  const visible = ROWS.filter((row) => filter === "all" || row.kind === filter);
+  const { status, videoModels, imageModels } = usePricingModels();
+  const visible = rowsFor(interleaveRows(videoModels, imageModels), filter);
 
   return (
     <section aria-label="Model rates">
@@ -52,6 +56,24 @@ export function PricingModelRates() {
           <span>Model</span>
           <span className="text-right">Rate</span>
         </div>
+
+        {status === "loading" ? (
+          <div
+            role="status"
+            aria-label={PRICING_COPY.rates.loading}
+            className="animate-pulse divide-y divide-white/5.5"
+          >
+            {Array.from({ length: RATE_SKELETON_ROWS }, (_, index) => (
+              <PricingModelRowSkeleton key={index} />
+            ))}
+          </div>
+        ) : null}
+
+        {status === "failed" ? (
+          <p role="status" className="bg-card px-5 py-6 text-xs lg:text-[0.6875rem] text-muted-foreground">
+            {PRICING_COPY.rates.unavailable}
+          </p>
+        ) : null}
 
         <AnimatedHeight>
           <div className="relative divide-y divide-white/5.5">
