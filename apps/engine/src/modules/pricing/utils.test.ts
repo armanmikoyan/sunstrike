@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { CatalogModel } from "@/modules/catalog";
 import type { ModelPrice, QuoteRequest } from "./types";
-import { buildQuote, buildRates, mapPriceRow, parsePricingRules, parseQuoteRequest, tierUnitPrice } from "./utils";
+import { buildQuote, buildRates, mapPriceRow, parsePricingRules, parseQuoteQuery, tierUnitPrice } from "./utils";
 
 const videoModel: CatalogModel = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -116,10 +116,6 @@ describe("pricing utils", () => {
     expect(rates).toEqual([
       {
         modelId: videoModel.id,
-        slug: videoModel.slug,
-        name: videoModel.name,
-        summary: videoModel.summary,
-        mode: "video",
         unit: "per_second",
         unitPriceMicros: 85_000,
         rules: noRules,
@@ -166,19 +162,29 @@ describe("pricing utils", () => {
     expect(quote).toMatchObject({ subtotalMicros: 1_530_000, discountMicros: 153_000, totalMicros: 1_377_000 });
   });
 
-  it("parses a quote body with defaults and rejects malformed fields", () => {
-    expect(
-      parseQuoteRequest({
-        kind: "create",
-        modelId: " chronolab-motion-2 ",
-        settings: { mode: "video", resolution: "1080p", aspectRatio: "16:9", durationSeconds: 6 },
-      }),
-    ).toEqual({ ok: true, value: { ...videoRequest, modelId: "chronolab-motion-2" } });
+  it("parses a quote query string with defaults and rejects malformed fields", () => {
+    const query = {
+      kind: "create",
+      modelId: " chronolab-motion-2 ",
+      mode: "video",
+      resolution: "1080p",
+      aspectRatio: "16:9",
+      durationSeconds: "6",
+    };
 
-    expect(parseQuoteRequest(null)).toMatchObject({ ok: false });
-    expect(parseQuoteRequest({ ...videoRequest, kind: "remix" })).toMatchObject({ ok: false });
-    expect(parseQuoteRequest({ ...videoRequest, templateId: "not-a-uuid" })).toMatchObject({ ok: false });
-    expect(parseQuoteRequest({ ...videoRequest, quantity: 1.5 })).toMatchObject({ ok: false });
-    expect(parseQuoteRequest({ ...videoRequest, settings: { mode: "3d" } })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery(query)).toEqual({ ok: true, value: { ...videoRequest, modelId: "chronolab-motion-2" } });
+    expect(parseQuoteQuery({ ...query, audio: "true", quantity: "3" })).toMatchObject({
+      ok: true,
+      value: { settings: { audio: true }, quantity: 3 },
+    });
+
+    expect(parseQuoteQuery({})).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, kind: "remix" })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, mode: "3d" })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, mode: ["video", "image"] })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, durationSeconds: "six" })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, audio: "yes" })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, templateId: "not-a-uuid" })).toMatchObject({ ok: false });
+    expect(parseQuoteQuery({ ...query, quantity: "1.5" })).toMatchObject({ ok: false });
   });
 });

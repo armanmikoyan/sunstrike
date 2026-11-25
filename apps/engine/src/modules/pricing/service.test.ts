@@ -8,7 +8,6 @@ const repositoryMock = vi.hoisted(() => ({
 }));
 
 const catalogMock = vi.hoisted(() => ({
-  listActiveModels: vi.fn(),
   validateGenerationSettings: vi.fn(),
 }));
 
@@ -58,16 +57,14 @@ describe("pricing service", () => {
     vi.clearAllMocks();
   });
 
-  it("lists rates for active catalog models that have a price", async () => {
-    catalogMock.listActiveModels.mockResolvedValue([model]);
+  it("lists rates for the given models that have a price", async () => {
     repositoryMock.listActiveByModelIds.mockResolvedValue([price]);
 
-    const rates = await service.listRates("video");
+    const rates = await service.listRates([model]);
 
-    expect(catalogMock.listActiveModels).toHaveBeenCalledWith("video");
     expect(repositoryMock.listActiveByModelIds).toHaveBeenCalledWith([model.id]);
     expect(rates).toHaveLength(1);
-    expect(rates[0]).toMatchObject({ slug: model.slug, unitPriceMicros: 85_000 });
+    expect(rates[0]).toMatchObject({ modelId: model.id, unitPriceMicros: 85_000 });
     expect(rates[0]).not.toHaveProperty("providerCostMicros");
   });
 
@@ -75,7 +72,7 @@ describe("pricing service", () => {
     catalogMock.validateGenerationSettings.mockResolvedValue({ ...model, providerCostMicros: 55_000 });
     repositoryMock.findActiveByModelId.mockResolvedValue(price);
 
-    const quote = await service.createQuote(request);
+    const quote = await service.calculateQuote(request);
 
     expect(catalogMock.validateGenerationSettings).toHaveBeenCalledWith(model.slug, request.settings);
     expect(repositoryMock.findActiveByModelId).toHaveBeenCalledWith(model.id);
@@ -84,8 +81,8 @@ describe("pricing service", () => {
   });
 
   it("rejects an out-of-range quantity before reading the catalog", async () => {
-    await expect(service.createQuote({ ...request, quantity: 0 })).rejects.toMatchObject({ status: 400 });
-    await expect(service.createQuote({ ...request, quantity: 501 })).rejects.toMatchObject({ status: 400 });
+    await expect(service.calculateQuote({ ...request, quantity: 0 })).rejects.toMatchObject({ status: 400 });
+    await expect(service.calculateQuote({ ...request, quantity: 501 })).rejects.toMatchObject({ status: 400 });
     expect(catalogMock.validateGenerationSettings).not.toHaveBeenCalled();
   });
 
@@ -93,6 +90,6 @@ describe("pricing service", () => {
     catalogMock.validateGenerationSettings.mockResolvedValue(model);
     repositoryMock.findActiveByModelId.mockResolvedValue(null);
 
-    await expect(service.createQuote(request)).rejects.toMatchObject({ status: 404 });
+    await expect(service.calculateQuote(request)).rejects.toMatchObject({ status: 404 });
   });
 });

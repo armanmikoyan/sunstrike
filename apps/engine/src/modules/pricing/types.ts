@@ -38,13 +38,9 @@ export interface ModelPriceRow {
   updated_at: string;
 }
 
-/** Public selling rate for one active model; never carries upstream provider costs. */
+/** Public selling rate for one active model; model details stay with catalog. */
 export interface PricingRate {
   modelId: string;
-  slug: string;
-  name: string;
-  summary: string;
-  mode: GenerationMode;
   unit: PriceUnit;
   unitPriceMicros: number;
   rules: PricingRules;
@@ -81,7 +77,3 @@ export interface Quote {
 }
 
 export type ParseResult<T> = { ok: true; value: T } | { ok: false; message: string };
-
-export interface ListRatesQuery {
-  mode?: unknown;
-}

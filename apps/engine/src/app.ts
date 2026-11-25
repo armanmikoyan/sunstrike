@@ -9,6 +9,7 @@ import generationRouter from "@/modules/generation/router";
 import healthRouter from "@/modules/health/router";
 import mediaRouter from "@/modules/media/router";
 import notificationsRouter from "@/modules/notifications/router";
+import offeringsRouter from "@/modules/offerings/router";
 import pricingRouter from "@/modules/pricing/router";
 import templatesRouter from "@/modules/templates/router";
 import usersRouter from "@/modules/users/router";
@@ -26,6 +27,7 @@ export function createApp(): Express {
   instance.use("/api/v1/generation", generationRouter);
   instance.use("/api/v1/media", mediaRouter);
   instance.use("/api/v1/notifications", notificationsRouter);
+  instance.use("/api/v1/offerings", offeringsRouter);
   instance.use("/api/v1/pricing", pricingRouter);
   instance.use("/api/v1/templates", templatesRouter);
   instance.use("/api/v1/users", auth.requireAuth, usersRouter);

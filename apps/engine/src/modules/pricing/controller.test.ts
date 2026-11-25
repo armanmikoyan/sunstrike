@@ -2,13 +2,12 @@ import type { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const serviceMock = vi.hoisted(() => ({
-  listRates: vi.fn(),
-  createQuote: vi.fn(),
+  calculateQuote: vi.fn(),
 }));
 
 vi.mock("./service", () => serviceMock);
 
-import { createQuote, listRates } from "./controller";
+import { calculateQuote } from "./controller";
 
 function createResponse() {
   const json = vi.fn();
@@ -22,48 +21,38 @@ describe("pricing controller", () => {
     vi.clearAllMocks();
   });
 
-  it("returns rates and forwards the optional mode filter", async () => {
-    serviceMock.listRates.mockResolvedValue([]);
-    const { response, status, json } = createResponse();
-
-    await listRates({ query: { mode: "image" } } as unknown as Request, response);
-
-    expect(serviceMock.listRates).toHaveBeenCalledWith("image");
-    expect(status).toHaveBeenCalledWith(200);
-    expect(json).toHaveBeenCalledWith({ rates: [] });
-  });
-
-  it("rejects a non-string mode query parameter with 400", async () => {
-    const { response } = createResponse();
-
-    await expect(listRates({ query: { mode: ["image"] } } as unknown as Request, response)).rejects.toMatchObject({
-      status: 400,
-    });
-  });
-
-  it("passes a parsed quote body to the service", async () => {
+  it("passes a parsed quote query to the service", async () => {
     const quote = { totalMicros: 510_000 };
-    serviceMock.createQuote.mockResolvedValue(quote);
+    serviceMock.calculateQuote.mockResolvedValue(quote);
     const { response, status, json } = createResponse();
-    const body = {
+    const query = {
       kind: "create",
       modelId: "chronolab-motion-2",
-      settings: { mode: "video", resolution: "1080p", aspectRatio: "16:9", durationSeconds: 6 },
+      mode: "video",
+      resolution: "1080p",
+      aspectRatio: "16:9",
+      durationSeconds: "6",
     };
 
-    await createQuote({ body } as unknown as Request, response);
+    await calculateQuote({ query } as unknown as Request, response);
 
-    expect(serviceMock.createQuote).toHaveBeenCalledWith(expect.objectContaining({ quantity: 1, templateId: null }));
+    expect(serviceMock.calculateQuote).toHaveBeenCalledWith(
+      expect.objectContaining({
+        quantity: 1,
+        templateId: null,
+        settings: expect.objectContaining({ durationSeconds: 6 }),
+      }),
+    );
     expect(status).toHaveBeenCalledWith(200);
     expect(json).toHaveBeenCalledWith({ quote });
   });
 
-  it("rejects a malformed quote body with 400 without calling the service", async () => {
+  it("rejects a malformed quote query with 400 without calling the service", async () => {
     const { response } = createResponse();
 
-    await expect(createQuote({ body: { kind: "create" } } as unknown as Request, response)).rejects.toMatchObject({
+    await expect(calculateQuote({ query: { kind: "create" } } as unknown as Request, response)).rejects.toMatchObject({
       status: 400,
     });
-    expect(serviceMock.createQuote).not.toHaveBeenCalled();
+    expect(serviceMock.calculateQuote).not.toHaveBeenCalled();
   });
 });

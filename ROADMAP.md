@@ -47,9 +47,15 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   shared capability validation, and abstract `CatalogProviderAdapter` sync.
 - Pricing: `model_prices` migration seeded for the 9 models (per-second video,
   per-image stills, image volume tiers), `pricing_rules` for tiers, resolution
-  and audio multipliers and a percentage discount; `GET /api/v1/pricing/rates`
-  (with `?mode=video|image`) and a stateless `POST /api/v1/pricing/quotes`
-  validated through Catalog, with no upstream costs exposed.
+  and audio multipliers and a percentage discount; `pricing.listRates(models)`
+  for Offerings and `GET /api/v1/pricing/quote`, which calculates a price for
+  model and settings from the query string, validated through Catalog and never
+  stored, with no upstream costs exposed. Rates carry price fields only; model
+  details stay with Catalog.
+- Offerings: `GET /api/v1/offerings` (with `?mode=video|image`) pairs active
+  catalog models with their selling price, in catalog order, and leaves out a
+  model without an active price. The source for the studio pickers and the
+  pricing page.
 
 ### Blocked
 

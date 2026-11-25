@@ -33,6 +33,7 @@ mounts every module, `main.ts` serves HTTP, and `worker.ts` runs background jobs
 | `health`        | Runtime health check (`/health`) probing engine and database status                     |
 | `catalog`       | Models, capabilities, `active` enable/disable, Runware mappings and synced costs, Redis |
 | `pricing`       | Selling prices (`model_prices`), markups, discounts, public rates and stateless quotes  |
+| `offerings`     | Models a customer can use now, with their options and selling price                     |
 | `billing`       | Balances, top-ups (Lemon Squeezy), reserve/capture/release, refunds; no pricing deps    |
 | `generation`    | Validate via `catalog`, quote via `pricing`, snapshot price, reserve via `billing`, run |
 | `media`         | Uploaded assets, short-lived signed Storage URLs, registered generation outputs         |
@@ -101,6 +102,11 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
   helpers every module uses, such as the HTTP errors; `middleware` holds only
   request middleware and its own helpers.
 - Dependencies stay acyclic and point one way.
+- **Orchestrators compose, owners decide.** `offerings` (reads) and
+  `generation` (writes) combine other modules through their public objects
+  and own no business data of theirs; neither depends on the other. Clients
+  get composed answers from these modules, never by joining two responses in
+  the lab.
 
 ### Infrastructure
 

@@ -1,5 +1,5 @@
 import type { CatalogModel, GenerationMode, GenerationSettingsInput } from "@/modules/catalog";
-import { isOneOf, isPositiveNumber, isRecord, isUuid, isWholeNumber } from "@/shared/utils";
+import { isOneOf, isPositiveNumber, isRecord, isUuid, isWholeNumber, parseBoolean, parseInteger } from "@/shared/utils";
 import { CURRENCY, PRICE_UNITS, QUOTE_KINDS } from "./constants";
 import type {
   ModelPrice,
@@ -90,10 +90,6 @@ export function buildRates(models: readonly CatalogModel[], prices: readonly Mod
     return [
       {
         modelId: model.id,
-        slug: model.slug,
-        name: model.name,
-        summary: model.summary,
-        mode,
         unit: PRICE_UNITS[mode],
         unitPriceMicros: price.unitPriceMicros,
         rules: price.rules,
@@ -132,38 +128,9 @@ export function buildQuote(request: QuoteRequest, model: CatalogModel, price: Mo
   };
 }
 
-function parseSettings(value: unknown): ParseResult<GenerationSettingsInput> {
-  if (!isRecord(value)) return { ok: false, message: "Settings are required." };
-
-  const { mode, resolution, aspectRatio, durationSeconds, audio } = value;
-
-  if (!isPricedMode(mode)) {
-    return { ok: false, message: `Settings mode must be one of: ${Object.keys(PRICE_UNITS).join(", ")}.` };
-  }
-
-  if (typeof resolution !== "string" || !resolution) {
-    return { ok: false, message: "Settings resolution is required." };
-  }
-
-  if (typeof aspectRatio !== "string" || !aspectRatio) {
-    return { ok: false, message: "Settings aspect ratio is required." };
-  }
-
-  if (durationSeconds !== undefined && durationSeconds !== null && typeof durationSeconds !== "number") {
-    return { ok: false, message: "Settings duration must be a number of seconds." };
-  }
-
-  if (audio !== undefined && typeof audio !== "boolean") {
-    return { ok: false, message: "Settings audio must be true or false." };
-  }
-
-  return { ok: true, value: { mode, resolution, aspectRatio, durationSeconds, audio } };
-}
-
-/** Read the quote body into a typed request; model support and limits are the service's to judge. */
-export function parseQuoteRequest(body: unknown): ParseResult<QuoteRequest> {
-  const input: Record<string, unknown> = isRecord(body) ? body : {};
-  const { kind, modelId, settings, templateId, quantity } = input;
+/** Read the quote query string into a typed request; model support and limits are the service's to judge. */
+export function parseQuoteQuery(query: Record<string, unknown>): ParseResult<QuoteRequest> {
+  const { kind, modelId, mode, resolution, aspectRatio, durationSeconds, audio, templateId, quantity } = query;
 
   if (!isOneOf(QUOTE_KINDS, kind)) {
     return { ok: false, message: `Kind must be one of: ${QUOTE_KINDS.join(", ")}.` };
@@ -173,26 +140,48 @@ export function parseQuoteRequest(body: unknown): ParseResult<QuoteRequest> {
     return { ok: false, message: "A model id is required." };
   }
 
-  if (templateId !== undefined && templateId !== null && (typeof templateId !== "string" || !isUuid(templateId))) {
+  if (!isPricedMode(mode)) {
+    return { ok: false, message: `Mode must be one of: ${Object.keys(PRICE_UNITS).join(", ")}.` };
+  }
+
+  if (typeof resolution !== "string" || !resolution) {
+    return { ok: false, message: "A resolution is required." };
+  }
+
+  if (typeof aspectRatio !== "string" || !aspectRatio) {
+    return { ok: false, message: "An aspect ratio is required." };
+  }
+
+  const seconds = durationSeconds === undefined ? undefined : parseInteger(durationSeconds);
+
+  if (seconds === null) {
+    return { ok: false, message: "Duration must be a whole number of seconds." };
+  }
+
+  const withAudio = audio === undefined ? undefined : parseBoolean(audio);
+
+  if (withAudio === null) {
+    return { ok: false, message: "Audio must be true or false." };
+  }
+
+  if (templateId !== undefined && (typeof templateId !== "string" || !isUuid(templateId))) {
     return { ok: false, message: "Template id must be a UUID." };
   }
 
-  if (quantity !== undefined && !Number.isInteger(quantity)) {
+  const count = quantity === undefined ? 1 : parseInteger(quantity);
+
+  if (count === null) {
     return { ok: false, message: "Quantity must be a whole number." };
   }
-
-  const parsedSettings = parseSettings(settings);
-
-  if (!parsedSettings.ok) return parsedSettings;
 
   return {
     ok: true,
     value: {
       kind,
       modelId: modelId.trim(),
-      settings: parsedSettings.value,
+      settings: { mode, resolution, aspectRatio, durationSeconds: seconds, audio: withAudio },
       templateId: templateId ?? null,
-      quantity: typeof quantity === "number" ? quantity : 1,
+      quantity: count,
     },
   };
 }

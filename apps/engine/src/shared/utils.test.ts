@@ -8,6 +8,8 @@ import {
   isUuid,
   isWholeNumber,
   notFound,
+  parseBoolean,
+  parseInteger,
   unauthorized,
 } from "./utils";
 
@@ -41,5 +43,18 @@ describe("shared utils", () => {
     expect(isOneOf(["video", "image"], "image")).toBe(true);
     expect(isOneOf(["video", "image"], "3d")).toBe(false);
     expect(isOneOf(["video", "image"], 1)).toBe(false);
+  });
+
+  it("parses integers and booleans from numbers, booleans and query strings", () => {
+    expect(parseInteger(6)).toBe(6);
+    expect(parseInteger("6")).toBe(6);
+    expect(parseInteger("-2")).toBe(-2);
+    expect(parseInteger("1.5")).toBeNull();
+    expect(parseInteger("6s")).toBeNull();
+    expect(parseInteger(["6"])).toBeNull();
+
+    expect(parseBoolean("true")).toBe(true);
+    expect(parseBoolean(false)).toBe(false);
+    expect(parseBoolean("yes")).toBeNull();
   });
 });

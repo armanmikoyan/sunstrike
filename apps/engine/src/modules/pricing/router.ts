@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { createQuote, listRates } from "./controller";
+import { calculateQuote } from "./controller";
 
 const router = Router();
 
-router.get("/rates", listRates);
-router.post("/quotes", createQuote);
+router.get("/quote", calculateQuote);
 
 export default router;
