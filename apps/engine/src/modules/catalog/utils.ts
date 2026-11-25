@@ -1,4 +1,5 @@
-import { GENERATION_MODES, MODEL_INPUT_KINDS, PROVIDER_COST_UNITS } from "./constants";
+import { isOneOf } from "@/shared/utils";
+import { DEFAULT_PROVIDER_COST_UNIT, GENERATION_MODES, MODEL_INPUT_KINDS, PROVIDER_COST_UNITS } from "./constants";
 import type { ProviderSyncUpdate } from "./providers/types";
 import type {
   CapabilityValidationResult,
@@ -6,22 +7,12 @@ import type {
   CatalogModelWithCost,
   GenerationMode,
   GenerationSettingsInput,
-  ModelInputKind,
   ModelRow,
-  ProviderCostUnit,
   UpsertProviderModelInput,
 } from "./types";
 
 export function isGenerationMode(value: unknown): value is GenerationMode {
-  return typeof value === "string" && (GENERATION_MODES as readonly string[]).includes(value);
-}
-
-function isModelInputKind(value: string): value is ModelInputKind {
-  return (MODEL_INPUT_KINDS as readonly string[]).includes(value);
-}
-
-function isProviderCostUnit(value: string): value is ProviderCostUnit {
-  return (PROVIDER_COST_UNITS as readonly string[]).includes(value);
+  return isOneOf(GENERATION_MODES, value);
 }
 
 export function mapModelRow(row: ModelRow): CatalogModelWithCost {
@@ -39,14 +30,16 @@ export function mapModelRow(row: ModelRow): CatalogModelWithCost {
     providerModelKey: row.provider_model_key,
     capabilities: {
       modes: row.supported_modes.filter(isGenerationMode),
-      inputs: row.supported_inputs.filter(isModelInputKind),
+      inputs: row.supported_inputs.filter((kind) => isOneOf(MODEL_INPUT_KINDS, kind)),
       resolutions: row.resolutions,
       durationsSeconds: row.durations_seconds,
       aspectRatios: row.aspect_ratios,
       audio: row.supports_audio,
     },
     providerCostMicros: Number.isFinite(costMicros) ? costMicros : 0,
-    providerCostUnit: isProviderCostUnit(row.provider_cost_unit) ? row.provider_cost_unit : "per_image",
+    providerCostUnit: isOneOf(PROVIDER_COST_UNITS, row.provider_cost_unit)
+      ? row.provider_cost_unit
+      : DEFAULT_PROVIDER_COST_UNIT,
     active: row.active,
     updatedAt: row.updated_at,
   };

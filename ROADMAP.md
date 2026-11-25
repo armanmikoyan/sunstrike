@@ -45,6 +45,11 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 - Catalog: `generation_models` migration with 9 seeded models,
   `GET /api/v1/models` and `GET /api/v1/models/:id` (with `?mode=video|image`),
   shared capability validation, and abstract `CatalogProviderAdapter` sync.
+- Pricing: `model_prices` migration seeded for the 9 models (per-second video,
+  per-image stills, image volume tiers), `pricing_rules` for tiers, resolution
+  and audio multipliers and a percentage discount; `GET /api/v1/pricing/rates`
+  (with `?mode=video|image`) and a stateless `POST /api/v1/pricing/quotes`
+  validated through Catalog, with no upstream costs exposed.
 
 ### Blocked
 
@@ -73,12 +78,10 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Pricing
 
-- **Selling rates.** `model_prices` owns selling prices, markups, margins,
-  volume tiers and discounts per model; `GET /pricing/rates` returns active
-  selling rates without exposing upstream provider costs.
-- **Quotes.** `POST /pricing/quotes` reads model metadata and costs from
-  Catalog and returns a stateless quote for model, settings and template;
-  invalid settings are rejected; preview quotes are derived, never stored.
+- **Price admin.** Set a model's price and rules with a margin guard against
+  the synced upstream cost.
+- **Template pricing.** A template's customisation options change the quote
+  once the templates module exists; today `templateId` is only echoed.
 
 #### Billing
 
