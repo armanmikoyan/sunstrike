@@ -4,6 +4,7 @@ import type { MediaAsset } from "./types";
 const repositoryMock = vi.hoisted(() => ({
   insertPending: vi.fn(),
   findById: vi.fn(),
+  findSharedReady: vi.fn(),
   markCompleted: vi.fn(),
 }));
 
@@ -11,6 +12,7 @@ const storageMock = vi.hoisted(() => ({
   createUploadUrl: vi.fn(),
   statObject: vi.fn(),
   createDownloadUrl: vi.fn(),
+  createDownloadUrls: vi.fn(),
   removeObject: vi.fn(),
 }));
 
@@ -182,6 +184,36 @@ describe("media service", () => {
       repositoryMock.findById.mockResolvedValue(null);
 
       await expect(service.getAsset(OWNER, ASSET_ID)).rejects.toMatchObject({ status: 404 });
+    });
+  });
+
+  describe("getSharedAssets", () => {
+    const shared: MediaAsset = { ...ready, ownerUserId: null, storageKey: `shared/${ASSET_ID}.png` };
+
+    it("signs every ready shared asset in one batch", async () => {
+      repositoryMock.findSharedReady.mockResolvedValue([shared]);
+      storageMock.createDownloadUrls.mockResolvedValue(new Map([[shared.storageKey, "https://storage.test/s"]]));
+
+      const assets = await service.getSharedAssets([ASSET_ID, ASSET_ID, "not-a-uuid"]);
+
+      expect(repositoryMock.findSharedReady).toHaveBeenCalledWith([ASSET_ID]);
+      expect(storageMock.createDownloadUrls).toHaveBeenCalledWith("media", [shared.storageKey], 300);
+      expect(assets).toEqual([
+        expect.objectContaining({ id: ASSET_ID, status: "ready", url: "https://storage.test/s" }),
+      ]);
+    });
+
+    it("leaves out an asset Storage could not sign", async () => {
+      repositoryMock.findSharedReady.mockResolvedValue([shared]);
+      storageMock.createDownloadUrls.mockResolvedValue(new Map());
+
+      await expect(service.getSharedAssets([ASSET_ID])).resolves.toEqual([]);
+    });
+
+    it("skips the database and Storage when no id is valid", async () => {
+      await expect(service.getSharedAssets(["nope"])).resolves.toEqual([]);
+      expect(repositoryMock.findSharedReady).not.toHaveBeenCalled();
+      expect(storageMock.createDownloadUrls).not.toHaveBeenCalled();
     });
   });
 });

@@ -76,6 +76,14 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   size, removing a mismatch; `GET /api/v1/assets/{id}` returns the asset with a
   five-minute signed URL, and a foreign id returns 404. Storage access uses the
   secret key, server-side only.
+- Templates: `templates` migration (a shared source asset, customisation
+  options for input roles, resolutions, clip lengths and aspect ratios, and an
+  `active` flag). `GET /api/v1/templates` pages active templates newest first
+  (`?limit=` up to 50, `?cursor=` from `nextCursor`) and `GET
+  /api/v1/templates/{id}` returns one; each carries its source with a
+  five-minute signed URL, signed in one batch through
+  `media.getSharedAssets`, and one whose source is not ready is left out. No
+  templates are seeded yet, so the list is empty.
 
 ### Blocked
 
@@ -98,8 +106,10 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 - **Scheduled sync.** Run the catalog sync as a worker job on a schedule, keep
   an admin's disable separate from upstream availability so a sync never
   re-enables it, and flag a synced cost that rises above the selling price.
-- **Templates.** Seeded templates and customisation options; `GET /templates`
-  and `GET /templates/{id}` return active rows.
+- **Template sources.** Upload curated source clips as shared assets and add
+  their templates; until then the template list is empty.
+- **Studio templates.** The studio's template picker reads
+  `GET /api/v1/templates` through a lab route instead of the mock list.
 - **Pending upload cleanup.** A worker job removes assets still pending after
   the two-hour upload window, with any partial object.
 - **Output registration.** `media.registerOutput` stores a generated file

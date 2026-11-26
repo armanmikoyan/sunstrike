@@ -92,3 +92,30 @@ export async function getAsset(viewerId: string, assetId: string): Promise<Asset
 
   throw notFound(MEDIA_ERRORS.notFound);
 }
+
+/**
+ * Ready shared assets, such as template sources, each with a short-lived URL
+ * signed in one batch. Ids that are not shared, not ready or unknown are left out.
+ */
+export async function getSharedAssets(assetIds: string[]): Promise<AssetView[]> {
+  const ids = [...new Set(assetIds)].filter(isUuid);
+
+  if (ids.length === 0) return [];
+
+  const assets = await repository.findSharedReady(ids);
+
+  if (assets.length === 0) return [];
+
+  const urls = await storage.createDownloadUrls(
+    MEDIA_BUCKET,
+    assets.map((asset) => asset.storageKey),
+    DOWNLOAD_URL_TTL_SECONDS,
+  );
+  const expiresAt = isoAfterSeconds(new Date(), DOWNLOAD_URL_TTL_SECONDS);
+
+  return assets.flatMap((asset) => {
+    const url = urls.get(asset.storageKey);
+
+    return url ? [toAssetView(asset, { url, expiresAt })] : [];
+  });
+}

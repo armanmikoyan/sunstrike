@@ -30,6 +30,18 @@ export async function findById(id: string): Promise<MediaAsset | null> {
   return rows[0] ? mapAssetRow(rows[0]) : null;
 }
 
+/** Shared assets (no owner) whose upload has been checked. */
+export async function findSharedReady(ids: string[]): Promise<MediaAsset[]> {
+  const rows = await query<AssetRow>(
+    `select ${columns}
+     from media_assets
+     where id = any($1::uuid[]) and owner_user_id is null and completed_at is not null`,
+    [ids],
+  );
+
+  return rows.map(mapAssetRow);
+}
+
 /** Record the checked size and mark the upload complete; a second call keeps the first time. */
 export async function markCompleted(id: string, sizeBytes: number): Promise<MediaAsset> {
   const rows = await query<AssetRow>(

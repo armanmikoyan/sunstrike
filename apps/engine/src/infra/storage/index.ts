@@ -41,6 +41,19 @@ export async function createDownloadUrl(bucket: string, path: string, expiresInS
   return data.signedUrl;
 }
 
+/** Sign many downloads in one call; a path Storage could not sign is left out of the map. */
+export async function createDownloadUrls(
+  bucket: string,
+  paths: string[],
+  expiresInSeconds: number,
+): Promise<Map<string, string>> {
+  const { data, error } = await getClient().storage.from(bucket).createSignedUrls(paths, expiresInSeconds);
+
+  if (error) throw storageError("sign downloads", error);
+
+  return new Map(data.flatMap((item) => (item.path && item.signedUrl ? [[item.path, item.signedUrl] as const] : [])));
+}
+
 export async function removeObject(bucket: string, path: string): Promise<void> {
   const { error } = await getClient().storage.from(bucket).remove([path]);
 

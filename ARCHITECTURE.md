@@ -144,7 +144,8 @@ key or a raw storage path.
   marks it ready when its real type and size match; otherwise it is removed.
 - **Read through a signed URL.** `GET /api/v1/assets/{id}` returns the asset
   with a URL that expires in five minutes. Another user's asset is a 404,
-  never a 403. Assets without an owner are shared, such as template sources.
+  never a 403. Assets without an owner are shared, such as template sources;
+  other modules sign those in one batch through `media.getSharedAssets`.
 - **Limits in two places.** The media module's constants and the bucket
   itself both hold the accepted types and the size cap, so Storage rejects
   what slips past the engine.

@@ -1,6 +1,7 @@
+import type { ParseResult } from "@/shared/types";
 import { isRecord, isWholeNumber, toIsoString } from "@/shared/utils";
 import { ASSET_STATUS, BYTES_PER_MB, MAX_UPLOAD_BYTES, MEDIA_ERRORS, MEDIA_TYPES } from "./constants";
-import type { AssetRow, AssetView, MediaAsset, MediaKind, ParseResult, UploadRequest } from "./types";
+import type { AssetRow, AssetView, MediaAsset, MediaKind, UploadRequest } from "./types";
 
 /** The accepted type for a content type, ignoring parameters such as `; codecs=...`. */
 export function mediaType(contentType: string) {

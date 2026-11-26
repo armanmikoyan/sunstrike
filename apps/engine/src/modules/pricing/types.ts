@@ -88,5 +88,3 @@ export interface Quote {
   modelUpdatedAt: string;
   quotedAt: string;
 }
-
-export type ParseResult<T> = { ok: true; value: T } | { ok: false; message: string };

@@ -1,10 +1,10 @@
 import type { CatalogModel, GenerationMode, GenerationSettingsInput } from "@/modules/catalog";
+import type { ParseResult } from "@/shared/types";
 import { isOneOf, isPositiveNumber, isRecord, isUuid, isWholeNumber, parseBoolean, parseInteger } from "@/shared/utils";
 import { CURRENCY, EXAMPLE_VIDEO_SECONDS, PRICE_UNITS, QUOTE_KINDS } from "./constants";
 import type {
   ModelPrice,
   ModelPriceRow,
-  ParseResult,
   PriceTotals,
   PriceUnit,
   PricingRate,

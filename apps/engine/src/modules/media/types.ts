@@ -4,8 +4,6 @@ export type MediaKind = (typeof MEDIA_KINDS)[number];
 
 export type AssetStatus = (typeof ASSET_STATUS)[keyof typeof ASSET_STATUS];
 
-export type ParseResult<T> = { ok: true; value: T } | { ok: false; message: string };
-
 export interface MediaAsset {
   id: string;
   ownerUserId: string | null;
