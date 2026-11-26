@@ -130,6 +130,25 @@ we decide:
   upstream" flags. A synced cost can also rise above the selling price
   unnoticed, so the job must flag it until the price admin guards the margin.
 
+### Media storage
+
+Files live in one private Supabase Storage bucket, `media`, reached only
+through `infra/storage` with the secret key. The engine authorises every
+request itself and hands out short-lived signed URLs; the lab never sees a
+key or a raw storage path.
+
+- **Upload in two steps.** `POST /api/v1/assets/uploads` checks the declared
+  type and size, picks the path (`<owner>/<asset id>.<ext>`) and returns a
+  one-time upload URL with a pending asset. The client `PUT`s the file there,
+  then `POST /api/v1/assets/{id}/complete` reads the stored object and only
+  marks it ready when its real type and size match; otherwise it is removed.
+- **Read through a signed URL.** `GET /api/v1/assets/{id}` returns the asset
+  with a URL that expires in five minutes. Another user's asset is a 404,
+  never a 403. Assets without an owner are shared, such as template sources.
+- **Limits in two places.** The media module's constants and the bucket
+  itself both hold the accepted types and the size cap, so Storage rejects
+  what slips past the engine.
+
 ### Infrastructure
 
 `src/infra` is the only place a database, cache, queue or storage

@@ -20,6 +20,32 @@ export function notFound(message: string): HttpError {
   return httpError(404, message);
 }
 
+export function conflict(message: string): HttpError {
+  return httpError(409, message);
+}
+
+export function contentTooLarge(message: string): HttpError {
+  return httpError(413, message);
+}
+
+export function unsupportedMediaType(message: string): HttpError {
+  return httpError(415, message);
+}
+
+export function unprocessable(message: string): HttpError {
+  return httpError(422, message);
+}
+
+/** An ISO 8601 timestamp from a `Date` or a database timestamp string. */
+export function toIsoString(value: Date | string): string {
+  return (value instanceof Date ? value : new Date(value)).toISOString();
+}
+
+/** The ISO 8601 timestamp `seconds` after `from`. */
+export function isoAfterSeconds(from: Date, seconds: number): string {
+  return new Date(from.getTime() + seconds * 1000).toISOString();
+}
+
 export function isUuid(value: string): boolean {
   return UUID_PATTERN.test(value);
 }

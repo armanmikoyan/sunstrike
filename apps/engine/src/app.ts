@@ -25,7 +25,7 @@ export function createApp(): Express {
   instance.use("/api/v1/billing", billingRouter);
   instance.use("/api/v1/models", catalogRouter);
   instance.use("/api/v1/generation", generationRouter);
-  instance.use("/api/v1/media", mediaRouter);
+  instance.use("/api/v1/assets", auth.requireAuth, mediaRouter);
   instance.use("/api/v1/notifications", notificationsRouter);
   instance.use("/api/v1/offerings", offeringsRouter);
   instance.use("/api/v1/pricing", pricingRouter);

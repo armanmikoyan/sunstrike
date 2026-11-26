@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   badRequest,
+  conflict,
+  contentTooLarge,
   httpError,
+  isoAfterSeconds,
   isOneOf,
   isPositiveNumber,
   isRecord,
@@ -10,7 +13,10 @@ import {
   notFound,
   parseBoolean,
   parseInteger,
+  toIsoString,
   unauthorized,
+  unprocessable,
+  unsupportedMediaType,
 } from "./utils";
 
 describe("shared utils", () => {
@@ -19,6 +25,16 @@ describe("shared utils", () => {
     expect(badRequest("Invalid input")).toMatchObject({ status: 400, message: "Invalid input" });
     expect(unauthorized()).toMatchObject({ status: 401, message: "Unauthorized" });
     expect(notFound("Missing")).toMatchObject({ status: 404, message: "Missing" });
+    expect(conflict("Not yet")).toMatchObject({ status: 409, message: "Not yet" });
+    expect(contentTooLarge("Too big")).toMatchObject({ status: 413, message: "Too big" });
+    expect(unsupportedMediaType("Wrong type")).toMatchObject({ status: 415, message: "Wrong type" });
+    expect(unprocessable("Mismatch")).toMatchObject({ status: 422, message: "Mismatch" });
+  });
+
+  it("formats timestamps as ISO 8601", () => {
+    expect(toIsoString(new Date("2026-11-26T09:00:00Z"))).toBe("2026-11-26T09:00:00.000Z");
+    expect(toIsoString("2026-11-26 13:00:00+04")).toBe("2026-11-26T09:00:00.000Z");
+    expect(isoAfterSeconds(new Date("2026-11-26T09:00:00Z"), 300)).toBe("2026-11-26T09:05:00.000Z");
   });
 
   it("checks UUID format", () => {

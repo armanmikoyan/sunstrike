@@ -69,6 +69,13 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   catalog models with their selling price, in catalog order, and leaves out a
   model without an active price. The source for the studio pickers and the
   pricing page.
+- Media: `media_assets` migration and a private `media` bucket with type and
+  size limits. `POST /api/v1/assets/uploads` checks the declared type and size
+  and signs a one-time upload to a server-picked path;
+  `POST /api/v1/assets/{id}/complete` checks the stored object's real type and
+  size, removing a mismatch; `GET /api/v1/assets/{id}` returns the asset with a
+  five-minute signed URL, and a foreign id returns 404. Storage access uses the
+  secret key, server-side only.
 
 ### Blocked
 
@@ -93,10 +100,10 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   re-enables it, and flag a synced cost that rises above the selling price.
 - **Templates.** Seeded templates and customisation options; `GET /templates`
   and `GET /templates/{id}` return active rows.
-- **Uploads.** `POST /assets/uploads` returns a signed Supabase Storage upload
-  URL; `/complete` records the kind.
-- **Assets.** `GET /assets/{id}` returns metadata and a short-lived URL; a
-  foreign id returns 404.
+- **Pending upload cleanup.** A worker job removes assets still pending after
+  the two-hour upload window, with any partial object.
+- **Output registration.** `media.registerOutput` stores a generated file
+  under its owner and returns the asset id for the generation.
 
 #### Pricing
 
