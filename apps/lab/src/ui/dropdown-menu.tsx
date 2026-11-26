@@ -47,6 +47,7 @@ function DropdownMenuPortal({ ...props }: React.ComponentProps<typeof DropdownMe
 }
 
 function DropdownMenuTrigger({
+  disabled,
   onPointerDown,
   onPointerMove,
   onPointerUp,
@@ -59,10 +60,11 @@ function DropdownMenuTrigger({
   return (
     <DropdownMenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
+      disabled={disabled}
       {...props}
       onPointerDown={(event) => {
         onPointerDown?.(event);
-        if (event.defaultPrevented || event.pointerType === "mouse") return;
+        if (disabled || event.defaultPrevented || event.pointerType === "mouse") return;
 
         event.preventDefault();
         tap.current = { x: event.clientX, y: event.clientY, scrolled: false };

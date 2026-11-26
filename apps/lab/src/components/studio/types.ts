@@ -121,6 +121,13 @@ export type StudioDurationSliderProps = {
   className?: string;
 };
 
+export type StudioDurationMenuProps = StudioDurationSliderProps & {
+  /** Styling for the menu panel around the track. */
+  contentClassName?: string;
+  /** Whether the menu repeats the label above the track. */
+  menuLabel?: boolean;
+};
+
 export type StudioSkeletonLineProps = {
   width: string;
   className?: string;
