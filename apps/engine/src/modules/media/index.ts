@@ -4,6 +4,7 @@ import * as service from "./service";
 export const media = {
   getAsset: service.getAsset,
   getSharedAssets: service.getSharedAssets,
+  registerOutput: service.registerOutput,
 };
 
-export type { AssetStatus, AssetView, MediaKind } from "./types";
+export type { AssetStatus, AssetView, MediaKind, OutputFile } from "./types";

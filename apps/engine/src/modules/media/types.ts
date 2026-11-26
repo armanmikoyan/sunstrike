@@ -52,6 +52,12 @@ export interface AssetView {
   urlExpiresAt: string | null;
 }
 
+/** A file the server holds in memory, such as a provider's generation output. */
+export interface OutputFile {
+  contentType: string;
+  body: Buffer;
+}
+
 export interface UploadTicket {
   asset: AssetView;
   upload: {

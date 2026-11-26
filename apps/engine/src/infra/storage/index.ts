@@ -20,6 +20,13 @@ export async function createUploadUrl(bucket: string, path: string): Promise<Sig
   return { url: data.signedUrl, token: data.token };
 }
 
+/** Write a file the server already holds, such as a generation output; never overwrites. */
+export async function uploadObject(bucket: string, path: string, body: Buffer, contentType: string): Promise<void> {
+  const { error } = await getClient().storage.from(bucket).upload(path, body, { contentType, upsert: false });
+
+  if (error) throw storageError("upload an object", error);
+}
+
 export async function statObject(bucket: string, path: string): Promise<StoredObject | null> {
   const files = getClient().storage.from(bucket);
   const { data: found } = await files.exists(path);

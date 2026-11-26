@@ -1,5 +1,5 @@
 import type { ParseResult } from "@/shared/types";
-import { isRecord, isWholeNumber, toIsoString } from "@/shared/utils";
+import { isNonEmptyText, isRecord, isWholeNumber, parseFailure, toIsoString } from "@/shared/utils";
 import { ASSET_STATUS, BYTES_PER_MB, MAX_UPLOAD_BYTES, MEDIA_ERRORS, MEDIA_TYPES } from "./constants";
 import type { AssetRow, AssetView, MediaAsset, MediaKind, UploadRequest } from "./types";
 
@@ -24,17 +24,13 @@ export function fitsUploadLimit(kind: MediaKind, sizeBytes: number): boolean {
 }
 
 export function parseUploadRequest(body: unknown): ParseResult<UploadRequest> {
-  if (!isRecord(body)) return { ok: false, message: MEDIA_ERRORS.missingBody };
+  if (!isRecord(body)) return parseFailure(MEDIA_ERRORS.missingBody);
 
   const { contentType, sizeBytes } = body;
 
-  if (typeof contentType !== "string" || contentType.trim() === "") {
-    return { ok: false, message: MEDIA_ERRORS.invalidContentType };
-  }
+  if (!isNonEmptyText(contentType)) return parseFailure(MEDIA_ERRORS.invalidContentType);
 
-  if (!isWholeNumber(sizeBytes) || sizeBytes === 0) {
-    return { ok: false, message: MEDIA_ERRORS.invalidSize };
-  }
+  if (!isWholeNumber(sizeBytes) || sizeBytes === 0) return parseFailure(MEDIA_ERRORS.invalidSize);
 
   return { ok: true, value: { contentType, sizeBytes } };
 }

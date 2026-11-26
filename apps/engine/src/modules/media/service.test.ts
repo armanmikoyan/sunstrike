@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MediaAsset } from "./types";
 
 const repositoryMock = vi.hoisted(() => ({
-  insertPending: vi.fn(),
+  insert: vi.fn(),
   findById: vi.fn(),
   findSharedReady: vi.fn(),
   markCompleted: vi.fn(),
@@ -10,6 +10,7 @@ const repositoryMock = vi.hoisted(() => ({
 
 const storageMock = vi.hoisted(() => ({
   createUploadUrl: vi.fn(),
+  uploadObject: vi.fn(),
   statObject: vi.fn(),
   createDownloadUrl: vi.fn(),
   createDownloadUrls: vi.fn(),
@@ -44,11 +45,35 @@ describe("media service", () => {
     vi.clearAllMocks();
     storageMock.createUploadUrl.mockResolvedValue({ url: "https://storage.test/upload?token=t", token: "t" });
     storageMock.createDownloadUrl.mockResolvedValue("https://storage.test/download?token=d");
-    repositoryMock.insertPending.mockImplementation(async (asset) => ({
+    repositoryMock.insert.mockImplementation(async (asset, completed = false) => ({
       ...asset,
-      completedAt: null,
+      completedAt: completed ? ready.completedAt : null,
       createdAt: pending.createdAt,
     }));
+  });
+
+  describe("registerOutput", () => {
+    it("stores the file under its owner and records a ready asset", async () => {
+      const body = Buffer.from("frame");
+
+      const asset = await service.registerOutput(OWNER, { contentType: "image/png", body });
+      const [bucket, key, stored, contentType] = storageMock.uploadObject.mock.calls[0];
+
+      expect([bucket, stored, contentType]).toEqual(["media", body, "image/png"]);
+      expect(key).toMatch(new RegExp(`^${OWNER}/[0-9a-f-]{36}\\.png$`));
+      expect(repositoryMock.insert).toHaveBeenCalledWith(
+        expect.objectContaining({ ownerUserId: OWNER, sizeBytes: body.length, storageKey: key }),
+        true,
+      );
+      expect(asset).toMatchObject({ status: "ready", kind: "image" });
+    });
+
+    it("rejects an output type the bucket does not accept", async () => {
+      await expect(
+        service.registerOutput(OWNER, { contentType: "application/pdf", body: Buffer.from("x") }),
+      ).rejects.toMatchObject({ status: 415 });
+      expect(storageMock.uploadObject).not.toHaveBeenCalled();
+    });
   });
 
   describe("requestUpload", () => {
@@ -58,7 +83,7 @@ describe("media service", () => {
 
       expect(bucket).toBe("media");
       expect(key).toMatch(new RegExp(`^${OWNER}/[0-9a-f-]{36}\\.png$`));
-      expect(repositoryMock.insertPending).toHaveBeenCalledWith(
+      expect(repositoryMock.insert).toHaveBeenCalledWith(
         expect.objectContaining({ ownerUserId: OWNER, kind: "image", storageKey: key }),
       );
       expect(ticket.asset).toMatchObject({ status: "pending", url: null });
@@ -81,13 +106,13 @@ describe("media service", () => {
         service.requestUpload(OWNER, { contentType: "image/png", sizeBytes: 20 * MB + 1 }),
       ).rejects.toMatchObject({ status: 413 });
       expect(storageMock.createUploadUrl).not.toHaveBeenCalled();
-      expect(repositoryMock.insertPending).not.toHaveBeenCalled();
+      expect(repositoryMock.insert).not.toHaveBeenCalled();
     });
 
     it("allows a larger video than image", async () => {
       await service.requestUpload(OWNER, { contentType: "video/mp4", sizeBytes: 50 * MB });
 
-      expect(repositoryMock.insertPending).toHaveBeenCalledWith(expect.objectContaining({ kind: "video" }));
+      expect(repositoryMock.insert).toHaveBeenCalledWith(expect.objectContaining({ kind: "video" }));
     });
   });
 

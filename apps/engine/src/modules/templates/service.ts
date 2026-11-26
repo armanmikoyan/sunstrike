@@ -1,8 +1,9 @@
 import { media } from "@/modules/media";
-import { isUuid, notFound } from "@/shared/utils";
+import type { PageQuery } from "@/shared/types";
+import { isUuid, notFound, toPage } from "@/shared/utils";
 import { TEMPLATE_ERRORS } from "./constants";
 import * as repository from "./repository";
-import type { Template, TemplatePage, TemplatePageQuery, TemplateView } from "./types";
+import type { Template, TemplatePage, TemplateView } from "./types";
 import { pairWithSources } from "./utils";
 
 /** Templates with their signed source previews; one whose source is not ready is left out. */
@@ -15,15 +16,10 @@ async function attachSources(templates: Template[]): Promise<TemplateView[]> {
 }
 
 /** One page of active templates, newest first; `nextCursor` is null on the last page. */
-export async function listTemplates(page: TemplatePageQuery): Promise<TemplatePage> {
-  const rows = await repository.listActive(page.limit + 1, page.cursor);
-  const current = rows.slice(0, page.limit);
-  const last = current.at(-1);
+export async function listTemplates(query: PageQuery): Promise<TemplatePage> {
+  const page = toPage(await repository.listActive(query.limit + 1, query.cursor), query.limit);
 
-  return {
-    templates: await attachSources(current),
-    nextCursor: rows.length > page.limit && last ? last.id : null,
-  };
+  return { templates: await attachSources(page.items), nextCursor: page.nextCursor };
 }
 
 /** An active template whose source is ready. */

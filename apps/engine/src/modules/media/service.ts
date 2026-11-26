@@ -11,7 +11,7 @@ import {
 } from "@/shared/utils";
 import { DOWNLOAD_URL_TTL_SECONDS, MEDIA_BUCKET, MEDIA_ERRORS, UPLOAD_HEADERS } from "./constants";
 import * as repository from "./repository";
-import type { AssetView, MediaAsset, UploadRequest, UploadTicket } from "./types";
+import type { AssetView, MediaAsset, OutputFile, UploadRequest, UploadTicket } from "./types";
 import { canView, fitsUploadLimit, mediaType, storageKey, toAssetView, uploadLimitMessage } from "./utils";
 
 async function findAsset(assetId: string): Promise<MediaAsset | null> {
@@ -35,7 +35,7 @@ export async function requestUpload(ownerUserId: string, request: UploadRequest)
   const id = randomUUID();
   const key = storageKey(ownerUserId, id, type.extension);
   const signed = await storage.createUploadUrl(MEDIA_BUCKET, key);
-  const asset = await repository.insertPending({
+  const asset = await repository.insert({
     id,
     ownerUserId,
     kind: type.kind,
@@ -91,6 +91,25 @@ export async function getAsset(viewerId: string, assetId: string): Promise<Asset
   if (asset.ownerUserId === viewerId) return toAssetView(asset);
 
   throw notFound(MEDIA_ERRORS.notFound);
+}
+
+/** Store a file the server produced, such as a generation output, as a ready asset of its owner. */
+export async function registerOutput(ownerUserId: string, file: OutputFile): Promise<AssetView> {
+  const type = mediaType(file.contentType);
+
+  if (!type) throw unsupportedMediaType(MEDIA_ERRORS.unsupportedType);
+
+  const id = randomUUID();
+  const key = storageKey(ownerUserId, id, type.extension);
+
+  await storage.uploadObject(MEDIA_BUCKET, key, file.body, type.contentType);
+
+  const asset = await repository.insert(
+    { id, ownerUserId, kind: type.kind, contentType: type.contentType, sizeBytes: file.body.length, storageKey: key },
+    true,
+  );
+
+  return toAssetView(asset);
 }
 
 /**

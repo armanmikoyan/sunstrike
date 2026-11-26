@@ -13,12 +13,13 @@ const columns = `
   created_at
 `;
 
-export async function insertPending(asset: NewAsset): Promise<MediaAsset> {
+/** Record an asset: pending until its upload is checked, or already complete for a file the server stored. */
+export async function insert(asset: NewAsset, completed = false): Promise<MediaAsset> {
   const rows = await query<AssetRow>(
-    `insert into media_assets (id, owner_user_id, kind, content_type, size_bytes, storage_key)
-     values ($1, $2, $3, $4, $5, $6)
+    `insert into media_assets (id, owner_user_id, kind, content_type, size_bytes, storage_key, completed_at)
+     values ($1, $2, $3, $4, $5, $6, case when $7::boolean then now() end)
      returning ${columns}`,
-    [asset.id, asset.ownerUserId, asset.kind, asset.contentType, asset.sizeBytes, asset.storageKey],
+    [asset.id, asset.ownerUserId, asset.kind, asset.contentType, asset.sizeBytes, asset.storageKey, completed],
   );
 
   return mapAssetRow(rows[0]);

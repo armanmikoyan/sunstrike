@@ -1,4 +1,5 @@
-import type { HttpError } from "./types";
+import { PAGE_ERRORS, PAGE_LIMIT } from "./constants";
+import type { HttpError, Page, PageQuery, ParseResult } from "./types";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -14,6 +15,10 @@ export function badRequest(message: string): HttpError {
 
 export function unauthorized(): HttpError {
   return httpError(401, "Unauthorized");
+}
+
+export function paymentRequired(message: string): HttpError {
+  return httpError(402, message);
 }
 
 export function notFound(message: string): HttpError {
@@ -54,6 +59,16 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** A string with something other than whitespace in it, at most `maxLength` characters long. */
+export function isNonEmptyText(value: unknown, maxLength = Number.POSITIVE_INFINITY): value is string {
+  return typeof value === "string" && value.trim() !== "" && value.length <= maxLength;
+}
+
+/** A failed parse carrying the message the caller sends back. */
+export function parseFailure(message: string): ParseResult<never> {
+  return { ok: false, message };
+}
+
 export function isPositiveNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
 }
@@ -71,6 +86,35 @@ export function parseInteger(value: unknown): number | null {
   if (typeof value === "number") return Number.isInteger(value) ? value : null;
 
   return typeof value === "string" && INTEGER_PATTERN.test(value) ? Number.parseInt(value, 10) : null;
+}
+
+/** A whole number from a Postgres `bigint`, which `pg` returns as a string. */
+export function toSafeInteger(value: string | number): number {
+  const parsed = typeof value === "number" ? value : Number.parseInt(value, 10);
+
+  return Number.isSafeInteger(parsed) ? parsed : 0;
+}
+
+/** `?limit=` and `?cursor=` from a query string; the cursor is the id the previous page ended on. */
+export function parsePageQuery(query: unknown): ParseResult<PageQuery> {
+  const { limit, cursor }: Record<string, unknown> = isRecord(query) ? query : {};
+  const pageLimit = limit === undefined ? PAGE_LIMIT.default : parseInteger(limit);
+
+  if (pageLimit === null || pageLimit < 1 || pageLimit > PAGE_LIMIT.max) return parseFailure(PAGE_ERRORS.invalidLimit);
+
+  if (cursor === undefined) return { ok: true, value: { limit: pageLimit, cursor: null } };
+
+  if (typeof cursor !== "string" || !isUuid(cursor)) return parseFailure(PAGE_ERRORS.invalidCursor);
+
+  return { ok: true, value: { limit: pageLimit, cursor } };
+}
+
+/** Split rows fetched with `limit + 1` into the page and the cursor of its last row. */
+export function toPage<T extends { id: string }>(rows: T[], limit: number): Page<T> {
+  const items = rows.slice(0, limit);
+  const last = items.at(-1);
+
+  return { items, nextCursor: rows.length > limit && last ? last.id : null };
 }
 
 /** A boolean from a boolean or a query-string value `"true"` / `"false"`, else null. */

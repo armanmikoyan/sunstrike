@@ -1,6 +1,16 @@
 import type { CatalogModel, GenerationMode, GenerationSettingsInput } from "@/modules/catalog";
 import type { ParseResult } from "@/shared/types";
-import { isOneOf, isPositiveNumber, isRecord, isUuid, isWholeNumber, parseBoolean, parseInteger } from "@/shared/utils";
+import {
+  isNonEmptyText,
+  isOneOf,
+  isPositiveNumber,
+  isRecord,
+  isUuid,
+  isWholeNumber,
+  parseBoolean,
+  parseFailure,
+  parseInteger,
+} from "@/shared/utils";
 import { CURRENCY, EXAMPLE_VIDEO_SECONDS, PRICE_UNITS, QUOTE_KINDS } from "./constants";
 import type {
   ModelPrice,
@@ -166,45 +176,45 @@ export function parseQuoteQuery(query: Record<string, unknown>): ParseResult<Quo
   const { kind, modelId, mode, resolution, aspectRatio, durationSeconds, audio, templateId, quantity } = query;
 
   if (!isOneOf(QUOTE_KINDS, kind)) {
-    return { ok: false, message: `Kind must be one of: ${QUOTE_KINDS.join(", ")}.` };
+    return parseFailure(`Kind must be one of: ${QUOTE_KINDS.join(", ")}.`);
   }
 
-  if (typeof modelId !== "string" || !modelId.trim()) {
-    return { ok: false, message: "A model id is required." };
+  if (!isNonEmptyText(modelId)) {
+    return parseFailure("A model id is required.");
   }
 
   if (!isPricedMode(mode)) {
-    return { ok: false, message: `Mode must be one of: ${Object.keys(PRICE_UNITS).join(", ")}.` };
+    return parseFailure(`Mode must be one of: ${Object.keys(PRICE_UNITS).join(", ")}.`);
   }
 
-  if (typeof resolution !== "string" || !resolution) {
-    return { ok: false, message: "A resolution is required." };
+  if (!isNonEmptyText(resolution)) {
+    return parseFailure("A resolution is required.");
   }
 
-  if (typeof aspectRatio !== "string" || !aspectRatio) {
-    return { ok: false, message: "An aspect ratio is required." };
+  if (!isNonEmptyText(aspectRatio)) {
+    return parseFailure("An aspect ratio is required.");
   }
 
   const seconds = durationSeconds === undefined ? undefined : parseInteger(durationSeconds);
 
   if (seconds === null) {
-    return { ok: false, message: "Duration must be a whole number of seconds." };
+    return parseFailure("Duration must be a whole number of seconds.");
   }
 
   const withAudio = audio === undefined ? undefined : parseBoolean(audio);
 
   if (withAudio === null) {
-    return { ok: false, message: "Audio must be true or false." };
+    return parseFailure("Audio must be true or false.");
   }
 
   if (templateId !== undefined && (typeof templateId !== "string" || !isUuid(templateId))) {
-    return { ok: false, message: "Template id must be a UUID." };
+    return parseFailure("Template id must be a UUID.");
   }
 
   const count = quantity === undefined ? 1 : parseInteger(quantity);
 
   if (count === null) {
-    return { ok: false, message: "Quantity must be a whole number." };
+    return parseFailure("Quantity must be a whole number.");
   }
 
   return {

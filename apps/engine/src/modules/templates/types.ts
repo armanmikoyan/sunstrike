@@ -33,11 +33,6 @@ export interface TemplateView {
   createdAt: string;
 }
 
-export interface TemplatePageQuery {
-  limit: number;
-  cursor: string | null;
-}
-
 export interface TemplatePage {
   templates: TemplateView[];
   nextCursor: string | null;

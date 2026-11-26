@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
-import { badRequest } from "@/shared/utils";
+import { badRequest, parsePageQuery } from "@/shared/utils";
 import * as service from "./service";
-import { parsePageQuery } from "./utils";
 
 export async function listTemplates(request: Request, response: Response) {
   const parsed = parsePageQuery(request.query);

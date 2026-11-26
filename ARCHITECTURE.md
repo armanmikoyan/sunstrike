@@ -36,10 +36,11 @@ and `sync.ts` syncs the catalog from its providers once.
 | `pricing`       | Selling prices (`model_prices`), markups, discounts, public rates and stateless quotes  |
 | `offerings`     | Models a customer can use now, with their options and selling price                     |
 | `billing`       | Balances, top-ups (Lemon Squeezy), reserve/capture/release, refunds; no pricing deps    |
-| `generation`    | Validate via `catalog`, quote via `pricing`, snapshot price, reserve via `billing`, run |
+| `generations`   | Validate via `catalog`, quote via `pricing`, snapshot price, reserve via `billing`, run |
 | `media`         | Uploaded assets, short-lived signed Storage URLs, registered generation outputs         |
 | `templates`     | Curated source templates and their customisation options                                |
 | `notifications` | Terminal job updates, unread list and read state                                        |
+| `fake`          | Temporary, dev only: placeholder provider and unpaid top-ups until the real ones exist  |
 
 ### Module files
 
@@ -78,6 +79,9 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
   `import { users } from "@/modules/users"` gives `users`. Everything else —
   controller, service, repository, worker, providers, tables — is private.
   When a need does not fit, extend the object; never reach around it.
+- **Mount at the module's name.** `app.ts` mounts each module's router at
+  `/api/v1/<module>`, so a URL always names the module that answers it;
+  only `/health` sits outside the API prefix.
 - **One import path, one exception.** Never import a file inside a module, only
   `@/modules/<module>`. `app.ts` is the only exception: it imports each
   module's `router.ts` to mount it, and nothing else imports a router.
@@ -104,7 +108,7 @@ it, expose it on the module's public object, as `auth.requireAuth` is.
   request middleware and its own helpers.
 - Dependencies stay acyclic and point one way.
 - **Orchestrators compose, owners decide.** `offerings` (reads) and
-  `generation` (writes) combine other modules through their public objects
+  `generations` (writes) combine other modules through their public objects
   and own no business data of theirs; neither depends on the other. Clients
   get composed answers from these modules, never by joining two responses in
   the lab.
@@ -137,12 +141,12 @@ through `infra/storage` with the secret key. The engine authorises every
 request itself and hands out short-lived signed URLs; the lab never sees a
 key or a raw storage path.
 
-- **Upload in two steps.** `POST /api/v1/assets/uploads` checks the declared
+- **Upload in two steps.** `POST /api/v1/media/uploads` checks the declared
   type and size, picks the path (`<owner>/<asset id>.<ext>`) and returns a
   one-time upload URL with a pending asset. The client `PUT`s the file there,
-  then `POST /api/v1/assets/{id}/complete` reads the stored object and only
+  then `POST /api/v1/media/{id}/complete` reads the stored object and only
   marks it ready when its real type and size match; otherwise it is removed.
-- **Read through a signed URL.** `GET /api/v1/assets/{id}` returns the asset
+- **Read through a signed URL.** `GET /api/v1/media/{id}` returns the asset
   with a URL that expires in five minutes. Another user's asset is a 404,
   never a 403. Assets without an owner are shared, such as template sources;
   other modules sign those in one batch through `media.getSharedAssets`.
@@ -150,9 +154,40 @@ key or a raw storage path.
   itself both hold the accepted types and the size cap, so Storage rejects
   what slips past the engine.
 
+### Generations, ledger and events
+
+A generation is quoted, paid for, queued, run and announced across four
+modules, each committing only its own rows.
+
+- **Create.** `POST /api/v1/generations` needs an `Idempotency-Key` header.
+  Generation checks the inputs through `media`, the template through
+  `templates`, takes a quote from `pricing` and stores it on the job; the job
+  is never repriced. It then holds the quoted total through `billing.reserve`
+  and only then makes the job due (`run_after`). A refused hold (402) deletes
+  the unpaid job. The same key returns the first job at its first price.
+- **The table is the queue.** The worker claims the oldest due job with
+  `FOR UPDATE SKIP LOCKED` and a five-minute lease. A job whose lease ran out
+  is claimed again, so a killed worker loses nothing; each claim counts an
+  attempt, and a write from a superseded attempt is ignored. Retryable
+  failures wait and run again, up to three attempts.
+- **Terminal states settle once.** Success stores the output through
+  `media.registerOutput` and captures the hold; failure releases it. Ledger
+  rows carry one idempotency key per step (`reserve:<id>`, `settle:<id>`), so
+  a repeated settlement writes nothing.
+- **The ledger is append-only.** `transactions` stores positive micros by type;
+  available is top-ups, refunds and releases minus holds, and reserved is holds
+  minus captures and releases. A per-user advisory lock serialises holds.
+- **Facts go out as events.** `infra/events` is an in-process bus. Generation
+  publishes `generation.finished` and exposes `generations.onFinished`;
+  notifications listens and writes one row per job and outcome. Handlers run
+  in the worker process, so events stay in-process until there is more than one.
+- **Lists page by cursor.** `shared/utils` parses `?limit=` and `?cursor=` and
+  builds `{ items, nextCursor }`; repositories fetch one row past the limit,
+  newest first by `(created_at, id)`.
+
 ### Infrastructure
 
-`src/infra` is the only place a database, cache, queue or storage
+`src/infra` is the only place a database, cache, queue, event bus or storage
 client is created or imported. `src/infra/index.ts` owns startup
 connection, shutdown and health probing (`connectInfra`, `disconnectInfra`,
 `checkInfraHealth`), so `app.ts` only wires middleware and module routers and

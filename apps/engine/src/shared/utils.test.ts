@@ -4,6 +4,7 @@ import {
   conflict,
   contentTooLarge,
   httpError,
+  isNonEmptyText,
   isoAfterSeconds,
   isOneOf,
   isPositiveNumber,
@@ -12,12 +13,58 @@ import {
   isWholeNumber,
   notFound,
   parseBoolean,
+  parseFailure,
   parseInteger,
+  parsePageQuery,
+  paymentRequired,
   toIsoString,
+  toPage,
+  toSafeInteger,
   unauthorized,
   unprocessable,
   unsupportedMediaType,
 } from "./utils";
+
+const ROW_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+
+describe("paging", () => {
+  it("defaults to the first page of 20", () => {
+    expect(parsePageQuery({})).toEqual({ ok: true, value: { limit: 20, cursor: null } });
+  });
+
+  it("reads a limit and a cursor from the query string", () => {
+    expect(parsePageQuery({ limit: "5", cursor: ROW_ID })).toEqual({ ok: true, value: { limit: 5, cursor: ROW_ID } });
+  });
+
+  it.each([["0"], ["51"], ["ten"], ["2.5"]])("rejects limit %s", (limit) => {
+    expect(parsePageQuery({ limit })).toMatchObject({ ok: false });
+  });
+
+  it("rejects a cursor that is not a row id", () => {
+    expect(parsePageQuery({ cursor: "page-2" })).toMatchObject({ ok: false });
+    expect(parsePageQuery({ cursor: ["a", "b"] })).toMatchObject({ ok: false });
+  });
+
+  it("splits a limit + 1 fetch into the page and the next cursor", () => {
+    const rows = [{ id: "a" }, { id: "b" }, { id: "c" }];
+
+    expect(toPage(rows, 2)).toEqual({ items: [{ id: "a" }, { id: "b" }], nextCursor: "b" });
+    expect(toPage(rows, 3)).toEqual({ items: rows, nextCursor: null });
+    expect(toPage([], 3)).toEqual({ items: [], nextCursor: null });
+  });
+});
+
+describe("toSafeInteger", () => {
+  it("reads Postgres bigint strings", () => {
+    expect(toSafeInteger("1500000")).toBe(1_500_000);
+    expect(toSafeInteger(42)).toBe(42);
+    expect(toSafeInteger("not a number")).toBe(0);
+  });
+
+  it("answers 402 for payment required", () => {
+    expect(paymentRequired("Top up")).toMatchObject({ status: 402, message: "Top up" });
+  });
+});
 
 describe("shared utils", () => {
   it("builds HTTP errors with the expected status and message", () => {
@@ -41,6 +88,18 @@ describe("shared utils", () => {
     expect(isUuid("11111111-1111-4111-8111-111111111111")).toBe(true);
     expect(isUuid("chronolab-motion-2")).toBe(false);
     expect(isUuid("")).toBe(false);
+  });
+
+  it("accepts text that is not blank and fits the length", () => {
+    expect(isNonEmptyText("720p")).toBe(true);
+    expect(isNonEmptyText("   ")).toBe(false);
+    expect(isNonEmptyText(5)).toBe(false);
+    expect(isNonEmptyText("abcd", 3)).toBe(false);
+    expect(isNonEmptyText("abc", 3)).toBe(true);
+  });
+
+  it("builds a failed parse with its message", () => {
+    expect(parseFailure("Nope.")).toEqual({ ok: false, message: "Nope." });
   });
 
   it("narrows unknown values to records, numbers and allowed strings", () => {

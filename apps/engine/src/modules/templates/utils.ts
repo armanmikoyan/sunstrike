@@ -1,8 +1,6 @@
 import type { AssetView } from "@/modules/media";
-import type { ParseResult } from "@/shared/types";
-import { isRecord, isUuid, parseInteger, toIsoString } from "@/shared/utils";
-import { PAGE_LIMIT, TEMPLATE_ERRORS } from "./constants";
-import type { CustomizationOptions, Template, TemplatePageQuery, TemplateRow, TemplateView } from "./types";
+import { isRecord, toIsoString } from "@/shared/utils";
+import type { CustomizationOptions, Template, TemplateRow, TemplateView } from "./types";
 
 function stringList(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && item !== "") : [];
@@ -55,19 +53,4 @@ export function pairWithSources(templates: Template[], sources: AssetView[]): Te
 
     return source ? [toTemplateView(template, source)] : [];
   });
-}
-
-export function parsePageQuery(query: unknown): ParseResult<TemplatePageQuery> {
-  const { limit, cursor }: Record<string, unknown> = isRecord(query) ? query : {};
-  const pageLimit = limit === undefined ? PAGE_LIMIT.default : parseInteger(limit);
-
-  if (pageLimit === null || pageLimit < 1 || pageLimit > PAGE_LIMIT.max) {
-    return { ok: false, message: TEMPLATE_ERRORS.invalidLimit };
-  }
-
-  if (cursor === undefined) return { ok: true, value: { limit: pageLimit, cursor: null } };
-
-  if (typeof cursor !== "string" || !isUuid(cursor)) return { ok: false, message: TEMPLATE_ERRORS.invalidCursor };
-
-  return { ok: true, value: { limit: pageLimit, cursor } };
 }

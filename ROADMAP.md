@@ -50,7 +50,7 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   the auth module; Supabase stays in `infra/supabase`. Email templates
   send `{{ .Token }}` at a 6-digit OTP length, matching the login boxes.
 - Catalog: `generation_models` migration with 9 seeded models,
-  `GET /api/v1/models` and `GET /api/v1/models/:id` (with `?mode=video|image`),
+  `GET /api/v1/catalog` and `GET /api/v1/catalog/:id` (with `?mode=video|image`),
   shared capability validation, and abstract `CatalogProviderAdapter` sync.
 - Runware catalog: 5 video and 4 image Runware models keyed by AIR id, with
   their vendor and its logo. The Runware adapter reads availability through
@@ -70,10 +70,10 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   model without an active price. The source for the studio pickers and the
   pricing page.
 - Media: `media_assets` migration and a private `media` bucket with type and
-  size limits. `POST /api/v1/assets/uploads` checks the declared type and size
+  size limits. `POST /api/v1/media/uploads` checks the declared type and size
   and signs a one-time upload to a server-picked path;
-  `POST /api/v1/assets/{id}/complete` checks the stored object's real type and
-  size, removing a mismatch; `GET /api/v1/assets/{id}` returns the asset with a
+  `POST /api/v1/media/{id}/complete` checks the stored object's real type and
+  size, removing a mismatch; `GET /api/v1/media/{id}` returns the asset with a
   five-minute signed URL, and a foreign id returns 404. Storage access uses the
   secret key, server-side only.
 - Templates: `templates` migration (a shared source asset, customisation
@@ -84,6 +84,26 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   five-minute signed URL, signed in one batch through
   `media.getSharedAssets`, and one whose source is not ready is left out. No
   templates are seeded yet, so the list is empty.
+- Billing: append-only `transactions` ledger in micros. `GET /api/v1/billing`
+  derives available and reserved; `billing.reserve` holds an exact amount under
+  a per-user lock (402 when short), and `capture` / `release` settle it once.
+- Generations: `generations` migration holding the accepted quote snapshot.
+  `POST /api/v1/generations` (202, `Idempotency-Key` required) validates
+  inputs, template and settings, quotes, holds the price and queues;
+  `GET /api/v1/generations` pages the user's history and
+  `GET /api/v1/generations/{id}` reads one, a foreign id returning 404.
+- Worker: the generations table is the queue, with leases, reclaim of expired
+  leases, three attempts and retry delays. `media.registerOutput` stores the
+  output; success captures, failure releases. `worker` runs the loop with the
+  provider it is given and stops cleanly on a signal.
+- Fake module (temporary, not mounted in production): a provider that returns
+  a placeholder image after 3s and fails when the prompt contains `[fail]`;
+  `POST /api/v1/fake/top-ups` with `{ amountMicros }` credits through
+  `billing.topUp` without a payment; `POST /api/v1/fake/jobs/run` runs the
+  next due job without the worker.
+- Notifications: `notifications` migration; one row per job and outcome from
+  `generation.finished`, `GET /api/v1/notifications` (paged) and
+  `PATCH /api/v1/notifications/{id}` with `{ "read": true }`.
 
 ### Blocked
 
@@ -112,8 +132,6 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
   `GET /api/v1/templates` through a lab route instead of the mock list.
 - **Pending upload cleanup.** A worker job removes assets still pending after
   the two-hour upload window, with any partial object.
-- **Output registration.** `media.registerOutput` stores a generated file
-  under its owner and returns the asset id for the generation.
 
 #### Pricing
 
@@ -124,41 +142,33 @@ the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 #### Billing
 
-- **Balance.** `GET /balance` derives available and reserved from the ledger;
-  no pricing dependencies.
-- **Top-ups.** Lemon Squeezy checkout URL; a verified webhook credits once.
-- **Reserve and settle.** Reserve an exact amount before execution; capture on
-  success; release on failure so the exact amount is restored.
-- **Idempotency.** `Idempotency-Key` on generation and top-up replays the
-  original result.
-- **History.** Every balance change appears in the ledger, newest first.
+- **Top-ups.** `POST /api/v1/billing/top-ups` returns a Lemon Squeezy checkout URL
+  under an `Idempotency-Key`; a verified webhook credits once through
+  `billing.topUp` with the order id. Until then, dev balances come from the
+  fake top-up.
+- **History.** `GET /api/v1/billing/transactions` pages every balance change, newest
+  first.
 - **Payment method and receipts.** Card and invoices come from the Lemon
   Squeezy portal; auto top-up crosses once per threshold.
 
 #### Generations
 
-- **Capability validation.** One rule shared by studio and engine; rejects an
-  unsupported ratio, resolution, duration or audio via Catalog.
-- **Create.** Validates via Catalog, gets a quote from Pricing and persists the
-  accepted quote snapshot on the job (never repriced), reserves via Billing,
-  inserts `queued`, enqueues and returns 202 in under 1s.
-- **List and read.** Cursor history and one generation scoped to the user; a
-  foreign id returns 404.
 - **Edit and personalise.** `kind = edit` applies template options through the
-  same queue and billing.
+  same queue and billing; today an edit only requires a template.
+- **Output and inputs in the reply.** A generation returns its output and
+  input assets with signed URLs, not only their ids.
 
 #### Worker and notifications
 
-- **Queue.** Postgres queue with leases and retries; no Redis until load
-  requires it; killing the worker mid-job reclaims the job.
-- **Providers.** Runware adapter plus a fake/sandbox provider behind one
-  provider interface; both produce a terminal generation.
-- **Terminal states.** `succeeded` writes the output and settles; `failed`
-  writes the code and releases.
-- **Recovery.** Boot reclaims expired leases; no accepted job is lost.
-- **Notifications.** One row per terminal transition, with the type set to
-  `generation_succeeded` or `generation_failed`; list and mark read; a retry
-  does not duplicate.
+- **Runware provider.** A Runware adapter behind the same provider interface;
+  the worker uses the fake provider until then.
+- **Remove the fake module.** Once top-ups and the Runware provider land,
+  delete `modules/fake`, its mount in `app.ts` and its provider in `worker.ts`.
+- **Settlement recovery.** A sweep settles a terminal job whose capture or
+  release did not land, and removes a job left unpaid when its request died
+  between insert and hold.
+- **Unread count.** Notifications report how many are unread, and mark all
+  read in one call.
 
 #### Programmatic API
 

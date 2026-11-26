@@ -12,6 +12,8 @@
     "test:watch": "vitest",
     "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
     "start": "tsx --env-file-if-exists=.env src/main.ts",
+    "worker": "tsx --env-file-if-exists=.env src/worker.ts",
+    "dev:worker": "tsx watch --env-file-if-exists=.env src/worker.ts",
     "db:migrate": "tsx --env-file-if-exists=.env src/infra/database/migrate.ts",
     "catalog:sync": "tsx --env-file-if-exists=.env src/sync.ts"
   },

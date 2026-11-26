@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AssetView } from "@/modules/media";
 import type { Template } from "./types";
-import { mapTemplateRow, pairWithSources, parseCustomizationOptions, parsePageQuery } from "./utils";
+import { mapTemplateRow, pairWithSources, parseCustomizationOptions } from "./utils";
 
 const TEMPLATE_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const SOURCE_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
@@ -73,27 +73,5 @@ describe("pairWithSources", () => {
 
   it("leaves out a template whose source is missing", () => {
     expect(pairWithSources([template], [])).toEqual([]);
-  });
-});
-
-describe("parsePageQuery", () => {
-  it("defaults to the first page of 20", () => {
-    expect(parsePageQuery({})).toEqual({ ok: true, value: { limit: 20, cursor: null } });
-  });
-
-  it("reads a limit and a cursor from the query string", () => {
-    expect(parsePageQuery({ limit: "5", cursor: TEMPLATE_ID })).toEqual({
-      ok: true,
-      value: { limit: 5, cursor: TEMPLATE_ID },
-    });
-  });
-
-  it.each([["0"], ["51"], ["ten"], ["2.5"]])("rejects limit %s", (limit) => {
-    expect(parsePageQuery({ limit })).toMatchObject({ ok: false });
-  });
-
-  it("rejects a cursor that is not a template id", () => {
-    expect(parsePageQuery({ cursor: "page-2" })).toMatchObject({ ok: false });
-    expect(parsePageQuery({ cursor: ["a", "b"] })).toMatchObject({ ok: false });
   });
 });

@@ -1,7 +1,9 @@
 import * as service from "./service";
+import { isGenerationMode } from "./utils";
 
 /** Model registry: active models, capability validation, and provider sync. */
 export const catalog = {
+  isGenerationMode,
   listActiveModels: service.listActiveModels,
   getModel: service.getModel,
   validateGenerationSettings: service.validateGenerationSettings,
