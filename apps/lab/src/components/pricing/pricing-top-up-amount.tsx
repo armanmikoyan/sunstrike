@@ -1,14 +1,19 @@
 "use client";
 
+import { Minus, Plus } from "lucide-react";
 import { RollingNumber } from "@/motion/rolling-number";
 import { amountLabel } from "@/components/pricing/utils";
+import { useHaptics } from "@/hooks/use-haptics";
 import { PRICING_COPY } from "./constants";
 import { QuantityButton } from "./pricing-quantity-button";
 import { SegmentedSlider } from "./segmented-slider";
 import type { PricingTopUpAmountProps } from "./types";
 
 export function PricingTopUpAmount({ amount, onAmountChange }: PricingTopUpAmountProps) {
+  const { pulse } = useHaptics();
+
   const changeAmount = (direction: -1 | 1) => {
+    pulse();
     onAmountChange(
       Math.min(
         PRICING_COPY.topUps.custom.max,
@@ -26,20 +31,20 @@ export function PricingTopUpAmount({ amount, onAmountChange }: PricingTopUpAmoun
           prefix={PRICING_COPY.topUps.currency}
           className="text-[2rem] font-normal leading-none tracking-[-0.03em]"
         />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <QuantityButton
             onClick={() => changeAmount(-1)}
             disabled={amount <= PRICING_COPY.topUps.custom.min}
             aria-label={PRICING_COPY.topUps.custom.decreaseAmount}
           >
-            −
+            <Minus className="size-4" strokeWidth={2} />
           </QuantityButton>
           <QuantityButton
             onClick={() => changeAmount(1)}
             disabled={amount >= PRICING_COPY.topUps.custom.max}
             aria-label={PRICING_COPY.topUps.custom.increaseAmount}
           >
-            +
+            <Plus className="size-4" strokeWidth={2} />
           </QuantityButton>
         </div>
       </div>

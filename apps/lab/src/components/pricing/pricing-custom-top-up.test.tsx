@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { modelsForMode, toModelOption } from "@/components/studio/utils";
 import { offerings } from "@/mocks/offerings";
 import { PricingCustomTopUp } from "./pricing-custom-top-up";
@@ -23,6 +23,10 @@ function renderCard() {
 }
 
 describe("custom top-up", () => {
+  afterEach(() => {
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: undefined });
+  });
+
   it("starts at the minimum amount", () => {
     renderCard();
     const slider = screen.getByRole("slider", { name: "Custom top-up amount" });
@@ -36,6 +40,16 @@ describe("custom top-up", () => {
     await userEvent.click(screen.getByRole("button", { name: "Increase amount" }));
 
     expect(screen.getByRole("slider", { name: "Custom top-up amount" })).toHaveAttribute("aria-valuenow", "6");
+  });
+
+  it("pulses the haptic motor when the amount is stepped", async () => {
+    const vibrate = vi.fn();
+    Object.defineProperty(navigator, "vibrate", { configurable: true, value: vibrate });
+    renderCard();
+
+    await userEvent.click(screen.getByRole("button", { name: "Increase amount" }));
+
+    expect(vibrate).toHaveBeenCalledWith(8);
   });
 
   it("shows the selected model's rate and asset estimate in the box", async () => {

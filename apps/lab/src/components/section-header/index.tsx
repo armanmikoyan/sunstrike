@@ -5,7 +5,7 @@ export function SectionHeader({ title, description, action, className }: Section
   return (
     <div className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
       <hgroup className="max-w-170">
-        <h2 className="font-grotesk text-[1.0625rem] font-semibold uppercase leading-tight tracking-[0.1em] text-foreground sm:text-[1.1875rem]">
+        <h2 className="font-grotesk text-[1.0625rem] font-semibold uppercase leading-tight tracking-[0.1em] text-brand sm:text-[1.1875rem]">
           {title}
         </h2>
         <p className="mt-2 max-w-140 text-sm lg:text-[0.8125rem] leading-relaxed text-muted-foreground">

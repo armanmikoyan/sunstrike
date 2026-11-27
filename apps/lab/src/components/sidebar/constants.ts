@@ -12,8 +12,8 @@ export const ACCOUNT_PANE_ITEM_CLASS =
   "flex h-8 items-center gap-2 rounded-lg px-2 text-xs text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:text-[0.6875rem]";
 
 export const AVATAR_PLACEHOLDER_CLASS = "size-7 shrink-0 rounded-full bg-secondary ring-1 ring-white/10";
-export const AVATAR_FRAME_CLASS =
-  "size-7 shrink-0 rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(156,242,94,0.18),0_0_12px_rgba(156,242,94,0.22)]";
+/** Plain circular avatar. The signed-in state is carried by the row chip, not the mark. */
+export const AVATAR_FRAME_CLASS = "size-7 shrink-0 overflow-hidden rounded-full";
 
 export const ACCOUNT_MENU_COPY = {
   account: "Account",

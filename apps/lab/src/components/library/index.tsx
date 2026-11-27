@@ -23,16 +23,14 @@ export function Library() {
         }
       />
 
-      <div className="mt-5 grid grid-cols-1 divide-y divide-border rounded-xl border border-border bg-white/1.5 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <dl className="mt-5 grid grid-cols-3 gap-x-6 sm:max-w-md">
         {LIBRARY_STATS.map((stat) => (
-          <div key={stat.label} className="px-4 py-3.5">
-            <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{stat.label}</p>
-            <p className="mt-1.5 text-base font-medium tracking-[-0.02em] tabular-nums">
-              {stat.label === "Spent" ? <span className="tabular-nums font-normal">{stat.value}</span> : stat.value}
-            </p>
+          <div key={stat.label}>
+            <dt className="text-xs lg:text-[0.6875rem] text-muted-foreground">{stat.label}</dt>
+            <dd className="mt-1 text-sm font-medium tracking-[-0.01em] tabular-nums text-foreground">{stat.value}</dd>
           </div>
         ))}
-      </div>
+      </dl>
 
       <LibraryView />
     </PageShell>

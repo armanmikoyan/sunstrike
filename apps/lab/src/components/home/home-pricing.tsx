@@ -12,7 +12,7 @@ export function HomePricing() {
         <div className="p-7 sm:p-10 lg:p-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <h2 className="max-w-140 font-grotesk text-[clamp(1.75rem,3.6vw,2.5rem)] font-medium leading-[1.05] tracking-[-0.045em]">
+              <h2 className="max-w-140 font-grotesk text-[clamp(1.75rem,3.6vw,2.5rem)] font-medium leading-[1.05] tracking-[-0.045em] text-brand">
                 {HOME_COPY.pricing.titleBefore}
                 {HOME_COPY.pricing.titleAccent}
                 {HOME_COPY.pricing.titleAfter}

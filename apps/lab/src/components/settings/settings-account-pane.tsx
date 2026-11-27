@@ -13,7 +13,7 @@ export function SettingsAccountPane() {
   return (
     <div>
       <PaneHeader title={SETTINGS_COPY.account.title} description={SETTINGS_COPY.account.description} />
-      <div className="space-y-5 p-5">
+      <div className="space-y-4 p-5">
         <SettingsField
           label={SETTINGS_COPY.account.email}
           hint={SETTINGS_COPY.account.emailHint}

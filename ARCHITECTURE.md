@@ -274,6 +274,10 @@ feature component and its logic, and nothing else.
 - **High-frequency state stays local.** The composer's typing cycle lives in
   `ComposerTypingHint`, so a tick re-renders the hint rather than the form,
   and it freezes while the hint is off screen or the tab is hidden.
+- **Haptics follow touch.** `useHaptics` wraps the Vibration API and is a
+  silent no-op on desktop. A tab switch and a top-up pack tap pulse once; the
+  top-up slider ticks as its value changes, rate-limited so a fast drag never
+  turns into a buzz.
 - **The session is one shared store.** `useSessionUser` reads a module store;
   a check from the last minute is reused by later mounts (the mobile drawer
   remounts on every open). Stale checks, a returning tab and auth events

@@ -163,9 +163,10 @@
     cursor: pointer;
   }
 
+  /* Neutral selection: the brand green was too loud against body text. */
   ::selection {
-    background: var(--brand);
-    color: var(--brand-foreground);
+    background: rgba(255, 255, 255, 0.22);
+    color: inherit;
   }
 }
 

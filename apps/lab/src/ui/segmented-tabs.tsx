@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/ui/tabs";
 import { cn } from "cn";
+import { useHaptics } from "@/hooks/use-haptics";
 import type { LucideIcon } from "lucide-react";
 
 type SegmentedTabsOption<T extends string> = {
@@ -29,6 +31,8 @@ export function SegmentedTabs<T extends string>({
   fullWidth = false,
   scrollable = false,
 }: SegmentedTabsProps<T>) {
+  const { pulse } = useHaptics();
+  const pulsed = useRef<T | null>(null);
   const list = (
     <TabsList
       aria-label={ariaLabel}
@@ -60,7 +64,21 @@ export function SegmentedTabs<T extends string>({
   );
 
   return (
-    <Tabs value={value} onValueChange={(next) => onValueChange(next as T)} className={className}>
+    <Tabs
+      value={value}
+      onValueChange={(next) => {
+        if (next === value) return;
+        // Radix can report the same change twice before the value prop
+        // updates; pulse once per destination.
+        const destination = next as T;
+        if (pulsed.current !== destination) {
+          pulsed.current = destination;
+          pulse(8);
+        }
+        onValueChange(destination);
+      }}
+      className={className}
+    >
       {scrollable ? <div className="no-scrollbar -mx-1 overflow-x-auto overflow-y-hidden px-1">{list}</div> : list}
     </Tabs>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { usePathname } from "next/navigation";
+import { useHaptics } from "@/hooks/use-haptics";
 import { EXIT_MS } from "./constants";
 
 export function useIsActive() {
@@ -43,6 +44,7 @@ export function useMobileSidebarDrawer(
   const lastPathname = useRef(pathname);
   const wasOpen = useRef(open);
   const [rendered, setRendered] = useState(open);
+  const { pulse } = useHaptics();
 
   if (open && !rendered) {
     setRendered(true);
@@ -52,10 +54,8 @@ export function useMobileSidebarDrawer(
     if (wasOpen.current === open) return;
     wasOpen.current = open;
 
-    try {
-      navigator.vibrate?.(open ? 12 : 8);
-    } catch {}
-  }, [open]);
+    pulse(open ? 12 : 8);
+  }, [open, pulse]);
 
   useEffect(() => {
     if (open) return;

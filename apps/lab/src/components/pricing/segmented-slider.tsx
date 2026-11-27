@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { cn } from "cn";
+import { useHaptics } from "@/hooks/use-haptics";
 import { useSegmentedSlider } from "./hooks";
 import type { SegmentedSliderProps } from "./types";
 
@@ -24,6 +26,15 @@ export function SegmentedSlider({
       ticks,
     },
   );
+  const { pulse, tick } = useHaptics();
+  const lastValue = useRef(value);
+
+  // Tick once per value change during a drag, so the bar feels connected to the thumb.
+  useEffect(() => {
+    if (value === lastValue.current) return;
+    lastValue.current = value;
+    if (dragging) tick();
+  }, [value, dragging, tick]);
 
   return (
     <div
@@ -38,6 +49,7 @@ export function SegmentedSlider({
       onKeyDown={handleKeyDown}
       onPointerDown={(event) => {
         event.currentTarget.setPointerCapture(event.pointerId);
+        pulse(6);
         setDragging(true);
         setFromClientX(event.clientX);
       }}

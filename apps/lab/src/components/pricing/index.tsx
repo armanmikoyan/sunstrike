@@ -15,7 +15,7 @@ export function Pricing() {
       <section className="flex flex-col justify-between gap-8 border-b border-border pb-8 lg:flex-row lg:items-end">
         <div className="max-w-192">
           <p className="text-xs lg:text-[0.6875rem] text-muted-foreground">{PRICING_COPY.hero.eyebrow}</p>
-          <h1 className="mt-3 text-balance font-grotesk text-[2rem] font-medium leading-[1.02] tracking-[-0.045em] sm:text-[2.375rem]">
+          <h1 className="mt-3 text-balance font-grotesk text-[2rem] font-medium leading-[1.02] tracking-[-0.045em] text-brand sm:text-[2.375rem]">
             {PRICING_COPY.hero.titleBefore}
             {PRICING_COPY.hero.titleAccent}
             {PRICING_COPY.hero.titleAfter}

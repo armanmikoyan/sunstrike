@@ -1,24 +1,19 @@
-import { CreditCard, Layers3, Video } from "lucide-react";
-
 export const SUPPORT_EMAIL = "support@wildscape.ai";
 
 export const HELP_GUIDES = [
   {
     title: "Your first shot",
     description: "Prompting, references, templates and settings.",
-    icon: Video,
     href: "/create/video",
   },
   {
     title: "Billing & generations",
     description: "How costs are calculated and when they are charged.",
-    icon: CreditCard,
     href: "/pricing",
   },
   {
     title: "Models & resolution",
     description: "Pick the right model for images, motion and products.",
-    icon: Layers3,
     href: "/explore",
   },
 ];
