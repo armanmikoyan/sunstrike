@@ -1,7 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchMock, routerMock, setPathname } from "~/vitest.setup";
-import { SESSION_FRESH_MS, SIGNED_IN_EVENT } from "./constants";
+import { NAVIGATION_SETTLED_EVENT, NAVIGATION_START_EVENT } from "@/components/navigation-progress/constants";
+import { SESSION_FRESH_MS, SIGNED_IN_EVENT, SIGN_OUT_MIN_MS } from "./constants";
 import { useLoginHref, useRequireAuth, useSessionUser, useSignOut } from "./hooks";
 
 function json(body: unknown, status = 200) {
@@ -131,6 +132,10 @@ describe("useSessionUser", () => {
 });
 
 describe("useSignOut", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("clears the session through the BFF and stays on a public page", async () => {
     setPathname("/library");
     const { result } = renderHook(() => useSignOut());
@@ -141,6 +146,33 @@ describe("useSignOut", () => {
 
     expect(fetchMock).toHaveBeenCalledWith("/api/auth/sign-out", { method: "POST" });
     expect(routerMock.replace).not.toHaveBeenCalled();
+  });
+
+  it("drives the navigation bar and holds it for a moment before settling", async () => {
+    vi.useFakeTimers();
+    setPathname("/library");
+    const events: string[] = [];
+    const record = (event: Event) => events.push(event.type);
+    window.addEventListener(NAVIGATION_START_EVENT, record);
+    window.addEventListener(NAVIGATION_SETTLED_EVENT, record);
+
+    const { result } = renderHook(() => useSignOut());
+
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    expect(events).toEqual([NAVIGATION_START_EVENT]);
+
+    act(() => vi.advanceTimersByTime(SIGN_OUT_MIN_MS - 1));
+    expect(events).toEqual([NAVIGATION_START_EVENT]);
+
+    act(() => vi.advanceTimersByTime(1));
+    expect(events).toEqual([NAVIGATION_START_EVENT, NAVIGATION_SETTLED_EVENT]);
+
+    window.removeEventListener(NAVIGATION_START_EVENT, record);
+    window.removeEventListener(NAVIGATION_SETTLED_EVENT, record);
+    vi.useRealTimers();
   });
 
   it("lets a protected route's auth gate go home instead of login", async () => {

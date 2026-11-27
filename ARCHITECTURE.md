@@ -253,7 +253,8 @@ feature component and its logic, and nothing else.
   it. Links come from `@/components/link`, which reports Next's own
   `useLinkStatus` pending state to the bar; `router.push` callers dispatch
   `NAVIGATION_START_EVENT`, and back/forward ends on the pathname commit.
-  `staleTimes` keeps recent routes in the client cache.
+  `staleTimes` keeps recent routes in the client cache. Signing out drives the
+  same bar, held for 1.5s, instead of blocking the screen with a modal.
 - **Shared data is warmed, not re-fetched.** `OfferingsWarmup` loads the
   catalog on idle and seeds the atom, so the first screen that needs it
   renders content instead of a skeleton. Successful results live for the

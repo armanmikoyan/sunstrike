@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { SESSION_FRESH_MS, SIGN_OUT_MIN_MS, SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGNING_OUT_EVENT } from "./constants";
+import { NAVIGATION_SETTLED_EVENT, NAVIGATION_START_EVENT } from "@/components/navigation-progress/constants";
+import { SESSION_FRESH_MS, SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGN_OUT_MIN_MS } from "./constants";
 import type { SessionResponse, SessionState } from "./types";
 
 const LOADING: SessionState = { user: null, loading: true };
@@ -111,13 +112,23 @@ export function useSignOut() {
 
   const signOut = useCallback(async () => {
     setPending(true);
-    window.dispatchEvent(new Event(SIGNING_OUT_EVENT));
+    // Logging out is a request, not a route change, so it drives the top
+    // progress bar directly instead of taking over the screen with a modal.
+    const startedAt = Date.now();
+    window.dispatchEvent(new Event(NAVIGATION_START_EVENT));
 
     try {
       await fetch("/api/auth/sign-out", { method: "POST" });
     } finally {
       window.dispatchEvent(new Event(SIGNED_OUT_EVENT));
       setPending(false);
+
+      // The request is usually instant; hold the bar so the logout registers.
+      const settle = () => window.dispatchEvent(new Event(NAVIGATION_SETTLED_EVENT));
+      const remaining = SIGN_OUT_MIN_MS - (Date.now() - startedAt);
+
+      if (remaining > 0) window.setTimeout(settle, remaining);
+      else settle();
     }
   }, []);
 
@@ -156,50 +167,4 @@ export function useRequireAuth(): SessionState {
   }, [pathname, router, signedOut, state.loading, state.user]);
 
   return state;
-}
-
-export function useSignOutOverlay(): boolean {
-  const [visible, setVisible] = useState(false);
-  const shownAt = useRef(0);
-  const hideTimer = useRef<number | null>(null);
-
-  useEffect(() => {
-    const show = () => {
-      if (hideTimer.current !== null) {
-        window.clearTimeout(hideTimer.current);
-        hideTimer.current = null;
-      }
-
-      shownAt.current = Date.now();
-      setVisible(true);
-    };
-
-    const hide = () => {
-      if (hideTimer.current !== null) return;
-
-      const remaining = SIGN_OUT_MIN_MS - (Date.now() - shownAt.current);
-
-      if (remaining <= 0) {
-        setVisible(false);
-        return;
-      }
-
-      hideTimer.current = window.setTimeout(() => {
-        hideTimer.current = null;
-        setVisible(false);
-      }, remaining);
-    };
-
-    window.addEventListener(SIGNING_OUT_EVENT, show);
-    window.addEventListener(SIGNED_OUT_EVENT, hide);
-
-    return () => {
-      if (hideTimer.current !== null) window.clearTimeout(hideTimer.current);
-
-      window.removeEventListener(SIGNING_OUT_EVENT, show);
-      window.removeEventListener(SIGNED_OUT_EVENT, hide);
-    };
-  }, []);
-
-  return visible;
 }
