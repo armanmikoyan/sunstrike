@@ -6,7 +6,9 @@ import { PLAYERS } from "./constants";
 export function useVideoPlayer(src: string) {
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
-  const [inView, setInView] = useState(true);
+  // Wait for the observer before playing. Starting `true` made every tile on
+  // the wall begin streaming on mount, including the offscreen loop copies.
+  const [inView, setInView] = useState(() => typeof IntersectionObserver === "undefined");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const aligned = useRef(false);
 

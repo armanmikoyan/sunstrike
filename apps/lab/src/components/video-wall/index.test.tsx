@@ -18,10 +18,13 @@ describe("video wall", () => {
     expect(videos[1]).toHaveAttribute("preload", "metadata");
   });
 
-  it("streams the lightweight source on the wall", () => {
+  it("streams the full-resolution preview on the wall", () => {
     const { container } = render(<VideoWall />);
-    const videos = container.querySelectorAll("video");
+    const videos = [...container.querySelectorAll("video")];
 
-    expect(videos[0]).toHaveAttribute("src", "/videos/extra-time/preview-sm.mp4");
+    expect(videos).not.toHaveLength(0);
+    for (const video of videos) {
+      expect(video.getAttribute("src")).toMatch(/^\/videos\/[^/]+\/preview\.mp4$/);
+    }
   });
 });

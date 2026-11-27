@@ -59,6 +59,24 @@ describe("video with fallback", () => {
 });
 
 describe("video playback", () => {
+  it("does not start playback until the observer reports the clip in view", () => {
+    globalThis.IntersectionObserver = FakeObserver as never;
+    const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+
+    const { container } = render(
+      <VideoWithFallback src="/media/01.mp4" poster="/media/01.jpg" fallback="linear-gradient(#000, #111)" />,
+    );
+
+    fireEvent.loadedData(container.querySelector("video")!);
+    expect(play).not.toHaveBeenCalled();
+
+    act(() => {
+      onIntersect?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+    });
+    expect(play).toHaveBeenCalled();
+  });
+
   it("plays only while the clip is on screen", () => {
     globalThis.IntersectionObserver = FakeObserver as never;
     const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);

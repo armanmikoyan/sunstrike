@@ -254,9 +254,11 @@ feature component and its logic, and nothing else.
   200–300ms, and a route enters with a 160ms opacity-only fade. Animate
   transform and opacity, never layout. Reduced motion stops decorative loops
   and makes route changes instant.
-- **Ship the right media weight.** Cards and the home wall stream the
-  `preview-sm` source; `fullSrc` is reserved for large surfaces such as the
-  studio stage and login hero. Every new video asset ships a small preview.
+- **Video quality is not a budget line.** Generated media is the product, so
+  every surface streams the full-resolution preview; never downsample it to
+  win a transfer number. Speed comes from the poster that paints first, the
+  `preload` policy, and playback that starts only when a tile enters view —
+  offscreen loop copies stay idle.
 
 ### Tests
 
