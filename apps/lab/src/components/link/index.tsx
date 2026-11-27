@@ -10,6 +10,7 @@ import { NAVIGATION_SETTLED_EVENT, NAVIGATION_START_EVENT } from "@/components/n
  * pending → settled transition ends it: a link that unmounts mid-navigation
  * (a drawer closing on click) leaves the finish to the route commit.
  */
+
 function LinkPending() {
   const { pending } = useLinkStatus();
   const started = useRef(false);
