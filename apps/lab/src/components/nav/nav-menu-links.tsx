@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
 import { useHoverIndicator } from "@/hooks/use-hover-indicator";
@@ -60,17 +59,11 @@ export function NavMenuLinks({ menu }: NavMenuLinksProps) {
                 onClick={menu.close}
                 aria-expanded={active}
                 className={cn(
-                  "relative flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-medium text-muted-foreground transition-colors duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:text-foreground motion-reduce:transition-none lg:text-[0.6875rem]",
+                  "relative flex h-8 items-center rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:text-foreground motion-reduce:transition-none lg:text-[0.6875rem]",
                   active && "text-foreground",
                 )}
               >
                 {item.label}
-                <ChevronDown
-                  className={cn(
-                    "size-3 opacity-45 transition-[transform,opacity] duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
-                    active && "rotate-180 opacity-70",
-                  )}
-                />
               </Link>
             </div>
           );

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useDelayedClose } from "@/hooks/use-delayed-close";
-import { MENU_CLOSE_DELAY_MS, PANEL_GUTTER, PANEL_MAX_WIDTH } from "./constants";
+import { MEGA_MENUS, MENU_CLOSE_DELAY_MS, PANEL_GUTTER, PANEL_MAX_WIDTH } from "./constants";
 import {
   getNarrow,
   getNarrowOnServer,
@@ -32,12 +32,12 @@ export function useMegaMenu() {
     (key: string) => {
       cancelClose();
 
-      const trigger = itemRefs.current[key];
-      const header = trigger?.closest("header");
-      if (trigger && header) {
+      const anchor = itemRefs.current[MEGA_MENUS[0].key];
+      const header = anchor?.closest("header");
+      if (anchor && header) {
         const headerWidth = header.getBoundingClientRect().width;
         const width = Math.max(0, Math.min(PANEL_MAX_WIDTH, headerWidth - PANEL_GUTTER * 2));
-        const offset = trigger.getBoundingClientRect().left - header.getBoundingClientRect().left;
+        const offset = anchor.getBoundingClientRect().left - header.getBoundingClientRect().left;
         const maxLeft = Math.max(PANEL_GUTTER, headerWidth - width - PANEL_GUTTER);
         setPanelWidth(width);
         setPanelLeft(Math.min(Math.max(PANEL_GUTTER, offset), maxLeft));
