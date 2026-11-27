@@ -120,12 +120,12 @@ export function useNavigationProgress() {
 
     document.addEventListener("click", onClick, true);
     window.addEventListener("popstate", onPopState);
-    window.addEventListener("chronolab:navigation-start", onStart);
+    window.addEventListener("wildscape:navigation-start", onStart);
 
     return () => {
       document.removeEventListener("click", onClick, true);
       window.removeEventListener("popstate", onPopState);
-      window.removeEventListener("chronolab:navigation-start", onStart);
+      window.removeEventListener("wildscape:navigation-start", onStart);
     };
   }, [start]);
 

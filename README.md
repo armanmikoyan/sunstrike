@@ -1,4 +1,4 @@
-# Chronolab.ai
+# Wildscape.ai
 
 A dark-studio generative media interface. Generate cinematic video and stills
 from a prompt, pay as you go, and keep every frame.
@@ -58,8 +58,9 @@ Folder layout, component contract, shared UI and tests live in
 
 ## Brand
 
-The product is **Chronolab.ai**. Brand assets are in `apps/lab/public/brand`;
-app icons and the manifest live in `apps/lab/public/favicons` and are declared
-through `metadata.icons` in `apps/lab/src/app/layout.tsx`. The nav orb is a
-self-contained WebGL element (`apps/lab/public/brand/violet-orb.js`) with a
-static poster fallback.
+The product is **Wildscape.ai**. The lockup, the nav mark and the app icons
+(`favicon.ico`, `icon-192.png`, `apple-icon.png`) are in
+`apps/lab/public/brand`, declared through `metadata.icons` in
+`apps/lab/src/app/layout.tsx`; `/favicon.ico` is rewritten there. The brand
+colour is lime (`--brand` in `apps/lab/src/app/globals.css`); anything filled
+with it carries the dark `--brand-foreground` text.

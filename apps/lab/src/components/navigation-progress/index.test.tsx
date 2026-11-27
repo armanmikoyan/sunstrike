@@ -22,7 +22,7 @@ describe("navigation progress", () => {
   it("shows while a navigation is running", () => {
     render(<NavigationProgress />);
     act(() => {
-      window.dispatchEvent(new Event("chronolab:navigation-start"));
+      window.dispatchEvent(new Event("wildscape:navigation-start"));
     });
     expect(bar()).toHaveClass("opacity-100");
   });
@@ -81,7 +81,7 @@ describe("navigation progress", () => {
   it("hides again once the route settles", () => {
     const { rerender } = render(<NavigationProgress />);
     act(() => {
-      window.dispatchEvent(new Event("chronolab:navigation-start"));
+      window.dispatchEvent(new Event("wildscape:navigation-start"));
     });
     expect(bar()).toHaveClass("opacity-100");
 

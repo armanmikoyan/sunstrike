@@ -22,7 +22,7 @@ export const FOOTER_GROUPS = [
 export const FOOTER_COPY = {
   description: "Images and motion in one studio. No subscription, no seat count, no expiring balance.",
   status: "All systems operational",
-  copyright: "© 2026 Chronolab.ai. All frames reserved.",
+  copyright: "© 2026 Wildscape.ai. All frames reserved.",
   terms: "Terms",
   privacy: "Privacy",
   payg: "Pay as you go",

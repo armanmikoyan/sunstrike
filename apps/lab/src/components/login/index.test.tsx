@@ -19,7 +19,7 @@ function json(body: unknown, status = 200) {
   });
 }
 
-async function enterEmail(email = "arman@chronolab.ai") {
+async function enterEmail(email = "arman@wildscape.ai") {
   await userEvent.type(screen.getByRole("textbox", { name: loginCopy.emailLabel }), email);
   await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
 }
@@ -87,12 +87,12 @@ describe("login", () => {
       expect(fetchMock).toHaveBeenCalledWith("/api/auth/otp", expect.objectContaining({ method: "POST" })),
     );
     expect(await screen.findByRole("textbox", { name: "Digit 1 of 6" }, { timeout: 2000 })).toHaveFocus();
-    expect(screen.getByRole("status")).toHaveTextContent("arman@chronolab.ai");
+    expect(screen.getByRole("status")).toHaveTextContent("arman@wildscape.ai");
   });
 
   it("verifies the code and returns to the requested page", async () => {
     fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
-    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
     render(<Login next="/settings/account" />);
 
     await enterEmail();
@@ -107,7 +107,7 @@ describe("login", () => {
 
   it("rejects an off-site return path", async () => {
     fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
-    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
     render(<Login next="https://evil.example" />);
 
     await enterEmail();
@@ -158,7 +158,7 @@ describe("login", () => {
     expect(sendCode()).toBeDisabled();
 
     await userEvent.clear(email);
-    await userEvent.type(email, "other@chronolab.ai");
+    await userEvent.type(email, "other@wildscape.ai");
 
     expect(sendCode()).toBeEnabled();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -192,7 +192,7 @@ describe("login", () => {
     // The caret lands in the field with the old address selected, so typing
     // replaces it instead of appending to it.
     await waitFor(() => expect(email).toHaveFocus());
-    expect(email).toHaveValue("arman@chronolab.ai");
+    expect(email).toHaveValue("arman@wildscape.ai");
   });
 
   it("allows three sends before holding the resend for the wait", async () => {
@@ -203,7 +203,7 @@ describe("login", () => {
     render(<Login />);
 
     fireEvent.change(screen.getByRole("textbox", { name: loginCopy.emailLabel }), {
-      target: { value: "arman@chronolab.ai" },
+      target: { value: "arman@wildscape.ai" },
     });
     fireEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
 
@@ -262,7 +262,7 @@ describe("login", () => {
     render(<Login />);
 
     fireEvent.change(screen.getByRole("textbox", { name: loginCopy.emailLabel }), {
-      target: { value: "arman@chronolab.ai" },
+      target: { value: "arman@wildscape.ai" },
     });
     fireEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
     act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
@@ -288,7 +288,7 @@ describe("login", () => {
     render(<Login />);
 
     fireEvent.change(screen.getByRole("textbox", { name: loginCopy.emailLabel }), {
-      target: { value: "arman@chronolab.ai" },
+      target: { value: "arman@wildscape.ai" },
     });
     fireEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
     act(() => vi.advanceTimersByTime(SENDING_PHASE_MS));
@@ -370,7 +370,7 @@ describe("login", () => {
     );
     render(<Login />);
 
-    await userEvent.type(screen.getByRole("textbox", { name: loginCopy.emailLabel }), "arman@chronolab.ai");
+    await userEvent.type(screen.getByRole("textbox", { name: loginCopy.emailLabel }), "arman@wildscape.ai");
     await userEvent.click(screen.getByRole("button", { name: new RegExp(loginCopy.sendCode) }));
 
     const sending = screen.getByRole("button", { name: loginCopy.sending });
@@ -440,7 +440,7 @@ describe("login", () => {
     expect(screen.getByRole("button", { name: loginCopy.differentEmail })).toBeDisabled();
 
     await act(async () => {
-      resolveFetch(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+      resolveFetch(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
     });
 
     expect(routerMock.replace).toHaveBeenCalledWith("/");
@@ -449,7 +449,7 @@ describe("login", () => {
 
   it("waits for all six digits before calling the API", async () => {
     fetchMock.mockResolvedValueOnce(json({ ok: true }, 202));
-    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
     render(<Login />);
 
     await enterEmail();

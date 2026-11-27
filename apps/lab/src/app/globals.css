@@ -20,7 +20,7 @@
   --muted-foreground: #9aa0a6;
   --accent: #2a2d32;
   --accent-foreground: #f4f5f7;
-  --destructive: var(--brand-tertiary);
+  --destructive: var(--danger);
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.12);
   --ring: #f4f5f7;
@@ -38,11 +38,12 @@
   --sidebar-accent-foreground: #f4f5f7;
   --sidebar-border: rgba(255, 255, 255, 0.09);
   --sidebar-ring: #f4f5f7;
-  --brand: #7c3aed;
-  --brand-foreground: #faf9f6;
-  --brand-hover: #8b5cf6;
-  --brand-secondary: #a78bfa;
-  --brand-tertiary: #c4b5fd;
+  --brand: #74f01c;
+  --brand-foreground: #0c1405;
+  --brand-hover: #8cf542;
+  --brand-secondary: #9cf25e;
+  --brand-tertiary: #c6f9a1;
+  --danger: #f6a091;
   --surface: #0f1113;
   --surface-raised: #0f1113;
   --surface-inset: #0f1113;
@@ -64,7 +65,7 @@
   --muted-foreground: #9aa0a6;
   --accent: #2a2d32;
   --accent-foreground: #f4f5f7;
-  --destructive: var(--brand-tertiary);
+  --destructive: var(--danger);
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.12);
   --ring: #f4f5f7;
@@ -163,8 +164,8 @@
   }
 
   ::selection {
-    background: rgba(244, 245, 247, 0.9);
-    color: #0f1113;
+    background: var(--brand);
+    color: var(--brand-foreground);
   }
 }
 

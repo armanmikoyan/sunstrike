@@ -9,25 +9,29 @@ import { CookieConsent } from "@/components/cookie-consent";
 import { INSTRUMENT_SERIF, INTER, SPACE_GROTESK, SPACE_MONO } from "@/app/fonts";
 import "./globals.css";
 
-const SITE_URL = process.env.SITE_URL ?? "https://chronolab.ai";
+const SITE_URL = process.env.SITE_URL ?? "https://wildscape.ai";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  applicationName: "Chronolab.ai",
+  applicationName: "Wildscape.ai",
   title: {
-    default: "Chronolab.ai — Generative Studio",
-    template: "%s — Chronolab.ai",
+    default: "Wildscape.ai — Generative Studio",
+    template: "%s — Wildscape.ai",
   },
   description: "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
   icons: {
-    icon: "/brand/favicon.ico",
+    icon: [
+      { url: "/brand/favicon.ico", sizes: "any" },
+      { url: "/brand/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: { url: "/brand/apple-icon.png", sizes: "180x180" },
   },
   openGraph: {
-    title: "Chronolab.ai — Generative Studio",
+    title: "Wildscape.ai — Generative Studio",
     description: "Generate cinematic video and images from a prompt. Pay as you go, keep every frame.",
-    siteName: "Chronolab.ai",
+    siteName: "Wildscape.ai",
     type: "website",
-    images: [{ url: SOCIAL_SRC, width: 1200, height: 630, alt: "Chronolab.ai" }],
+    images: [{ url: SOCIAL_SRC, width: 1200, height: 630, alt: "Wildscape.ai" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -36,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#7c3aed",
+  themeColor: "#0f1113",
   colorScheme: "dark",
 };
 

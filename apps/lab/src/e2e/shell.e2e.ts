@@ -13,12 +13,12 @@ test.describe("app shell", () => {
     const collapse = page.getByRole("button", { name: "Collapse sidebar" });
     await expect(collapse).toBeVisible();
     await expect(page.getByRole("link", { name: "Favorites" })).toBeVisible();
-    // Wordmark appears next to the collapse control, the bar keeps the mark.
-    await expect(page.getByRole("link", { name: "Chronolab.ai home" })).toHaveCount(2);
+    // Only the bar carries the mark; the rail has no logo in either state.
+    await expect(page.getByRole("link", { name: "Wildscape.ai home" })).toHaveCount(1);
 
     await collapse.click();
     await expect(expand).toBeVisible();
-    await expect(page.getByRole("link", { name: "Chronolab.ai home" })).toHaveCount(1);
+    await expect(page.getByRole("link", { name: "Wildscape.ai home" })).toHaveCount(1);
   });
 
   test("animates the rail open instead of snapping", async ({ page }) => {
@@ -74,8 +74,8 @@ test.describe("app shell", () => {
     // rail uses, so a nav pill sits at x=10 in both states and must not move
     // sideways at all. An earlier, 80px-wide rail centred the pill at x=19.5
     // and flipped `self-center` off with the state, so it jumped 9.5px before
-    // the rail moved. The header toggle shares that inset in both states, so
-    // the whole column grows without any control drifting sideways.
+    // the rail moved. The toggle sits centred on the rail's edge line, so it
+    // travels with the edge and never leads or lags it.
     const sample = (run: () => Promise<void>, target: number) =>
       page
         .evaluate((target) => {
@@ -86,12 +86,13 @@ test.describe("app shell", () => {
             const tick = () => {
               const aside = document.querySelector("aside");
               const item = aside?.querySelector('a[aria-label="Explore"]');
-              const toggle = aside?.querySelector("button[aria-expanded]");
+              const toggle = aside?.parentElement?.querySelector(":scope > button[aria-expanded]");
               if (aside && item && toggle) {
+                const box = toggle.getBoundingClientRect();
                 frames.push({
                   rail: aside.getBoundingClientRect().width,
                   x: item.getBoundingClientRect().x,
-                  toggle: toggle.getBoundingClientRect().x,
+                  toggle: box.x + box.width / 2,
                 });
               }
               // Settle on the target width instead of running for a fixed
@@ -135,17 +136,15 @@ test.describe("app shell", () => {
     for (const frame of expanding) {
       // Pinned to the rail's inset: the pill never leads or lags the rail.
       expect(Math.abs(frame.x - 10)).toBeLessThan(0.6);
+      expect(Math.abs(frame.toggle - frame.rail)).toBeLessThan(1);
     }
-    expect(Math.abs(expanding.at(-1)!.toggle - 10)).toBeLessThan(1);
     expectNoTeleport(expanding);
 
     const collapsing = await sample(() => page.getByRole("button", { name: "Collapse sidebar" }).click(), 57);
     for (const frame of collapsing) {
       expect(Math.abs(frame.x - 10)).toBeLessThan(0.6);
-      // While the rail is still fully open, nothing may have moved yet.
-      if (frame.rail > 183) expect(frame.toggle).toBeCloseTo(10, 0);
+      expect(Math.abs(frame.toggle - frame.rail)).toBeLessThan(1);
     }
-    expect(Math.abs(collapsing.at(-1)!.toggle - 10)).toBeLessThan(1);
     expectNoTeleport(collapsing);
   });
 
@@ -158,26 +157,35 @@ test.describe("app shell", () => {
     await item.hover();
 
     const controls = {
-      toggle: page.getByRole("button", { name: "Expand sidebar" }),
       generation: page.locator('aside a[aria-label="New generation"]'),
       item,
       account: page.locator("aside button[aria-label='Account menu']"),
     };
 
-    const centres: number[] = [];
+    const starts: number[] = [];
     for (const control of Object.values(controls)) {
       const box = (await control.boundingBox())!;
       // The hover surface and every other control keep a 10px gutter to the
       // rail's border instead of sitting flush against it.
       expect(box.x).toBeGreaterThan(rail!.x + 9);
       expect(box.x + box.width).toBeLessThan(rail!.x + rail!.width - 9);
-      centres.push(box.x + box.width / 2);
+      starts.push(box.x);
     }
 
-    // One vertical axis for the collapsed rail.
-    for (const centre of centres) {
-      expect(centre).toBeCloseTo(centres[0], 0);
+    // One left edge for the collapsed rail; the smaller call to action leaves
+    // room for the edge toggle on its row.
+    for (const start of starts) {
+      expect(start).toBeCloseTo(starts[0], 0);
     }
+
+    // The edge toggle sits on the corner where the rail's border meets the
+    // bar's bottom line, clear of the call to action.
+    const generation = (await controls.generation.boundingBox())!;
+    const toggle = (await page.getByRole("button", { name: "Expand sidebar" }).boundingBox())!;
+    const bar = (await page.locator("header").first().boundingBox())!;
+    expect(generation.x + generation.width).toBeLessThan(toggle.x);
+    expect(Math.abs(toggle.x + toggle.width / 2 - (rail!.x + rail!.width - 0.5))).toBeLessThan(0.25);
+    expect(Math.abs(toggle.y + toggle.height / 2 - (bar.y + bar.height - 0.5))).toBeLessThan(1);
 
     // The bubble hugs the rail instead of floating out in the page.
     const tip = (await page.getByRole("tooltip").boundingBox())!;

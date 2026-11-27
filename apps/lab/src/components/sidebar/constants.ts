@@ -13,7 +13,7 @@ export const ACCOUNT_PANE_ITEM_CLASS =
 
 export const AVATAR_PLACEHOLDER_CLASS = "size-7 shrink-0 rounded-full bg-secondary ring-1 ring-white/10";
 export const AVATAR_FRAME_CLASS =
-  "size-7 shrink-0 rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(167,139,250,0.18),0_0_12px_rgba(167,139,250,0.22)]";
+  "size-7 shrink-0 rounded-full border border-brand-secondary/80 shadow-[0_0_0_1px_rgba(156,242,94,0.18),0_0_12px_rgba(156,242,94,0.22)]";
 
 export const ACCOUNT_MENU_COPY = {
   account: "Account",

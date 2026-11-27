@@ -1,6 +1,6 @@
-# Chronolab.ai architecture
+# Wildscape.ai architecture
 
-Chronolab.ai is a generative media product. Its system design — requirements,
+Wildscape.ai is a generative media product. Its system design — requirements,
 entities, API, data flow, services and deep dives — is on the design board,
 [`architecture.excalidraw`](./architecture.excalidraw). This document describes
 the repository that implements it: the parts it is made of, what each part owns,
@@ -8,7 +8,7 @@ and the conventions that keep them consistent.
 
 ## Parts
 
-Chronolab.ai is one npm workspace with two apps.
+Wildscape.ai is one npm workspace with two apps.
 
 - **Engine** (`apps/engine`) — the backend. An Express service and its worker:
   validation, pricing, persistence, jobs, outcomes and authentication. It is

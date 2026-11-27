@@ -1,4 +1,4 @@
-# Chronolab.ai roadmap
+# Wildscape.ai roadmap
 
 The product design is in [`architecture.excalidraw`](./architecture.excalidraw);
 the system and rules are in [`ARCHITECTURE.md`](./ARCHITECTURE.md).

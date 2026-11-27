@@ -18,7 +18,7 @@ test.describe("cookie consent", () => {
     await page.reload({ waitUntil: "domcontentloaded" });
     await page.waitForFunction(() => document.documentElement.dataset.hydrated === "true");
     await expect(banner).toBeHidden();
-    expect(await page.evaluate(() => window.localStorage.getItem("chronolab:cookie-consent"))).toBe("all");
+    expect(await page.evaluate(() => window.localStorage.getItem("wildscape:cookie-consent"))).toBe("all");
   });
 
   test("Essential only dismisses without analytics", async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe("cookie consent", () => {
 
     await page.getByRole("button", { name: "Essential only" }).click();
     await expect(page.getByRole("region", { name: "Cookie consent" })).toBeHidden();
-    expect(await page.evaluate(() => window.localStorage.getItem("chronolab:cookie-consent"))).toBe("essential");
+    expect(await page.evaluate(() => window.localStorage.getItem("wildscape:cookie-consent"))).toBe("essential");
   });
 
   test("links to the cookie section of the privacy policy", async ({ page }) => {

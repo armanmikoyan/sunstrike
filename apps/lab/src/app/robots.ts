@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.SITE_URL ?? "https://chronolab.ai";
+const SITE_URL = process.env.SITE_URL ?? "https://wildscape.ai";
 
 export default function robots(): MetadataRoute.Robots {
   return {

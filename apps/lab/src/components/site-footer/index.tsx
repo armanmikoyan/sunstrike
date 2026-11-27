@@ -8,7 +8,7 @@ export function SiteFooter() {
       <div className="flex w-full flex-col gap-10">
         <div className="flex flex-col justify-between gap-8 md:flex-row">
           <div>
-            <LogoLockup compact className="w-48" />
+            <LogoLockup compact className="w-68" />
             <p className="mt-3 max-w-70 text-xs lg:text-[0.6875rem] leading-relaxed text-muted-foreground">
               {FOOTER_COPY.description}
             </p>

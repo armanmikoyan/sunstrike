@@ -11,7 +11,7 @@ function json(body: unknown, status = 200) {
   });
 }
 
-const user = { id: "user-1", email: "arman@chronolab.ai" };
+const user = { id: "user-1", email: "arman@wildscape.ai" };
 
 describe("useSessionUser", () => {
   it("loads the current user", async () => {

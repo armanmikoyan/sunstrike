@@ -70,7 +70,7 @@ describe("GoogleOneTap", () => {
 
   it("exchanges the credential and reloads", async () => {
     const options = await start();
-    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
 
     await act(async () => {
       await options.callback({ credential: "credential" });
@@ -88,7 +88,7 @@ describe("GoogleOneTap", () => {
     setPathname("/login");
     window.history.replaceState(null, "", "/login?next=%2Fsettings%2Faccount");
     const options = await start();
-    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
 
     await act(async () => {
       await options.callback({ credential: "credential" });

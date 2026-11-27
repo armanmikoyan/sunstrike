@@ -1,6 +1,6 @@
-export const CONSENT_STORAGE_KEY = "chronolab:cookie-consent";
+export const CONSENT_STORAGE_KEY = "wildscape:cookie-consent";
 
-export const CONSENT_EVENT = "chronolab:cookie-consent";
+export const CONSENT_EVENT = "wildscape:cookie-consent";
 
 export const COOKIE_CONSENT_COPY = {
   regionLabel: "Cookie consent",

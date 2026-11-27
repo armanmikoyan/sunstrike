@@ -7,7 +7,7 @@ describe("account pane", () => {
   it("shows the saved email and confirms a save", async () => {
     render(<SettingsAccountPane />);
 
-    expect(screen.getByLabelText("Email")).toHaveValue("arman@chronolab.ai");
+    expect(screen.getByLabelText("Email")).toHaveValue("arman@wildscape.ai");
 
     await userEvent.click(screen.getByRole("button", { name: "Save changes" }));
 

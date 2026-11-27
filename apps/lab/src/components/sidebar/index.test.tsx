@@ -36,7 +36,7 @@ function renderDrawer(open = true) {
 
 const railNavLinks = () => within(screen.getByRole("navigation", { name: "Studio" })).getAllByRole("link");
 
-function mockSession(email = "arman@chronolab.ai", avatarUrl: string | null = null) {
+function mockSession(email = "arman@wildscape.ai", avatarUrl: string | null = null) {
   fetchMock.mockResolvedValueOnce(
     new Response(JSON.stringify({ user: { id: "user-1", email, avatarUrl } }), {
       status: 200,
@@ -115,12 +115,12 @@ describe("sidebar profile menu", () => {
   it("keeps the balance and settings inside the profile", async () => {
     mockSession();
     renderSidebar(true);
-    expect(await screen.findByText("arman@chronolab.ai")).toBeInTheDocument();
+    expect(await screen.findByText("arman@wildscape.ai")).toBeInTheDocument();
     await userEvent.hover(screen.getByRole("button", { name: "Account menu" }));
 
     const menu = await screen.findByRole("menu");
     expect(within(menu).getByText("Account")).toBeInTheDocument();
-    expect(within(menu).getByText("arman@chronolab.ai")).toBeInTheDocument();
+    expect(within(menu).getByText("arman@wildscape.ai")).toBeInTheDocument();
     expect(within(menu).queryByText("Arman Mikoyan")).not.toBeInTheDocument();
 
     const balance = within(menu).getByRole("menuitem", { name: /Balance/ });
@@ -133,7 +133,7 @@ describe("sidebar profile menu", () => {
 
   it("shows the stored avatar instead of the placeholder mark", async () => {
     const face = "https://avatars.githubusercontent.com/u/1?v=4";
-    mockSession("arman@chronolab.ai", face);
+    mockSession("arman@wildscape.ai", face);
     renderSidebar(true);
 
     const trigger = await screen.findByRole("button", { name: "Account menu" });
@@ -200,7 +200,7 @@ describe("sidebar profile menu", () => {
     setPathname("/library");
     mockSession();
     renderSidebar(true);
-    await screen.findByText("arman@chronolab.ai");
+    await screen.findByText("arman@wildscape.ai");
     await userEvent.hover(screen.getByRole("button", { name: "Account menu" }));
     await userEvent.click(await screen.findByRole("menuitem", { name: /Sign out/ }));
 

@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Script from "next/script";
 import { PanelLeft } from "lucide-react";
-import { Chronosphere } from "@/components/brand";
+import { BrandMark } from "@/components/brand";
 import { cn } from "cn";
 import { MEGA_MENUS, NAV_COPY } from "./constants";
 import { useMegaMenu } from "./hooks";
@@ -27,9 +26,8 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
           activeMenu ? "opacity-100" : "opacity-0",
         )}
       />
-      <header className="chrome-bar sticky top-0 z-40 h-11 border-b border-border" onMouseLeave={menu.scheduleClose}>
-        <Script src="/brand/violet-orb.js" strategy="afterInteractive" />
-        <div className="flex h-full w-full items-center gap-2 pl-3 pr-2 sm:pl-5">
+      <header className="chrome-bar sticky top-0 z-40 h-12 border-b border-border" onMouseLeave={menu.scheduleClose}>
+        <div className="flex h-full w-full items-center gap-2 pl-3 pr-2 sm:pl-5 lg:pl-8">
           <button
             type="button"
             ref={menuButtonRef}
@@ -44,7 +42,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
             aria-label={NAV_COPY.home}
             className="-ml-1 my-1 shrink-0 rounded-lg p-0.5 outline-none transition-colors hover:bg-white/6 focus-visible:ring-2 focus-visible:ring-white/30"
           >
-            <Chronosphere className="size-7 sm:size-8" />
+            <BrandMark className="size-7 sm:size-8" />
           </Link>
 
           <NavMenuLinks menu={menu} />

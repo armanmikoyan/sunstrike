@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { LEGAL_UPDATED } from "@/components/legal/constants";
 
-const SITE_URL = process.env.SITE_URL ?? "https://chronolab.ai";
+const SITE_URL = process.env.SITE_URL ?? "https://wildscape.ai";
 const updated = new Date(`${LEGAL_UPDATED.iso}T00:00:00.000Z`);
 
 /**

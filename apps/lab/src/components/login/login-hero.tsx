@@ -22,7 +22,7 @@ export function LoginHero() {
       <div className="absolute inset-0 bg-linear-to-t from-[#08090b] via-[#08090b]/20 to-[#08090b]/70" />
 
       <div className="relative flex min-h-screen flex-col justify-between p-8 xl:p-10">
-        <LogoLockup className="w-72" />
+        <LogoLockup className="w-96" />
 
         <div className="max-w-125">
           <p className="text-xs text-white/70 lg:text-[0.6875rem]">{loginCopy.brand}</p>

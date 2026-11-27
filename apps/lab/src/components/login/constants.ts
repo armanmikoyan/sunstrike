@@ -19,27 +19,27 @@ export const CODE_BOX_HIDDEN = { opacity: 0, y: 16, scale: 0.84 };
 export const CODE_BOX_SHOWN = { opacity: 1, y: 0, scale: 1 };
 
 export const CODE_EMPTY_TONE = {
-  borderColor: "rgba(167, 139, 250, 0.24)",
-  backgroundColor: "rgba(139, 92, 246, 0.06)",
-  boxShadow: "0 0 0 rgba(139, 92, 246, 0)",
+  borderColor: "rgba(156, 242, 94, 0.22)",
+  backgroundColor: "rgba(116, 240, 28, 0.04)",
+  boxShadow: "0 0 0 rgba(116, 240, 28, 0)",
 };
 
 export const CODE_FILLED_TONE = {
-  borderColor: "rgba(139, 92, 246, 0.6)",
-  backgroundColor: "rgba(139, 92, 246, 0.13)",
-  boxShadow: "0 0 18px rgba(139, 92, 246, 0.18)",
+  borderColor: "rgba(116, 240, 28, 0.55)",
+  backgroundColor: "rgba(116, 240, 28, 0.1)",
+  boxShadow: "0 0 18px rgba(116, 240, 28, 0.14)",
 };
 
 export const CODE_FOCUSED_TONE = {
-  borderColor: "rgba(196, 181, 253, 0.85)",
-  backgroundColor: "rgba(139, 92, 246, 0.12)",
-  boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.18)",
+  borderColor: "rgba(198, 249, 161, 0.85)",
+  backgroundColor: "rgba(116, 240, 28, 0.09)",
+  boxShadow: "0 0 0 3px rgba(116, 240, 28, 0.16)",
 };
 
 export const CODE_BUSY_TONE = {
-  borderColor: "rgba(167, 139, 250, 0.85)",
-  backgroundColor: "rgba(139, 92, 246, 0.2)",
-  boxShadow: "0 0 22px rgba(139, 92, 246, 0.3)",
+  borderColor: "rgba(156, 242, 94, 0.85)",
+  backgroundColor: "rgba(116, 240, 28, 0.16)",
+  boxShadow: "0 0 22px rgba(116, 240, 28, 0.24)",
 };
 
 export const loginHeroId = "09";
@@ -49,15 +49,15 @@ export const loginErrors: LoginErrors = {
 };
 
 export const loginCopy = {
-  brand: "Chronolab.ai",
+  brand: "Wildscape.ai",
   heroTitleBefore: "A studio for",
   heroTitleAccent: "directed frames",
   heroDescription: "Image and motion generation with real direction. No subscription, just pay for the work you make.",
   motion: "Motion 2",
   upscale: "4K upscale",
-  copyright: "© 2026 Chronolab.ai · Pay as you go",
+  copyright: "© 2026 Wildscape.ai · Pay as you go",
   backToStudio: "Back to studio",
-  title: "Sign in to Chronolab",
+  title: "Sign in to Wildscape",
   emailLabel: "Email",
   emailPlaceholder: "you@studio.com",
   codeLabel: "Code",

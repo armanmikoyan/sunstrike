@@ -74,7 +74,7 @@ describe("legal contents scroll spy", () => {
   });
 
   it("follows the section crossing the reading line", async () => {
-    render(<LegalContents sections={sections} contactEmail="support@chronolab.ai" />);
+    render(<LegalContents sections={sections} contactEmail="support@wildscape.ai" />);
 
     expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "location");
 
@@ -87,7 +87,7 @@ describe("legal contents scroll spy", () => {
   });
 
   it("keeps a clicked section until the reader scrolls again", async () => {
-    render(<LegalContents sections={sections} contactEmail="support@chronolab.ai" />);
+    render(<LegalContents sections={sections} contactEmail="support@wildscape.ai" />);
 
     fireEvent.click(screen.getByRole("link", { name: "Cookies" }));
     scrollY = 0;

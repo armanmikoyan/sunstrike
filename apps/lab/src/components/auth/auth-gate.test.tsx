@@ -24,7 +24,7 @@ describe("auth gate", () => {
   });
 
   it("renders the content for a signed-in visitor", async () => {
-    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@chronolab.ai" } }));
+    fetchMock.mockResolvedValueOnce(json({ user: { id: "user-1", email: "arman@wildscape.ai" } }));
     render(
       <AuthGate>
         <p>Account settings</p>

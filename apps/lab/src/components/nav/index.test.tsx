@@ -20,7 +20,7 @@ const clearButton = () => screen.queryByRole("button", { name: "Clear search" })
 describe("top nav", () => {
   it("is the brand entry point", () => {
     renderTopNav();
-    expect(screen.getByRole("link", { name: "Chronolab.ai home" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Wildscape.ai home" })).toHaveAttribute("href", "/");
   });
 
   it("exposes the creative tool menus on desktop", () => {

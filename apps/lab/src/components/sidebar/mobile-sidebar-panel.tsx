@@ -36,7 +36,7 @@ export function MobileSidebarPanel({ panelRef, overlayRef, onClose }: MobileSide
         </button>
 
         <div className="flex min-h-0 flex-1 flex-col px-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5">
-          <SidebarBody expanded showToggle={false} inlineAccount onToggle={onClose} onNavigate={onClose} />
+          <SidebarBody expanded showToggle={false} inlineAccount onNavigate={onClose} />
         </div>
       </div>
     </div>

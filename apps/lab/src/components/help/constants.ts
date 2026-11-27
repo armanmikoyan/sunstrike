@@ -1,6 +1,6 @@
 import { CreditCard, Layers3, Video } from "lucide-react";
 
-export const SUPPORT_EMAIL = "support@chronolab.ai";
+export const SUPPORT_EMAIL = "support@wildscape.ai";
 
 export const HELP_GUIDES = [
   {

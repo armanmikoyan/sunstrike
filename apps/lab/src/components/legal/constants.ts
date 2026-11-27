@@ -12,14 +12,14 @@ export const PRIVACY_DOCUMENT: LegalDocument = {
     "What the studio collects, why it keeps it and the choices you have over your prompts, frames and account.",
   updated: LEGAL_UPDATED.label,
   updatedIso: LEGAL_UPDATED.iso,
-  contactEmail: "privacy@chronolab.ai",
+  contactEmail: "privacy@wildscape.ai",
   sections: [
     {
       id: "overview",
       title: "Overview",
       paragraphs: [
-        "Chronolab.ai turns prompts into images and motion. This policy explains what we collect when you use the site and the studio, why we keep it, and what you can ask us to do with it.",
-        "It covers chronolab.ai and every screen behind it. Where a third party processes data for us, that processor is named in Sharing below.",
+        "Wildscape.ai turns prompts into images and motion. This policy explains what we collect when you use the site and the studio, why we keep it, and what you can ask us to do with it.",
+        "It covers wildscape.ai and every screen behind it. Where a third party processes data for us, that processor is named in Sharing below.",
       ],
     },
     {
@@ -85,7 +85,7 @@ export const PRIVACY_DOCUMENT: LegalDocument = {
       title: "Your rights",
       paragraphs: [
         "You can ask for a copy of your data, correct it, export it, delete it, or object to analytics. You can also complain to your local data protection authority.",
-        "Email privacy@chronolab.ai and we will answer within 30 days. We may ask you to confirm you own the account before we act.",
+        "Email privacy@wildscape.ai and we will answer within 30 days. We may ask you to confirm you own the account before we act.",
       ],
     },
     {
@@ -113,7 +113,7 @@ export const PRIVACY_DOCUMENT: LegalDocument = {
       id: "contact",
       title: "Contact",
       paragraphs: [
-        "Chronolab.ai is the controller for the data described here. For privacy questions, email privacy@chronolab.ai. For anything else about your account, support@chronolab.ai is faster.",
+        "Wildscape.ai is the controller for the data described here. For privacy questions, email privacy@wildscape.ai. For anything else about your account, support@wildscape.ai is faster.",
       ],
     },
   ],
@@ -125,14 +125,14 @@ export const TERMS_DOCUMENT: LegalDocument = {
   description: "The agreement behind your account, the balance you spend and the frames you make.",
   updated: LEGAL_UPDATED.label,
   updatedIso: LEGAL_UPDATED.iso,
-  contactEmail: "support@chronolab.ai",
+  contactEmail: "support@wildscape.ai",
   sections: [
     {
       id: "agreement",
       title: "The agreement",
       paragraphs: [
-        "These terms cover chronolab.ai, the studio and your account. By using the service you accept them, so read them before you generate.",
-        "If you use Chronolab.ai for a company, you confirm you can accept these terms for it.",
+        "These terms cover wildscape.ai, the studio and your account. By using the service you accept them, so read them before you generate.",
+        "If you use Wildscape.ai for a company, you confirm you can accept these terms for it.",
       ],
     },
     {
@@ -147,10 +147,10 @@ export const TERMS_DOCUMENT: LegalDocument = {
       id: "billing",
       title: "Balance, prices and charges",
       paragraphs: [
-        "Chronolab.ai is pay as you go. You buy a prepaid balance in US dollars, and each generation is charged from it at the price the studio shows before you generate.",
+        "Wildscape.ai is pay as you go. You buy a prepaid balance in US dollars, and each generation is charged from it at the price the studio shows before you generate.",
         "Your balance does not expire. There is no subscription, no seat count and no monthly minimum.",
         "Prices can change, but a change never affects a generation you have already been charged for.",
-        "Payments, tax and invoices are handled by Lemon Squeezy. Where the law gives you a refund right on unused balance, email billing@chronolab.ai and we will process it.",
+        "Payments, tax and invoices are handled by Lemon Squeezy. Where the law gives you a refund right on unused balance, email billing@wildscape.ai and we will process it.",
       ],
     },
     {
@@ -219,7 +219,7 @@ export const TERMS_DOCUMENT: LegalDocument = {
       id: "contact",
       title: "Contact",
       paragraphs: [
-        "Questions about these terms, your balance or a generation go to support@chronolab.ai. We answer on business days.",
+        "Questions about these terms, your balance or a generation go to support@wildscape.ai. We answer on business days.",
       ],
     },
   ],

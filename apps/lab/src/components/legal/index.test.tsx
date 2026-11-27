@@ -28,7 +28,7 @@ describe("legal documents", () => {
     const { container } = render(<TermsOfService />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Terms of service" })).toBeInTheDocument();
-    expect(container.textContent).toMatch(/support@chronolab\.ai/);
+    expect(container.textContent).toMatch(/support@wildscape\.ai/);
     for (const section of TERMS_DOCUMENT.sections) {
       expect(container.querySelector(`#${section.id}`)).not.toBeNull();
     }

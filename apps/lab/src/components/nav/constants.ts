@@ -209,7 +209,7 @@ export const MEGA_MENU_COPY = {
 };
 
 export const NAV_COPY = {
-  home: "Chronolab.ai home",
+  home: "Wildscape.ai home",
   openNavigation: "Open navigation",
   tools: "Studio tools",
   search: "Search the studio",

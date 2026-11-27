@@ -13,7 +13,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand text-brand-foreground hover:bg-brand-hover",
+        default:
+          "bg-brand text-brand-foreground hover:bg-brand-hover disabled:bg-white/8 disabled:text-muted-foreground disabled:opacity-100",
         outline: OUTLINE,
         subtle: cn(
           OUTLINE,

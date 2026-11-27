@@ -41,7 +41,7 @@ export type AccountRowLabelProps = {
 
 export type SidebarProps = Pick<SidebarToggleProps, "expanded" | "onToggle">;
 
-export type SidebarBodyProps = SidebarProps & {
+export type SidebarBodyProps = Pick<SidebarProps, "expanded"> & {
   showToggle?: boolean;
   onNavigate?: () => void;
   inlineAccount?: boolean;
@@ -65,7 +65,7 @@ export type SidebarExpandedState = {
   showToggle: boolean;
 };
 
-export type SidebarToggleProps = SidebarExpandedState & {
+export type SidebarToggleProps = Pick<SidebarExpandedState, "expanded"> & {
   onToggle: () => void;
 };
 

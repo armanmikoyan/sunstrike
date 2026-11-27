@@ -86,7 +86,7 @@ export const PRICING_FAQS = [
   {
     question: "Is there a subscription?",
     answer:
-      "No. Chronolab is pay as you go. Top up when you need to and spend the balance across image and video models at your own pace.",
+      "No. Wildscape is pay as you go. Top up when you need to and spend the balance across image and video models at your own pace.",
   },
   {
     question: "Does my balance expire?",
@@ -134,6 +134,6 @@ export const BOX_HEIGHT = 24;
 export const POP_MS = 260;
 export const POP_SCALE = 1.45;
 
-export const FILLED = [167, 139, 250] as const;
+export const FILLED = [156, 242, 94] as const;
 export const EMPTY = [255, 255, 255] as const;
 export const EMPTY_ALPHA = 0.2;

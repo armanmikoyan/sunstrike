@@ -70,7 +70,7 @@ export function usePromptComposer() {
   };
 
   const submit = () => {
-    window.dispatchEvent(new Event("chronolab:navigation-start"));
+    window.dispatchEvent(new Event("wildscape:navigation-start"));
     router.push(`/create/${mode}`);
   };
 
