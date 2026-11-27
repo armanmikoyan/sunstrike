@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Layers3, Paperclip, Plus, Upload } from "lucide-react";
 import { Button } from "@/ui/button";
 import {

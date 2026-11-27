@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { motion, useReducedMotion } from "motion/react";
 import { useHoverIndicator } from "@/hooks/use-hover-indicator";
 import { INSTANT_TRANSITION, LAYOUT_SPRING } from "@/motion/constants";

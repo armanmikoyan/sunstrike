@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { fetchMock, routerMock, setPathname } from "~/vitest.setup";
-import { SIGNED_IN_EVENT } from "./constants";
+import { SESSION_FRESH_MS, SIGNED_IN_EVENT } from "./constants";
 import { useLoginHref, useRequireAuth, useSessionUser, useSignOut } from "./hooks";
 
 function json(body: unknown, status = 200) {
@@ -60,7 +60,7 @@ describe("useSessionUser", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("revalidates for a later mount instead of caching the user", async () => {
+  it("reuses a fresh session for a later mount without another request", async () => {
     fetchMock.mockImplementation(async () => json({ user }));
     const first = renderHook(() => useSessionUser());
 
@@ -69,8 +69,51 @@ describe("useSessionUser", () => {
 
     const second = renderHook(() => useSessionUser());
 
+    expect(second.result.current).toEqual({ user, loading: false });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("revalidates for a later mount once the session check is stale", async () => {
+    const now = vi.spyOn(Date, "now").mockReturnValue(1_000);
+    fetchMock.mockImplementation(async () => json({ user }));
+    const first = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(first.result.current.user).toEqual(user));
+    first.unmount();
+    now.mockReturnValue(1_000 + SESSION_FRESH_MS);
+
+    const second = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(second.result.current.user).toEqual(user);
+    now.mockRestore();
+  });
+
+  it("retries a failed check on the next mount", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("offline"));
+    const first = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(first.result.current.loading).toBe(false));
+    first.unmount();
+    fetchMock.mockResolvedValueOnce(json({ user }));
+
+    const second = renderHook(() => useSessionUser());
+
     await waitFor(() => expect(second.result.current.user).toEqual(user));
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("applies a sign-in that happened while nothing was mounted", async () => {
+    const first = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(first.result.current.loading).toBe(false));
+    first.unmount();
+    fetchMock.mockResolvedValueOnce(json({ user }));
+
+    act(() => window.dispatchEvent(new Event(SIGNED_IN_EVENT)));
+    const second = renderHook(() => useSessionUser());
+
+    await waitFor(() => expect(second.result.current.user).toEqual(user));
   });
 
   it("revalidates when another sign-in flow completes", async () => {

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Plus } from "lucide-react";
 import { LibraryView } from "@/components/library-view";
 import { PageHeader } from "@/components/page-header";

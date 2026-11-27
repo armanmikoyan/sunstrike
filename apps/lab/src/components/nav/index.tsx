@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { PanelLeft } from "lucide-react";
 import { BrandMark } from "@/components/brand";
 import { cn } from "cn";
@@ -22,7 +22,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none fixed inset-0 z-30 bg-[linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.9))] transition-opacity duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
+          "pointer-events-none fixed inset-0 z-30 bg-[linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.9))] transition-opacity duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
           activeMenu ? "opacity-100" : "opacity-0",
         )}
       />
@@ -40,7 +40,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
           <Link
             href="/"
             aria-label={NAV_COPY.home}
-            className="-ml-1 my-1 shrink-0 rounded-lg p-0.5 outline-none transition-colors hover:bg-white/6 focus-visible:ring-2 focus-visible:ring-white/30"
+            className="-ml-3 shrink-0 rounded-xl py-1 pr-1.5 pl-2.5 outline-none transition-colors hover:bg-white/6 focus-visible:ring-2 focus-visible:ring-white/30"
           >
             <BrandMark className="size-7 sm:size-8" />
           </Link>

@@ -18,7 +18,7 @@ export function PromptComposer({ className }: PromptComposerProps) {
         composer.submit();
       }}
       className={cn(
-        "group/composer relative w-full rounded-[1.125rem] bg-[#17191c]/72 p-1.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07),0_1.5rem_5rem_-2rem_rgba(0,0,0,0.9)] backdrop-blur-2xl backdrop-brightness-88 backdrop-saturate-75 transition-[box-shadow,background-color] duration-300 focus-within:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_1.75rem_5.625rem_-1.875rem_rgba(0,0,0,0.95)]",
+        "group/composer relative w-full rounded-[1.125rem] bg-[#17191c]/72 p-1.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07),0_1.5rem_5rem_-2rem_rgba(0,0,0,0.9)] backdrop-blur-2xl backdrop-brightness-88 backdrop-saturate-75 transition-[box-shadow,background-color] duration-200 focus-within:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_1.75rem_5.625rem_-1.875rem_rgba(0,0,0,0.95)]",
         className,
       )}
     >

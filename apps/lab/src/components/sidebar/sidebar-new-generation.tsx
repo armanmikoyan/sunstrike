@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Plus } from "lucide-react";
 import { cn } from "cn";
 import { CTA_BEVEL, SIDEBAR_COPY } from "./constants";

@@ -10,6 +10,8 @@ export type MediaItem = {
   kind: MediaKind;
   category: MediaCategory;
   src: string;
+  /** Lower-bitrate encode for small decorative tiles; same resolution. */
+  wallSrc?: string;
   poster: string;
   aspect: string;
   model: string;

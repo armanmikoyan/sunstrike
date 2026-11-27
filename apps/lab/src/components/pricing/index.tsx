@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ArrowRight } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { PageShell } from "@/ui/page-shell";

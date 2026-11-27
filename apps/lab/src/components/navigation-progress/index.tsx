@@ -8,6 +8,7 @@ export function NavigationProgress() {
   return (
     <div
       aria-hidden="true"
+      data-navigation-progress
       className={`pointer-events-none fixed inset-x-0 top-0 z-200 h-[1.5px] transition-opacity duration-150 ${
         visible ? "opacity-100" : "opacity-0"
       }`}

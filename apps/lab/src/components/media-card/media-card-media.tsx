@@ -11,7 +11,7 @@ export function MediaCardMedia({ item, priority }: MediaCardMediaProps) {
           src={item.src}
           poster={item.poster}
           fallback={item.fallback}
-          preload={priority ? "auto" : "metadata"}
+          preload={priority ? "auto" : "none"}
           className="absolute inset-0 size-full object-cover"
         />
       ) : (

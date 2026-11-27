@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "cn";
 import { useHoverIndicator } from "@/hooks/use-hover-indicator";
@@ -19,7 +19,7 @@ export function NavMenuLinks({ menu }: NavMenuLinksProps) {
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute inset-0 rounded-xl bg-[#17191d] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] transition-opacity duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
+            "pointer-events-none absolute inset-0 rounded-xl bg-[#17191d] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] transition-opacity duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
             menu.openMenu ? "opacity-100" : "opacity-0",
           )}
         />

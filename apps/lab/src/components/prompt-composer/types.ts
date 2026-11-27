@@ -20,4 +20,7 @@ export type TypingOptions = {
   typeSpeed?: number;
   deleteSpeed?: number;
   pauseDuration?: number;
+  enabled?: boolean;
+  /** Freeze on the current text, e.g. while the hint is off screen. */
+  paused?: boolean;
 };

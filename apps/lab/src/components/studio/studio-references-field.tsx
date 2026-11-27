@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ImagePlus, Layers3, Upload, X } from "lucide-react";
 import { mediaById } from "@/mocks/media";
 import { STUDIO_COPY } from "./constants";

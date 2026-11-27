@@ -1,7 +1,7 @@
 "use client";
 
 import { Cookie } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { cn } from "cn";
 import { Button } from "@/ui/button";
 import { COOKIE_CONSENT_COPY } from "./constants";

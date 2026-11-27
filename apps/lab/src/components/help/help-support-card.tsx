@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Mail, MessageCircle } from "lucide-react";
 import { IconBox } from "@/ui/icon-box";
 import { Button } from "@/ui/button";

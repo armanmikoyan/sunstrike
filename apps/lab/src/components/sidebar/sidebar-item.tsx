@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { cn } from "cn";
 import { RailTooltip } from "./rail-tooltip";
 import type { SidebarItemProps } from "./types";

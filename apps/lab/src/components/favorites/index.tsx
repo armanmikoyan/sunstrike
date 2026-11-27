@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { MediaCard } from "@/components/media-card";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/ui/page-shell";

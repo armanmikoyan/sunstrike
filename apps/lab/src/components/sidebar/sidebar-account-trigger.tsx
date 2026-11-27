@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { DropdownMenu, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import { cn } from "cn";
 import { useLoginHref, useSessionUser, useSignOut } from "@/components/auth/hooks";

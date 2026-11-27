@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Coins } from "lucide-react";
 import { MediaKindBadge } from "@/ui/media-kind-badge";
 import { VideoWithFallback } from "@/components/video-with-fallback";
@@ -8,7 +8,7 @@ import { formatUSD } from "@/components/pricing/utils";
 import { cn } from "cn";
 import type { MosaicTileProps } from "./types";
 
-export function MosaicTile({ id, label, span, showCost = false }: MosaicTileProps) {
+export function MosaicTile({ id, label, span, showCost = false, compact = false }: MosaicTileProps) {
   const item = mediaById(id);
   if (!item) return null;
 
@@ -16,7 +16,7 @@ export function MosaicTile({ id, label, span, showCost = false }: MosaicTileProp
     <Link href={`/create/${item.kind}`} className={cn("group relative overflow-hidden rounded-xl bg-card", span)}>
       {item.kind === "video" ? (
         <VideoWithFallback
-          src={item.src}
+          src={compact ? (item.wallSrc ?? item.src) : item.src}
           poster={item.poster}
           fallback={item.fallback}
           className="absolute inset-0 size-full object-cover"

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/ui/button";
 import type { MegaMenuIntroProps } from "./types";

@@ -37,6 +37,7 @@ import {
   templateIdAtom,
 } from "./state";
 
+let cachedOfferings: OfferingsState | null = null;
 let offeringsRequest: Promise<OfferingsState> | null = null;
 
 async function fetchOfferings(): Promise<OfferingsState> {
@@ -54,11 +55,30 @@ async function fetchOfferings(): Promise<OfferingsState> {
 }
 
 function loadOfferings(): Promise<OfferingsState> {
-  offeringsRequest ??= fetchOfferings().finally(() => {
-    offeringsRequest = null;
-  });
+  if (cachedOfferings) return Promise.resolve(cachedOfferings);
+
+  offeringsRequest ??= fetchOfferings()
+    .then((state) => {
+      // Only a real catalog is worth keeping; a failure must be retried.
+      if (state.status === "ready") cachedOfferings = state;
+      return state;
+    })
+    .finally(() => {
+      offeringsRequest = null;
+    });
 
   return offeringsRequest;
+}
+
+/** Warms the catalog during idle time so the first screen renders content. */
+export function warmOfferings() {
+  return loadOfferings();
+}
+
+/** Test hook: forget the session cache between cases. */
+export function resetOfferingsCache() {
+  cachedOfferings = null;
+  offeringsRequest = null;
 }
 
 async function fetchQuoteTotal(query: string, signal: AbortSignal): Promise<number | null> {
@@ -87,10 +107,13 @@ export function useSharedState<Value, Args extends unknown[], Result>(atom: Writ
 
 export function useOfferings(mode: GenerationMode) {
   const [offerings, setOfferings] = useSharedState(offeringsAtom);
+  const attempted = useRef(false);
 
   useEffect(() => {
-    if (offerings.status !== "loading") return;
+    // Retry a failed load when a new screen mounts, but never loop on it.
+    if (offerings.status === "ready" || attempted.current) return;
 
+    attempted.current = true;
     let active = true;
 
     async function hydrate() {

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Coins, Plus } from "lucide-react";
 import { formatUSD } from "@/components/pricing/utils";
 import { balance } from "@/mocks/billing";

@@ -3,14 +3,17 @@ import type { MediaCategory, MediaItem } from "@/components/media-card/types";
 export const VIDEO_VARIANTS = [
   {
     preview: "/videos/extra-time/preview.mp4",
+    wall: "/videos/extra-time/preview-wall.mp4",
     poster: "/videos/extra-time/poster.jpg",
   },
   {
     preview: "/videos/orange-room/preview.mp4",
+    wall: "/videos/orange-room/preview-wall.mp4",
     poster: "/videos/orange-room/poster.jpg",
   },
   {
     preview: "/videos/horse-rider/preview.mp4",
+    wall: "/videos/horse-rider/preview-wall.mp4",
     poster: "/videos/horse-rider/poster.jpg",
   },
 ] as const;
@@ -253,6 +256,7 @@ export const mediaItems: MediaItem[] = items.map((item, index) => {
   return {
     ...item,
     src: isVideo ? video.preview : image,
+    wallSrc: isVideo ? video.wall : undefined,
     poster: isVideo ? video.poster : image,
     fallback: categoryFallback[item.category],
   };

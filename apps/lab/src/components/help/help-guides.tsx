@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ArrowUpRight } from "lucide-react";
 import { IconBox } from "@/ui/icon-box";
 import { HELP_GUIDES } from "./constants";

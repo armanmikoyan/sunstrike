@@ -1,59 +1,106 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { SIGN_OUT_MIN_MS, SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGNING_OUT_EVENT } from "./constants";
+import { SESSION_FRESH_MS, SIGN_OUT_MIN_MS, SIGNED_IN_EVENT, SIGNED_OUT_EVENT, SIGNING_OUT_EVENT } from "./constants";
 import type { SessionResponse, SessionState } from "./types";
 
-let inFlight: Promise<SessionState> | null = null;
+const LOADING: SessionState = { user: null, loading: true };
+const SIGNED_OUT: SessionState = { user: null, loading: false };
 
-async function fetchSession(): Promise<SessionState> {
+let session: SessionState = LOADING;
+let checkedAt: number | null = null;
+let inFlight: Promise<void> | null = null;
+const listeners = new Set<() => void>();
+
+function publish(next: SessionState) {
+  session = next;
+  for (const listener of listeners) listener();
+}
+
+let watching = false;
+
+/**
+ * Auth events update the shared session even while nothing is subscribed, so
+ * a sign-in on a page without the account UI is not masked by a cached
+ * signed-out state.
+ */
+function watchAuthEvents() {
+  if (watching) return;
+  watching = true;
+
+  window.addEventListener(SIGNED_IN_EVENT, () => {
+    checkedAt = null;
+    // A check that started before the sign-in would report the old session.
+    void (inFlight ? inFlight.then(refreshSession) : refreshSession());
+  });
+  window.addEventListener(SIGNED_OUT_EVENT, () => {
+    checkedAt = Date.now();
+    publish(SIGNED_OUT);
+  });
+  // Another tab may have signed in or out while this one was hidden.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && listeners.size > 0) void refreshSession();
+  });
+}
+
+function subscribe(listener: () => void) {
+  watchAuthEvents();
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+const getSnapshot = () => session;
+const getServerSnapshot = () => LOADING;
+
+/** `null` means the check itself failed, so nothing is cached. */
+async function fetchSession(): Promise<SessionState | null> {
   try {
     const response = await fetch("/api/auth/session", { cache: "no-store" });
 
-    if (!response.ok) return { user: null, loading: false };
+    if (!response.ok) return null;
 
     const body = (await response.json()) as SessionResponse;
 
     return { user: body.user ?? null, loading: false };
   } catch {
-    return { user: null, loading: false };
+    return null;
   }
 }
 
-function loadSession(): Promise<SessionState> {
-  inFlight ??= fetchSession().finally(() => {
+async function checkSession() {
+  try {
+    const next = await fetchSession();
+    checkedAt = next ? Date.now() : null;
+    publish(next ?? SIGNED_OUT);
+  } finally {
     inFlight = null;
-  });
+  }
+}
 
+function refreshSession(): Promise<void> {
+  inFlight ??= checkSession();
   return inFlight;
 }
 
+function isFresh() {
+  return checkedAt !== null && Date.now() - checkedAt < SESSION_FRESH_MS;
+}
+
+/** Test hook: forget the shared session between cases. */
+export function resetSessionCache() {
+  session = LOADING;
+  checkedAt = null;
+  inFlight = null;
+}
+
 export function useSessionUser(): SessionState {
-  const [state, setState] = useState<SessionState>({ user: null, loading: true });
+  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    let active = true;
-
-    async function hydrate() {
-      const session = await loadSession();
-
-      if (active) setState(session);
-    }
-
-    void hydrate();
-
-    const signedOut = () => setState({ user: null, loading: false });
-    const signedIn = () => void hydrate();
-
-    window.addEventListener(SIGNED_IN_EVENT, signedIn);
-    window.addEventListener(SIGNED_OUT_EVENT, signedOut);
-
-    return () => {
-      active = false;
-      window.removeEventListener(SIGNED_IN_EVENT, signedIn);
-      window.removeEventListener(SIGNED_OUT_EVENT, signedOut);
-    };
+    if (!isFresh()) void refreshSession();
   }, []);
 
   return state;

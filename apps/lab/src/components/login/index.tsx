@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { useReducedMotion } from "motion/react";
 import { LogoLockup } from "@/components/brand";
 import { loginCopy, STEP_SWAP } from "./constants";

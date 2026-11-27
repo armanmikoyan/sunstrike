@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { LogoLockup } from "@/components/brand";
 import { FOOTER_COPY, FOOTER_GROUPS } from "./constants";
 

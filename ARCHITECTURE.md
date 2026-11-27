@@ -247,18 +247,50 @@ feature component and its logic, and nothing else.
   `RouteWarmup` warms the primary destinations once the app is idle and
   `usePrefetch` warms programmatic targets on hover or focus. Both skip
   `saveData` and 2G connections.
-- **Navigation stays interruptible.** The progress bar appears only after
-  120ms and animates with `transform`, so fast transitions never flash.
+- **Navigation stays honest.** Prefetched routes commit instantly; the bar is
+  only the fallback for a slow one. It appears after 120ms, holds briefly at
+  full width and fades in 150ms, so a route that commits sooner never shows
+  it. Links come from `@/components/link`, which reports Next's own
+  `useLinkStatus` pending state to the bar; `router.push` callers dispatch
+  `NAVIGATION_START_EVENT`, and back/forward ends on the pathname commit.
   `staleTimes` keeps recent routes in the client cache.
+- **Shared data is warmed, not re-fetched.** `OfferingsWarmup` loads the
+  catalog on idle and seeds the atom, so the first screen that needs it
+  renders content instead of a skeleton. Successful results live for the
+  session; failures are never cached and retry on the next mount.
+- **Media paints posters first.** Players default to `preload="none"`, the
+  poster sits under the video, and playback starts only when the observer
+  reports the clip on screen. Off-screen, hidden-tab, reduced-motion and
+  route-commit states pause every player; `MediaResync` re-checks them after
+  a commit.
+- **The wall waits for idle.** Clips mount after `requestIdleCallback` (or a
+  short fallback) so posters own the first frame, and only the leading tile
+  preloads.
 - **Motion has a budget.** Hover and focus settle in 120–200ms, menus in
-  200–300ms, and a route enters with a 160ms opacity-only fade. Animate
-  transform and opacity, never layout. Reduced motion stops decorative loops
-  and makes route changes instant.
+  200–300ms, a route enters with a 180ms fade and a 2px lift, and panels grow
+  in from their trigger. Animate transform and opacity, never layout.
+  Reduced motion stops decorative loops, the typing hint and route fades.
+- **High-frequency state stays local.** The composer's typing cycle lives in
+  `ComposerTypingHint`, so a tick re-renders the hint rather than the form,
+  and it freezes while the hint is off screen or the tab is hidden.
+- **The session is one shared store.** `useSessionUser` reads a module store;
+  a check from the last minute is reused by later mounts (the mobile drawer
+  remounts on every open). Stale checks, a returning tab and auth events
+  revalidate; failed checks are never cached.
+- **Fonts preload only when most pages need them.** The serif accent is used
+  on login alone, so it loads on demand.
+- **Small tiles share the wall encode.** The home pricing mosaic streams
+  `preview-wall.mp4`, which the hero has already cached.
 - **Video quality is not a budget line.** Generated media is the product, so
   every surface streams the full-resolution preview; never downsample it to
-  win a transfer number. Speed comes from the poster that paints first, the
-  `preload` policy, and playback that starts only when a tile enters view —
-  offscreen loop copies stay idle.
+  win a transfer number. Weight is cut by re-encoding at the same resolution,
+  and by the poster/`preload`/in-view rules above.
+- **Small tiles get a lighter cut of the same resolution.** The wall shows
+  three clips across thirty small tiles, so it streams `preview-wall.mp4`
+  (native resolution, CRF 30, about half the bytes) while cards, the studio
+  and the login hero keep `preview.mp4`. Players never seek: the wall repeats
+  a clip across many tiles, and a seek makes each element fetch its own byte
+  ranges instead of sharing one download.
 
 ### Tests
 

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ArrowUpRight, Play } from "lucide-react";
 import { MEDIA_CARD_COPY } from "./constants";
 import type { MediaCardOverlayProps } from "./types";

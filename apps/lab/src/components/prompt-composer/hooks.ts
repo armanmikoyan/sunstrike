@@ -2,23 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { NAVIGATION_START_EVENT } from "@/components/navigation-progress/constants";
 import type { GenerationMode } from "@/components/studio/types";
 import { aspectRatiosFor, durationsFor } from "@/components/studio/utils";
 import { aspectRatioAtom, attachmentAtom, durationAtom, modeAtom, promptAtom } from "@/components/studio/state";
 import { useSelectedModel, useSharedState } from "@/components/studio/hooks";
-import { COMPOSER_COPY, PROMPT_IDEAS } from "./constants";
+import { COMPOSER_COPY } from "./constants";
 import type { TypingOptions } from "./types";
 
 export function useTypingCycle(
   words: readonly string[],
-  { typeSpeed = 24, deleteSpeed = 10, pauseDuration = 1200 }: TypingOptions = {},
+  { typeSpeed = 24, deleteSpeed = 10, pauseDuration = 1200, enabled = true, paused = false }: TypingOptions = {},
 ) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (words.length === 0) return;
+    if (!enabled || paused || words.length === 0) return;
 
     const word = words[wordIndex % words.length];
     let delay = isDeleting ? deleteSpeed : typeSpeed;
@@ -43,9 +44,38 @@ export function useTypingCycle(
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [text, isDeleting, wordIndex, words, typeSpeed, deleteSpeed, pauseDuration]);
+  }, [text, isDeleting, wordIndex, words, typeSpeed, deleteSpeed, pauseDuration, enabled, paused]);
 
-  return text;
+  return enabled ? text : (words[0] ?? "");
+}
+
+/**
+ * True while the element is on screen in a visible tab. The typing hint ticks
+ * every 10–24ms, so it must not keep committing renders nobody can see.
+ */
+export function useOnScreen<T extends Element>() {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(true);
+  const [tabVisible, setTabVisible] = useState(true);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onChange = () => setTabVisible(document.visibilityState !== "hidden");
+
+    onChange();
+    document.addEventListener("visibilitychange", onChange);
+    return () => document.removeEventListener("visibilitychange", onChange);
+  }, []);
+
+  return { ref, onScreen: inView && tabVisible };
 }
 
 export function usePromptComposer() {
@@ -62,7 +92,6 @@ export function usePromptComposer() {
   const durationOptions = selectedModel ? durationsFor(selectedModel) : [];
   const modelLabel =
     selectedModel?.displayName ?? (status === "loading" ? COMPOSER_COPY.loadingModels : COMPOSER_COPY.noModels);
-  const typedPlaceholder = useTypingCycle(PROMPT_IDEAS[mode]);
 
   const switchMode = (next: GenerationMode) => {
     setMode(next);
@@ -70,7 +99,7 @@ export function usePromptComposer() {
   };
 
   const submit = () => {
-    window.dispatchEvent(new Event("wildscape:navigation-start"));
+    window.dispatchEvent(new Event(NAVIGATION_START_EVENT));
     router.push(`/create/${mode}`);
   };
 
@@ -90,7 +119,6 @@ export function usePromptComposer() {
     selectedModel,
     aspectOptions,
     durationOptions,
-    typedPlaceholder,
     fileInputRef,
     switchMode,
     submit,

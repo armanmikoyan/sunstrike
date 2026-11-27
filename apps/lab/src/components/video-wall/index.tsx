@@ -1,9 +1,16 @@
+"use client";
+
 import { WALL_COLUMNS } from "./constants";
+import { useWallLive } from "./hooks";
 import { VideoWallTile } from "./video-wall-tile";
 
 export function VideoWall() {
+  const live = useWallLive();
+
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    // Decorative: every clip appears twice for the seamless loop, and the
+    // gallery below lists the same work with real links.
+    <div aria-hidden className="relative h-full w-full overflow-hidden">
       <div className="absolute inset-0 flex justify-center">
         <div className="flex w-full min-w-180 gap-2 px-2">
           {WALL_COLUMNS.map((column, columnIndex) => (
@@ -20,7 +27,8 @@ export function VideoWall() {
                     <VideoWallTile
                       key={`${repeat}-${id}`}
                       id={id}
-                      preload={columnIndex < 2 && index === 0 ? "auto" : "metadata"}
+                      live={live}
+                      preload={columnIndex === 0 && index === 0 ? "auto" : "none"}
                     />
                   ))}
                 </div>

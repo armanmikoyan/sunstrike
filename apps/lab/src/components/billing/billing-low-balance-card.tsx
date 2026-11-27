@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Coins } from "lucide-react";
 import { Button } from "@/ui/button";
 import { BILLING_COPY } from "./constants";

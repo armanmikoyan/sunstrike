@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Mail } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/ui/page-shell";

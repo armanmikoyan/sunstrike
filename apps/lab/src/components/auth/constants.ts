@@ -11,6 +11,13 @@ export const AUTH_COPY = {
 
 export const SIGN_OUT_MIN_MS = 800;
 
+/**
+ * A session checked this recently is reused by components that mount later
+ * (the mobile drawer remounts its account row on every open). Older checks,
+ * a returning tab and sign-in events revalidate.
+ */
+export const SESSION_FRESH_MS = 60_000;
+
 export const GOOGLE_ONE_TAP_OPTIONS = {
   auto_select: false,
   cancel_on_tap_outside: false,

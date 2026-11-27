@@ -4,6 +4,8 @@ import { afterEach, beforeEach, vi } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 import { Provider } from "jotai";
 import { TooltipProvider } from "@/ui/tooltip";
+import { resetSessionCache } from "@/components/auth/hooks";
+import { resetOfferingsCache } from "@/components/studio/hooks";
 import { offeringsResponse, quoteResponse } from "@/mocks/offerings";
 
 type WithChildrenProps = {
@@ -199,7 +201,7 @@ vi.mock("next/link", async () => {
     return ReactModule.createElement("a", { ...(rest as object), ref, href: url }, children);
   });
 
-  return { __esModule: true, default: Link };
+  return { __esModule: true, default: Link, useLinkStatus: () => ({ pending: false }) };
 });
 
 vi.mock("next/image", async () => {
@@ -296,6 +298,8 @@ vi.mock("motion/react", async () => {
 
 beforeEach(() => {
   resetNavigation();
+  resetOfferingsCache();
+  resetSessionCache();
   fetchMock.mockReset();
   fetchMock.mockImplementation(defaultFetch);
 });

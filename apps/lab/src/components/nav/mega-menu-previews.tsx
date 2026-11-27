@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { MediaKindBadge } from "@/ui/media-kind-badge";
 import { mediaById } from "@/mocks/media";
 import { cn } from "cn";

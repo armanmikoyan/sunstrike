@@ -16,9 +16,11 @@ export const SPACE_MONO = Space_Mono({
   weight: "400",
 });
 
+// Only the login accent uses the serif, so it loads on demand instead of being
+// preloaded by every page.
 export const INSTRUMENT_SERIF = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  preload: false,
 });

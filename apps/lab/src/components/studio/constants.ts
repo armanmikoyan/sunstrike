@@ -11,6 +11,10 @@ export const ASPECT_RATIOS = [
 ];
 
 export const OFFERINGS_URL = "/api/offerings";
+
+/** Warm the catalog once the app is idle, with a fallback for older browsers. */
+export const OFFERINGS_IDLE_TIMEOUT_MS = 2000;
+export const OFFERINGS_IDLE_FALLBACK_MS = 1200;
 export const QUOTE_URL = "/api/pricing/quote";
 export const QUOTE_KIND = "create";
 export const MICROS_PER_USD = 1_000_000;

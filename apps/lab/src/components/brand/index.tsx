@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { cn } from "cn";
 import { BRAND_COPY, LOCKUP_HEIGHT, LOCKUP_SRC, LOCKUP_WIDTH, MARK_SIZE, MARK_SRC } from "./constants";
 import type { BrandMarkProps, LogoLockupProps } from "./types";

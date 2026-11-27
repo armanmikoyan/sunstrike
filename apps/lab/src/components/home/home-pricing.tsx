@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { MosaicTile } from "@/components/ratio-mosaic/mosaic-tile";
 import { Button } from "@/ui/button";
@@ -53,7 +53,7 @@ export function HomePricing() {
             </div>
             <div className="mt-4 grid auto-rows-32 grid-cols-2 gap-3 lg:auto-rows-30 lg:grid-cols-12">
               {PRICING_MOSAIC_TILES.map((tile) => (
-                <MosaicTile key={tile.id} {...tile} showCost />
+                <MosaicTile key={tile.id} {...tile} showCost compact />
               ))}
             </div>
           </div>

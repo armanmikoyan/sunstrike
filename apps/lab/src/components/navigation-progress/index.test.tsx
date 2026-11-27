@@ -1,10 +1,10 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NavigationProgress } from ".";
-import { FADE_MS, MIN_VISIBLE_MS, SHOW_DELAY_MS } from "./constants";
+import { FADE_MS, HOLD_MS, NAVIGATION_SETTLED_EVENT, NAVIGATION_START_EVENT, SHOW_DELAY_MS } from "./constants";
 import { setPathname } from "~/vitest.setup";
 
-const bar = () => document.querySelector('[aria-hidden="true"]') as HTMLElement;
+const bar = () => document.querySelector("[data-navigation-progress]") as HTMLElement;
 
 describe("navigation progress", () => {
   beforeEach(() => {
@@ -34,7 +34,23 @@ describe("navigation progress", () => {
     expect(bar()).toHaveClass("opacity-100");
   });
 
-  it("reacts to internal link clicks", () => {
+  it("finishes when a link reports its navigation settled", () => {
+    render(<NavigationProgress />);
+    act(() => {
+      window.dispatchEvent(new Event(NAVIGATION_START_EVENT));
+      vi.advanceTimersByTime(SHOW_DELAY_MS);
+    });
+    expect(bar()).toHaveClass("opacity-100");
+
+    // A query-only link never changes the pathname; the settle still ends it.
+    act(() => {
+      window.dispatchEvent(new Event(NAVIGATION_SETTLED_EVENT));
+      vi.advanceTimersByTime(HOLD_MS + FADE_MS + 50);
+    });
+    expect(bar()).toHaveClass("opacity-0");
+  });
+
+  it("ignores plain clicks; links report through their pending state", () => {
     render(<NavigationProgress />);
     const link = document.createElement("a");
     link.href = "/pricing";
@@ -45,33 +61,21 @@ describe("navigation progress", () => {
       vi.advanceTimersByTime(SHOW_DELAY_MS);
     });
 
-    expect(bar()).toHaveClass("opacity-100");
+    expect(bar()).toHaveClass("opacity-0");
     link.remove();
   });
 
-  it("ignores external links and modified clicks", () => {
+  it("ignores query-only history steps", () => {
     render(<NavigationProgress />);
-    const link = document.createElement("a");
-    link.href = "https://example.com";
-    document.body.appendChild(link);
 
     act(() => {
-      link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      window.history.pushState({}, "", "/?q=forest");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      vi.advanceTimersByTime(SHOW_DELAY_MS);
     });
-    expect(bar()).toHaveClass("opacity-0");
 
-    link.href = "/pricing";
-    act(() => {
-      link.dispatchEvent(
-        new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          metaKey: true,
-        }),
-      );
-    });
     expect(bar()).toHaveClass("opacity-0");
-    link.remove();
+    window.history.pushState({}, "", "/");
   });
 
   it("ignores hash-only history changes", () => {
@@ -115,7 +119,7 @@ describe("navigation progress", () => {
     rerender(<NavigationProgress />);
 
     act(() => {
-      vi.advanceTimersByTime(MIN_VISIBLE_MS + FADE_MS + 50);
+      vi.advanceTimersByTime(HOLD_MS + FADE_MS + 50);
     });
 
     expect(bar()).toHaveClass("opacity-0");

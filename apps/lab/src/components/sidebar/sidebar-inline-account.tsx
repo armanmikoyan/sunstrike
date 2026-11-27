@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "cn";
 import { useLoginHref, useSessionUser, useSignOut } from "@/components/auth/hooks";

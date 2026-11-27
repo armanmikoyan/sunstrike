@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ArrowUpRight, Check } from "lucide-react";
 import { CountBadge } from "@/ui/count-badge";
 import { MediaKindBadge } from "@/ui/media-kind-badge";

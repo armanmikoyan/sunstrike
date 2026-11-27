@@ -98,4 +98,29 @@ describe("video playback", () => {
     });
     expect(play).toHaveBeenCalled();
   });
+
+  it("never seeks, so repeated clips keep sharing one download", () => {
+    const seek = vi.fn();
+    const original = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime");
+    Object.defineProperty(HTMLMediaElement.prototype, "currentTime", {
+      configurable: true,
+      get: () => 0,
+      set: seek,
+    });
+
+    try {
+      const { container } = render(
+        <>
+          <VideoWithFallback src="/media/01.mp4" fallback="linear-gradient(#000, #111)" />
+          <VideoWithFallback src="/media/01.mp4" fallback="linear-gradient(#000, #111)" />
+        </>,
+      );
+
+      for (const video of container.querySelectorAll("video")) fireEvent.loadedData(video);
+
+      expect(seek).not.toHaveBeenCalled();
+    } finally {
+      if (original) Object.defineProperty(HTMLMediaElement.prototype, "currentTime", original);
+    }
+  });
 });

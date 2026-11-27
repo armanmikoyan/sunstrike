@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { FADE_MS, MAX_PROGRESS_MS, MIN_VISIBLE_MS, SHOW_DELAY_MS, START_PROGRESS, TRICKLE_MS } from "./constants";
+import {
+  FADE_MS,
+  HOLD_MS,
+  MAX_PROGRESS_MS,
+  NAVIGATION_SETTLED_EVENT,
+  NAVIGATION_START_EVENT,
+  SHOW_DELAY_MS,
+  START_PROGRESS,
+  TRICKLE_MS,
+} from "./constants";
 
 export function useNavigationProgress() {
   const pathname = usePathname();
@@ -10,7 +19,6 @@ export function useNavigationProgress() {
   const [progress, setProgress] = useState(0);
   const firstPath = useRef(true);
   const running = useRef(false);
-  const shownAt = useRef(0);
   const lastRoute = useRef<string | null>(null);
   const show = useRef<number | null>(null);
   const trickle = useRef<number | null>(null);
@@ -43,14 +51,11 @@ export function useNavigationProgress() {
       return;
     }
 
-    const elapsed = performance.now() - shownAt.current;
-    const hold = Math.max(0, MIN_VISIBLE_MS - elapsed);
-
     setProgress(100);
     hide.current = window.setTimeout(() => {
       setVisible(false);
       reset.current = window.setTimeout(() => setProgress(0), FADE_MS);
-    }, hold + FADE_MS);
+    }, HOLD_MS + FADE_MS);
   }, []);
 
   const start = useCallback(() => {
@@ -71,7 +76,6 @@ export function useNavigationProgress() {
       show.current = null;
       if (!running.current) return;
 
-      shownAt.current = performance.now();
       setVisible(true);
       trickle.current = window.setInterval(() => {
         setProgress((value) => Math.min(90, value + Math.max(1, (90 - value) * 0.08)));
@@ -93,55 +97,33 @@ export function useNavigationProgress() {
     finish();
   }, [pathname, finish]);
 
+  // Links report through `useLinkStatus` (see `@/components/link`), and
+  // `router.push` callers dispatch the start event themselves. Back/forward
+  // has no link, so popstate starts the bar and the pathname commit ends it.
   useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) {
-        return;
-      }
-
-      if (!(event.target instanceof Element)) return;
-      const anchor = event.target.closest("a");
-      if (!anchor) return;
-      if (anchor.target && anchor.target !== "_self") return;
-      if (anchor.hasAttribute("download")) return;
-
-      const href = anchor.getAttribute("href");
-      if (!href || !href.startsWith("/") || href.startsWith("//")) return;
-
-      const next = new URL(href, window.location.href);
-      if (next.pathname === window.location.pathname && next.search === window.location.search) {
-        return;
-      }
-
-      start();
-    };
-
     const onPopState = () => {
       const route = `${window.location.pathname}${window.location.search}`;
       if (route === lastRoute.current) return;
 
+      const samePath = lastRoute.current?.split("?")[0] === window.location.pathname;
       lastRoute.current = route;
+      // A query-only step never changes the pathname, so nothing would end it.
+      if (samePath) return;
+
       start();
     };
     const onStart = () => start();
 
-    document.addEventListener("click", onClick, true);
     window.addEventListener("popstate", onPopState);
-    window.addEventListener("wildscape:navigation-start", onStart);
+    window.addEventListener(NAVIGATION_START_EVENT, onStart);
+    window.addEventListener(NAVIGATION_SETTLED_EVENT, finish);
 
     return () => {
-      document.removeEventListener("click", onClick, true);
       window.removeEventListener("popstate", onPopState);
-      window.removeEventListener("wildscape:navigation-start", onStart);
+      window.removeEventListener(NAVIGATION_START_EVENT, onStart);
+      window.removeEventListener(NAVIGATION_SETTLED_EVENT, finish);
     };
-  }, [start]);
+  }, [start, finish]);
 
   useEffect(() => {
     return () => {

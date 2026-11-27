@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { Coins, LogOut, Plus } from "lucide-react";
 import { cn } from "cn";
 import { formatUSD } from "@/components/pricing/utils";

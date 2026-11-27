@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/link";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/ui/button";
 import { cn } from "cn";
