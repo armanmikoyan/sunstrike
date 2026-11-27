@@ -5,6 +5,8 @@ import { PricingTopUpPack } from "./pricing-top-up-pack";
 import type { PricingTopUpPacksProps } from "./types";
 
 export function PricingTopUpPacks({ amount, onSelect }: PricingTopUpPacksProps) {
+  // The custom amount drives the presets, so dragging the slider highlights
+  // the nearest pack and clicking a pack moves the slider to its price.
   const activeIndex = topUpPacks.reduce(
     (closest, pack, index) =>
       Math.abs(amount - pack.price) < Math.abs(amount - topUpPacks[closest].price) ? index : closest,

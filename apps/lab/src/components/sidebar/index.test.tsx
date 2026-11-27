@@ -72,14 +72,14 @@ describe("sidebar rail", () => {
     expect(hrefs).not.toContain("/settings/account");
   });
 
-  it("gives the pricing icon a muted duotone and leaves help neutral", () => {
+  it("gives the pricing icon a single brand stroke and leaves help neutral", () => {
     renderSidebar(true);
 
     const pricing = screen.getByRole("link", { name: "Pricing" });
     const gem = pricing.querySelector("svg.lucide-gem");
     expect(gem).toBeInTheDocument();
     expect(gem).toHaveClass("text-brand-secondary");
-    expect(gem?.getAttribute("class")).toContain("stroke-brand-tertiary");
+    expect(gem?.getAttribute("class")).not.toContain("stroke-brand-tertiary");
 
     const helpIcon = screen.getByRole("link", { name: "Help" }).querySelector("svg");
     expect(helpIcon).not.toHaveClass("text-brand-secondary");

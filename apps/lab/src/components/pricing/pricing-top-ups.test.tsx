@@ -44,7 +44,7 @@ describe("top-up presets", () => {
     expect(screen.getByRole("button", { name: "Select $5" })).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("lights the nearest preset while the amount sits between two", async () => {
+  it("keeps the nearest preset lit while the amount sits just below it", async () => {
     renderTopUps();
 
     await userEvent.click(screen.getByRole("button", { name: "Select $50" }));
@@ -77,7 +77,17 @@ describe("top-up presets", () => {
     expect(screen.getByRole("button", { name: "Select $5" })).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("keeps the tiles in sync when the slider moves off a preset", async () => {
+  it("keeps the nearest preset lit while stepping around its price", async () => {
+    renderTopUps();
+
+    await userEvent.click(screen.getByRole("button", { name: "Select $50" }));
+    await userEvent.click(screen.getByRole("button", { name: "Increase amount" }));
+    await userEvent.click(screen.getByRole("button", { name: "Decrease amount" }));
+
+    expect(screen.getByRole("button", { name: "Select $50" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("keeps the tiles in sync when the slider moves", async () => {
     renderTopUps();
     const slider = screen.getByRole("slider", { name: "Custom top-up amount" });
 
@@ -88,5 +98,10 @@ describe("top-up presets", () => {
     expect(slider).toHaveAttribute("aria-valuenow", "10000");
     expect(screen.getByRole("button", { name: "Select $5000" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "Select $10000" })).toHaveAttribute("aria-pressed", "true");
+
+    await userEvent.keyboard("{Home}");
+
+    expect(slider).toHaveAttribute("aria-valuenow", "5");
+    expect(screen.getByRole("button", { name: "Select $5" })).toHaveAttribute("aria-pressed", "true");
   });
 });
