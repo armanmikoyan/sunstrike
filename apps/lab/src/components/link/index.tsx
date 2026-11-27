@@ -1,8 +1,8 @@
 "use client";
 
 import NextLink, { useLinkStatus } from "next/link";
-import { useEffect, useRef } from "react";
 import type { ComponentProps } from "react";
+import { useEffect, useRef } from "react";
 import { NAVIGATION_SETTLED_EVENT, NAVIGATION_START_EVENT } from "@/components/navigation-progress/constants";
 
 /**
@@ -10,7 +10,6 @@ import { NAVIGATION_SETTLED_EVENT, NAVIGATION_START_EVENT } from "@/components/n
  * pending → settled transition ends it: a link that unmounts mid-navigation
  * (a drawer closing on click) leaves the finish to the route commit.
  */
-
 function LinkPending() {
   const { pending } = useLinkStatus();
   const started = useRef(false);
