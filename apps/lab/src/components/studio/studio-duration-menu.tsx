@@ -31,7 +31,7 @@ export function StudioDurationMenu({
           className={cn("justify-between disabled:opacity-100", className)}
         >
           <span className="font-mono tabular-nums">{formatDuration(value)}</span>
-          {fixed ? null : <ChevronDown className="size-3.5 text-muted-foreground/70" />}
+          {fixed ? null : <ChevronDown className="size-3.5 text-muted-foreground/80" />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className={cn("p-1", contentClassName)}>

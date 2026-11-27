@@ -19,7 +19,7 @@ export function RatioMosaic() {
           description={MOSAIC_COPY.description}
           action={
             <div className="flex items-center gap-4">
-              <p className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground/70">{MOSAIC_COPY.count}</p>
+              <p className="font-mono text-xs lg:text-[0.6875rem] text-muted-foreground">{MOSAIC_COPY.count}</p>
               <Button asChild variant="quiet" className="hidden sm:flex">
                 <Link href="/explore">
                   {MOSAIC_COPY.action}

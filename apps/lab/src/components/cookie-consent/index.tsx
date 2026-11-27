@@ -41,7 +41,7 @@ export function CookieConsent() {
         <Button variant="subtle" size="lg" onClick={() => choose("essential")} className="w-full">
           {COOKIE_CONSENT_COPY.essential}
         </Button>
-        <Button onClick={() => choose("all")} className="h-9 w-full rounded-lg px-3 text-xs lg:text-[0.6875rem]">
+        <Button onClick={() => choose("all")} className="h-9 w-full rounded-lg px-3">
           {COOKIE_CONSENT_COPY.accept}
         </Button>
       </div>

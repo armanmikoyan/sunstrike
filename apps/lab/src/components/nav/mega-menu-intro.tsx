@@ -14,7 +14,7 @@ export function MegaMenuIntro({ menu, onClose }: MegaMenuIntroProps) {
       <Button
         asChild
         variant="outline"
-        className="mt-6 w-fit rounded-lg border-white/10 bg-white/3.5 text-xs lg:text-[0.6875rem] hover:border-white/20 hover:bg-white/6 hover:text-foreground"
+        className="mt-6 w-fit rounded-lg border-white/10 bg-white/3.5 hover:border-white/20 hover:bg-white/6 hover:text-foreground"
       >
         <Link href={menu.href} onClick={onClose}>
           {menu.cta}

@@ -16,7 +16,7 @@ export function StudioPromptField({ studio }: StudioScopedProps) {
           value={studio.prompt}
           onChange={(event) => studio.setPrompt(event.target.value)}
           placeholder={STUDIO_COPY.controls.placeholders[studio.isVideo ? "video" : "image"]}
-          className="min-h-28 resize-none border-white/8 bg-white/1.5 px-3 py-2.5 leading-relaxed placeholder:text-muted-foreground/65 focus-visible:border-white/25 focus-visible:ring-white/10"
+          className="min-h-28 resize-none border-white/8 bg-white/1.5 px-3 py-2.5 leading-relaxed placeholder:text-muted-foreground/80 focus-visible:border-white/25 focus-visible:ring-white/10"
         />
       </div>
     </div>

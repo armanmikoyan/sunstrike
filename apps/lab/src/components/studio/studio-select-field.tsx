@@ -29,7 +29,7 @@ export function StudioSelectField({ label, value, options, onChange }: StudioSel
               {selected?.icon}
               <span className="truncate">{selected?.label}</span>
             </span>
-            <ChevronDown className="size-3.5 text-muted-foreground/70" />
+            <ChevronDown className="size-3.5 text-muted-foreground/80" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="p-1">

@@ -55,7 +55,7 @@ export function StudioQueueDialog({
         <DialogFooter className="border-white/7 bg-white/1.5">
           <Button
             variant="outline"
-            className="h-8 rounded-lg border-white/10 bg-transparent text-xs lg:text-[0.6875rem]"
+            className="h-8 rounded-lg border-white/10 bg-transparent"
             onClick={() => setQueued(false)}
           >
             {STUDIO_COPY.queue.keepDirecting}

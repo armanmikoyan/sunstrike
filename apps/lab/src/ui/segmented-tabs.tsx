@@ -43,8 +43,11 @@ export function SegmentedTabs<T extends string>({
           <TabsTrigger
             key={option.value}
             value={option.value}
+            // The panel lives outside this control, so Radix's default
+            // `aria-controls` would point at a node that never renders.
+            aria-controls={undefined}
             className={cn(
-              "flex-none gap-1.5 rounded-[0.625rem] px-2.5 text-xs font-medium text-muted-foreground group-data-[variant=default]/tabs-list:data-active:shadow-none data-active:bg-white/8 data-active:text-foreground lg:px-2.5 lg:text-[0.6875rem] dark:data-active:border-transparent dark:data-active:bg-white/8 dark:data-active:text-foreground",
+              "flex-none gap-1.5 rounded-[0.625rem] px-2.5 text-[0.8125rem] font-medium text-muted-foreground group-data-[variant=default]/tabs-list:data-active:shadow-none data-active:bg-white/8 data-active:text-foreground lg:px-2.5 lg:text-[0.8125rem] dark:data-active:border-transparent dark:data-active:bg-white/8 dark:data-active:text-foreground",
               fullWidth && "flex-1",
             )}
           >

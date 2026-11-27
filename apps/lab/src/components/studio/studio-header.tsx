@@ -54,7 +54,7 @@ export function StudioHeader({ mode, credits }: StudioHeaderProps) {
           asChild
           variant="outline"
           size="sm"
-          className="h-7 rounded-md border-white/9 bg-white/2.5 px-2.5 text-xs lg:text-[0.6875rem] text-muted-foreground hover:bg-white/5 hover:text-foreground"
+          className="h-7 rounded-md border-white/9 bg-white/2.5 px-2.5 text-muted-foreground hover:bg-white/5 hover:text-foreground"
         >
           <Link href="/library">
             {STUDIO_COPY.header.library}

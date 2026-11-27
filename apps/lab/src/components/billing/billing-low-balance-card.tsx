@@ -14,7 +14,7 @@ export function BillingLowBalanceCard() {
       <Button
         asChild
         variant="outline"
-        className="mt-3 h-8 w-full rounded-lg border-white/10 bg-transparent text-xs lg:text-[0.6875rem] hover:bg-white/4"
+        className="mt-3 h-8 w-full rounded-lg border-white/10 bg-transparent hover:bg-white/4"
       >
         <Link href="/pricing">{BILLING_COPY.low.action}</Link>
       </Button>
