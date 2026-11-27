@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { useRef, type ComponentProps, type RefObject } from "react";
 import { Search, X } from "lucide-react";
 import { cn } from "cn";
 
@@ -12,6 +12,7 @@ type SearchInputProps = {
   hint?: string;
   clearLabel?: string;
   inputRef?: RefObject<HTMLInputElement | null>;
+  onFocus?: ComponentProps<"input">["onFocus"];
   className?: string;
 };
 
@@ -23,6 +24,7 @@ export function SearchInput({
   hint,
   clearLabel = "Clear search",
   inputRef,
+  onFocus,
   className,
 }: SearchInputProps) {
   const internalRef = useRef<HTMLInputElement>(null);
@@ -42,6 +44,7 @@ export function SearchInput({
         type="search"
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
+        onFocus={onFocus}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             event.preventDefault();

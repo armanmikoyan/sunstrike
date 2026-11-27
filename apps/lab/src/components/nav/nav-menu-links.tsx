@@ -19,7 +19,7 @@ export function NavMenuLinks({ menu }: NavMenuLinksProps) {
         <span
           aria-hidden
           className={cn(
-            "pointer-events-none absolute inset-0 rounded-xl bg-[#17191d] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] transition-opacity duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
+            "pointer-events-none absolute inset-0 rounded-xl bg-[#17191d] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] transition-opacity duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
             menu.openMenu ? "opacity-100" : "opacity-0",
           )}
         />
@@ -59,7 +59,7 @@ export function NavMenuLinks({ menu }: NavMenuLinksProps) {
                 onClick={menu.close}
                 aria-expanded={active}
                 className={cn(
-                  "relative flex h-8 items-center rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:text-foreground motion-reduce:transition-none lg:text-[0.6875rem]",
+                  "relative flex h-8 items-center rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-colors duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:text-foreground motion-reduce:transition-none lg:text-[0.6875rem]",
                   active && "text-foreground",
                 )}
               >

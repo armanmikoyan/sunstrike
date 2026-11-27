@@ -22,7 +22,7 @@ export function TopNav({ onOpenMenu, menuButtonRef }: TopNavProps) {
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none fixed inset-0 z-30 bg-[linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.9))] transition-opacity duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
+          "pointer-events-none fixed inset-0 z-30 bg-[linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.9))] transition-opacity duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none",
           activeMenu ? "opacity-100" : "opacity-0",
         )}
       />

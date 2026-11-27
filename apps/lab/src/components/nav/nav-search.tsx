@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePrefetch } from "@/hooks/use-prefetch";
 import { SearchInput } from "@/ui/search-input";
 import { NAV_COPY } from "./constants";
 import { useCompactNav, useShortcutLabel } from "./hooks";
 
 export function NavSearch() {
   const router = useRouter();
+  const prefetch = usePrefetch();
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
   const shortcut = useShortcutLabel();
@@ -45,6 +47,7 @@ export function NavSearch() {
         hint={shortcut}
         clearLabel={NAV_COPY.clearSearch}
         inputRef={searchRef}
+        onFocus={() => prefetch("/explore")}
       />
     </form>
   );

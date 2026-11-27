@@ -241,6 +241,23 @@ feature component and its logic, and nothing else.
   only. A different size is a change to the primitive, not to one page.
 - A primitive grows through named props.
 
+### Performance and motion
+
+- **Prefetch on intent, warm when idle.** `<Link>` prefetches what is in view;
+  `RouteWarmup` warms the primary destinations once the app is idle and
+  `usePrefetch` warms programmatic targets on hover or focus. Both skip
+  `saveData` and 2G connections.
+- **Navigation stays interruptible.** The progress bar appears only after
+  120ms and animates with `transform`, so fast transitions never flash.
+  `staleTimes` keeps recent routes in the client cache.
+- **Motion has a budget.** Hover and focus settle in 120–200ms, menus in
+  200–300ms, and a route enters with a 160ms opacity-only fade. Animate
+  transform and opacity, never layout. Reduced motion stops decorative loops
+  and makes route changes instant.
+- **Ship the right media weight.** Cards and the home wall stream the
+  `preview-sm` source; `fullSrc` is reserved for large surfaces such as the
+  studio stage and login hero. Every new video asset ships a small preview.
+
 ### Tests
 
 - Colocate `<file>.test.ts(x)` next to the file it covers.

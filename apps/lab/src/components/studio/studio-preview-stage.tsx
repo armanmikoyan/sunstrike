@@ -24,7 +24,7 @@ export function StudioPreviewStage({
       {isVideo && active.kind === "video" ? (
         <video
           key={active.id}
-          src={active.src}
+          src={active.fullSrc ?? active.src}
           poster={active.poster}
           autoPlay
           muted

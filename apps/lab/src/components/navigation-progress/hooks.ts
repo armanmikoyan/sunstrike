@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { FADE_MS, MAX_PROGRESS_MS, MIN_VISIBLE_MS, TRICKLE_MS } from "./constants";
+import { FADE_MS, MAX_PROGRESS_MS, MIN_VISIBLE_MS, SHOW_DELAY_MS, START_PROGRESS, TRICKLE_MS } from "./constants";
 
 export function useNavigationProgress() {
   const pathname = usePathname();
@@ -10,8 +10,9 @@ export function useNavigationProgress() {
   const [progress, setProgress] = useState(0);
   const firstPath = useRef(true);
   const running = useRef(false);
-  const startedAt = useRef(0);
+  const shownAt = useRef(0);
   const lastRoute = useRef<string | null>(null);
+  const show = useRef<number | null>(null);
   const trickle = useRef<number | null>(null);
   const safety = useRef<number | null>(null);
   const hide = useRef<number | null>(null);
@@ -34,7 +35,15 @@ export function useNavigationProgress() {
       reset.current = null;
     }
 
-    const elapsed = Date.now() - startedAt.current;
+    // The route settled before the bar appeared: never flash it.
+    if (show.current !== null) {
+      window.clearTimeout(show.current);
+      show.current = null;
+      setProgress(0);
+      return;
+    }
+
+    const elapsed = performance.now() - shownAt.current;
     const hold = Math.max(0, MIN_VISIBLE_MS - elapsed);
 
     setProgress(100);
@@ -47,7 +56,6 @@ export function useNavigationProgress() {
   const start = useCallback(() => {
     if (running.current) return;
     running.current = true;
-    startedAt.current = Date.now();
 
     if (hide.current !== null) {
       window.clearTimeout(hide.current);
@@ -58,11 +66,17 @@ export function useNavigationProgress() {
       reset.current = null;
     }
 
-    setVisible(true);
-    setProgress(10);
-    trickle.current = window.setInterval(() => {
-      setProgress((value) => Math.min(90, value + Math.max(1, (90 - value) * 0.08)));
-    }, TRICKLE_MS);
+    setProgress(START_PROGRESS);
+    show.current = window.setTimeout(() => {
+      show.current = null;
+      if (!running.current) return;
+
+      shownAt.current = performance.now();
+      setVisible(true);
+      trickle.current = window.setInterval(() => {
+        setProgress((value) => Math.min(90, value + Math.max(1, (90 - value) * 0.08)));
+      }, TRICKLE_MS);
+    }, SHOW_DELAY_MS);
     safety.current = window.setTimeout(finish, MAX_PROGRESS_MS);
   }, [finish]);
 
@@ -131,6 +145,7 @@ export function useNavigationProgress() {
 
   useEffect(() => {
     return () => {
+      if (show.current !== null) window.clearTimeout(show.current);
       if (trickle.current !== null) window.clearInterval(trickle.current);
       if (safety.current !== null) window.clearTimeout(safety.current);
       if (hide.current !== null) window.clearTimeout(hide.current);

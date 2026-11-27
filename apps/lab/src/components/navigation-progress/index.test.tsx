@@ -1,6 +1,7 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NavigationProgress } from ".";
+import { FADE_MS, MIN_VISIBLE_MS, SHOW_DELAY_MS } from "./constants";
 import { setPathname } from "~/vitest.setup";
 
 const bar = () => document.querySelector('[aria-hidden="true"]') as HTMLElement;
@@ -12,6 +13,7 @@ describe("navigation progress", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    setPathname("/");
   });
 
   it("stays hidden on first paint", () => {
@@ -24,6 +26,11 @@ describe("navigation progress", () => {
     act(() => {
       window.dispatchEvent(new Event("wildscape:navigation-start"));
     });
+    expect(bar()).toHaveClass("opacity-0");
+
+    act(() => {
+      vi.advanceTimersByTime(SHOW_DELAY_MS);
+    });
     expect(bar()).toHaveClass("opacity-100");
   });
 
@@ -35,6 +42,7 @@ describe("navigation progress", () => {
 
     act(() => {
       link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      vi.advanceTimersByTime(SHOW_DELAY_MS);
     });
 
     expect(bar()).toHaveClass("opacity-100");
@@ -78,10 +86,28 @@ describe("navigation progress", () => {
     window.history.pushState({}, "", "/");
   });
 
+  it("never flashes for a navigation that settles immediately", () => {
+    const { rerender } = render(<NavigationProgress />);
+    act(() => {
+      window.dispatchEvent(new Event("wildscape:navigation-start"));
+      vi.advanceTimersByTime(SHOW_DELAY_MS - 20);
+    });
+
+    setPathname("/pricing");
+    rerender(<NavigationProgress />);
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(bar()).toHaveClass("opacity-0");
+  });
+
   it("hides again once the route settles", () => {
     const { rerender } = render(<NavigationProgress />);
     act(() => {
       window.dispatchEvent(new Event("wildscape:navigation-start"));
+      vi.advanceTimersByTime(SHOW_DELAY_MS);
     });
     expect(bar()).toHaveClass("opacity-100");
 
@@ -89,7 +115,7 @@ describe("navigation progress", () => {
     rerender(<NavigationProgress />);
 
     act(() => {
-      vi.advanceTimersByTime(1200);
+      vi.advanceTimersByTime(MIN_VISIBLE_MS + FADE_MS + 50);
     });
 
     expect(bar()).toHaveClass("opacity-0");

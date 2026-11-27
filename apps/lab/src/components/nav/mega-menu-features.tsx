@@ -47,7 +47,7 @@ export function MegaMenuFeatures({ features, onClose }: MegaMenuFeaturesProps) {
             className="group relative flex items-center gap-3 rounded-lg px-2.5 py-2"
           >
             <Icon
-              className="size-5 shrink-0 text-muted-foreground transition-[color,scale] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-115 group-hover:text-brand-secondary group-focus-visible:scale-115 group-focus-visible:text-brand-secondary motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-focus-visible:scale-100"
+              className="size-5 shrink-0 text-muted-foreground transition-[color,scale] duration-200 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-115 group-hover:text-brand-secondary group-focus-visible:scale-115 group-focus-visible:text-brand-secondary motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-focus-visible:scale-100"
               strokeWidth={1.8}
             />
             <span className="min-w-0">

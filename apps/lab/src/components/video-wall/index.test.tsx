@@ -17,4 +17,11 @@ describe("video wall", () => {
     expect(videos[0]).toHaveAttribute("preload", "auto");
     expect(videos[1]).toHaveAttribute("preload", "metadata");
   });
+
+  it("streams the lightweight source on the wall", () => {
+    const { container } = render(<VideoWall />);
+    const videos = container.querySelectorAll("video");
+
+    expect(videos[0]).toHaveAttribute("src", "/videos/extra-time/preview-sm.mp4");
+  });
 });

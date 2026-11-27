@@ -12,7 +12,7 @@ export function LoginHero() {
     <section className="relative hidden min-h-screen overflow-hidden lg:block">
       {hero ? (
         <VideoWithFallback
-          src={hero.src}
+          src={hero.fullSrc ?? hero.src}
           poster={hero.poster}
           fallback={hero.fallback}
           preload="auto"

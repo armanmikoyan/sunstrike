@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { usePrefetch } from "@/hooks/use-prefetch";
 import { RollingNumber } from "@/motion/rolling-number";
 import { Button } from "@/ui/button";
 import { SegmentedTabs } from "@/ui/segmented-tabs";
@@ -15,6 +16,7 @@ import { formatDuration } from "@/components/studio/utils";
 
 export function PricingTopUpEstimate({ videoModels, imageModels, amount }: PricingTopUpEstimateProps) {
   const router = useRouter();
+  const prefetch = usePrefetch();
   const { mode, setMode, models, selectedModel, rate, capacity, unit, setSelectedSlug } = useTopUpEstimate({
     videoModels,
     imageModels,
@@ -88,7 +90,14 @@ export function PricingTopUpEstimate({ videoModels, imageModels, amount }: Prici
         </div>
       </div>
 
-      <Button type="button" size="cta" onClick={() => router.push("/settings/billing")} className="w-full">
+      <Button
+        type="button"
+        size="cta"
+        onClick={() => router.push("/settings/billing")}
+        onPointerEnter={() => prefetch("/settings/billing")}
+        onFocus={() => prefetch("/settings/billing")}
+        className="w-full"
+      >
         {PRICING_COPY.topUps.custom.topUp}{" "}
         <RollingNumber value={amount} useGrouping prefix={PRICING_COPY.topUps.currency} />
         <ArrowRight className="size-3.5" />

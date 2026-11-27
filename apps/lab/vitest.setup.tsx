@@ -80,6 +80,7 @@ export function resetNavigation() {
   navigationState.params = {};
   routerMock.push.mockReset();
   routerMock.replace.mockReset();
+  routerMock.prefetch.mockReset();
 }
 
 /** Renders a page with the providers the app shell normally supplies. */

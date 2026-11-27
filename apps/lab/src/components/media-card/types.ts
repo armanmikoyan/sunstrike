@@ -10,6 +10,8 @@ export type MediaItem = {
   kind: MediaKind;
   category: MediaCategory;
   src: string;
+  /** Full-resolution source for large surfaces; `src` is the lighter preview. */
+  fullSrc?: string;
   poster: string;
   aspect: string;
   model: string;
